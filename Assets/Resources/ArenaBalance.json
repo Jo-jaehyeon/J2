@@ -1,0 +1,363 @@
+{
+    "poolCounts": [
+        60,
+        45,
+        35,
+        25,
+        10
+    ],
+    "levels": [
+        {
+            "level": 1,
+            "weights": [
+                100,
+                0,
+                0,
+                0,
+                0
+            ],
+            "requiredXp": 2
+        },
+        {
+            "level": 2,
+            "weights": [
+                100,
+                0,
+                0,
+                0,
+                0
+            ],
+            "requiredXp": 6
+        },
+        {
+            "level": 3,
+            "weights": [
+                75,
+                25,
+                0,
+                0,
+                0
+            ],
+            "requiredXp": 10
+        },
+        {
+            "level": 4,
+            "weights": [
+                55,
+                30,
+                15,
+                0,
+                0
+            ],
+            "requiredXp": 20
+        },
+        {
+            "level": 5,
+            "weights": [
+                45,
+                33,
+                20,
+                2,
+                0
+            ],
+            "requiredXp": 32
+        },
+        {
+            "level": 6,
+            "weights": [
+                30,
+                40,
+                25,
+                5,
+                0
+            ],
+            "requiredXp": 40
+        },
+        {
+            "level": 7,
+            "weights": [
+                16,
+                30,
+                43,
+                10,
+                1
+            ],
+            "requiredXp": 48
+        },
+        {
+            "level": 8,
+            "weights": [
+                15,
+                20,
+                32,
+                30,
+                3
+            ],
+            "requiredXp": 52
+        },
+        {
+            "level": 9,
+            "weights": [
+                10,
+                17,
+                25,
+                33,
+                15
+            ],
+            "requiredXp": 64
+        },
+        {
+            "level": 10,
+            "weights": [
+                5,
+                10,
+                20,
+                40,
+                25
+            ],
+            "requiredXp": 88
+        },
+        {
+            "level": 11,
+            "weights": [
+                5,
+                10,
+                20,
+                35,
+                30
+            ],
+            "requiredXp": 100
+        },
+        {
+            "level": 12,
+            "weights": [
+                5,
+                10,
+                20,
+                35,
+                30
+            ],
+            "requiredXp": 100
+        },
+        {
+            "level": 13,
+            "weights": [
+                5,
+                10,
+                20,
+                35,
+                30
+            ],
+            "requiredXp": 100
+        },
+        {
+            "level": 14,
+            "weights": [
+                5,
+                10,
+                20,
+                35,
+                30
+            ],
+            "requiredXp": 100
+        },
+        {
+            "level": 15,
+            "weights": [
+                5,
+                10,
+                20,
+                35,
+                30
+            ],
+            "requiredXp": 100
+        },
+        {
+            "level": 16,
+            "weights": [
+                5,
+                10,
+                20,
+                35,
+                30
+            ],
+            "requiredXp": 100
+        },
+        {
+            "level": 17,
+            "weights": [
+                5,
+                10,
+                20,
+                35,
+                30
+            ],
+            "requiredXp": 100
+        },
+        {
+            "level": 18,
+            "weights": [
+                5,
+                10,
+                20,
+                35,
+                30
+            ],
+            "requiredXp": 100
+        },
+        {
+            "level": 19,
+            "weights": [
+                5,
+                10,
+                20,
+                35,
+                30
+            ],
+            "requiredXp": 100
+        },
+        {
+            "level": 20,
+            "weights": [
+                5,
+                10,
+                20,
+                35,
+                30
+            ],
+            "requiredXp": 60
+        },
+        {
+            "level": 21,
+            "weights": [
+                5,
+                10,
+                20,
+                35,
+                30
+            ],
+            "requiredXp": 60
+        },
+        {
+            "level": 22,
+            "weights": [
+                5,
+                10,
+                20,
+                35,
+                30
+            ],
+            "requiredXp": 10
+        },
+        {
+            "level": 23,
+            "weights": [
+                5,
+                10,
+                20,
+                35,
+                30
+            ],
+            "requiredXp": 10
+        },
+        {
+            "level": 24,
+            "weights": [
+                5,
+                10,
+                20,
+                35,
+                30
+            ],
+            "requiredXp": 10
+        },
+        {
+            "level": 25,
+            "weights": [
+                5,
+                10,
+                20,
+                35,
+                30
+            ],
+            "requiredXp": 10
+        },
+        {
+            "level": 26,
+            "weights": [
+                5,
+                10,
+                20,
+                35,
+                30
+            ],
+            "requiredXp": 10
+        },
+        {
+            "level": 27,
+            "weights": [
+                5,
+                10,
+                20,
+                35,
+                30
+            ],
+            "requiredXp": 10
+        },
+        {
+            "level": 28,
+            "weights": [
+                5,
+                10,
+                20,
+                35,
+                30
+            ],
+            "requiredXp": 10
+        },
+        {
+            "level": 29,
+            "weights": [
+                5,
+                10,
+                20,
+                35,
+                30
+            ],
+            "requiredXp": 10
+        },
+        {
+            "level": 30,
+            "weights": [
+                5,
+                10,
+                20,
+                35,
+                30
+            ],
+            "requiredXp": 10
+        },
+        {
+            "level": 31,
+            "weights": [
+                5,
+                10,
+                20,
+                35,
+                30
+            ],
+            "requiredXp": 10
+        },
+        {
+            "level": 32,
+            "weights": [
+                5,
+                10,
+                20,
+                35,
+                30
+            ],
+            "requiredXp": 10
+        }
+    ]
+}

@@ -1,0 +1,174 @@
+using System;
+using System.Linq;
+using DigitalArena;
+#if !ARENA_HEADLESS
+using UnityEditor;
+using UnityEngine;
+#endif
+
+public static class DigitalArenaValidation
+{
+#if ARENA_HEADLESS
+    public static void Main() { Run(); }
+#else
+    [MenuItem("Digital Arena/Validate Prototype Rules")]
+#endif
+    public static void Run()
+    {
+        int checks=0;
+        void Check(bool condition,string description) { if(!condition) throw new Exception("Arena validation failed: "+description); checks++; }
+        ArenaBalance TierBalance(int tier,int count=60)
+        {
+            var b=new ArenaBalance();b.poolCounts=Enumerable.Repeat(count,5).ToArray();
+            foreach(var row in b.levels) { row.weights=new int[5];row.weights[tier]=100; } return b;
+        }
+        ArenaRules Game(int tier=0,int count=60) { var r=new ArenaRules(100,TierBalance(tier,count));r.BeginRound();return r; }
+        void Round(ArenaRules r,bool won=true,int survivors=0) { r.StartBattle();r.ResolveBattle(won,survivors);r.BeginRound(); }
+        var game=Game();
+        Check(game.Health==100 && game.Level==1 && game.Gold==8,"initial health, level and income");
+        game.BeginRound();Check(game.Round==1 && game.Gold==8,"duplicate income blocked");
+        for(int i=0;i<5;i++) Check(game.Buy(i),"purchase candidate "+i);
+        Check(game.PurchaseCount==5 && game.Gold==3,"all five candidates can be purchased");
+        Check(!game.Buy(0) && !game.Buy(5),"sold slot and sixth purchase blocked");
+        Check(game.Pieces.Count==3 && game.Pieces.Count(p=>p.Tier==1)==1,"automatic three-copy evolution");
+        Check(game.Pieces.Select(p=>p.BenchSlot).Distinct().Count()==game.Pieces.Count,"merge retains unique bench slots");
+        var p=game.Pieces[0];var q=game.Pieces[1];int oldP=p.BenchSlot,oldQ=q.BenchSlot;
+        Check(game.MoveToBench(p.Id,oldQ) && q.BenchSlot==oldP && p.BenchSlot==oldQ,"bench slot swap");
+        Check(game.MoveToBench(p.Id,9) && p.BenchSlot==9,"move into empty bench slot");
+        Check(game.AutoDeploy(p.Id) && p.Cell==0,"double click targets chosen piece");
+        Check(!game.AutoDeploy(q.Id),"deployment level cap");
+        Check(game.Place(p.Id,31),"last of 32 field slots is valid");
+        Check(!game.Place(p.Id,32),"field bounds");
+        Check(game.Place(q.Id,31) && p.Cell<0 && p.BenchSlot>=0,"swap field with bench at cap");
+        game.StartBattle();Check(!game.MoveToBench(q.Id,0) && !game.AutoDeploy(p.Id) && !game.BuyXp(),"battle locks preparation");
+        game.ResolveBattle(true,0);Check(game.Xp==2,"battle XP");game.ResolveBattle(false,5);
+        Check(game.Xp==2 && game.Health==100,"duplicate results ignored");
+        for(int i=0;i<7;i++) { game.BeginRound();game.StartBattle(); }
+        Check(game.Stage==1 && game.StageRound==8,"eight rounds per stage");game.BeginRound();Check(game.Stage==2 && game.StageRound==1,"stage advance");
+        var xp=Game();Check(xp.BuyXp()&&xp.BuyXp() && xp.Xp==8 && xp.Gold==0,"paid XP costs four"); Round(xp); Round(xp); Check(xp.BuyXp() && xp.Level==2 && xp.Xp==6,"paid and passive XP overflow");
+        var passive=Game();for(int i=0;i<5;i++) Round(passive);
+        var xpTable=TierBalance(0);xpTable.levels[0].requiredXp=3;xpTable.levels[1].requiredXp=7;
+        var variableXp=new ArenaRules(1,xpTable);variableXp.BeginRound();
+        Check(variableXp.BuyXp()&&variableXp.Level==2&&variableXp.Xp==1&&variableXp.RequiredXp==7,"table XP purchase and carry");
+        Round(variableXp);Check(variableXp.Xp==3&&variableXp.Level==2,"passive XP uses same table");
+        Check(variableXp.BuyXp()&&variableXp.Level==3&&variableXp.Xp==0&&variableXp.RequiredXp==10,"next level has different XP threshold");
+        xpTable.levels[0].requiredXp=1;xpTable.levels[1].requiredXp=1;xpTable.levels[2].requiredXp=2;
+        var multiXp=new ArenaRules(1,xpTable);multiXp.BeginRound();multiXp.BuyXp();
+        Check(multiXp.Level==4&&multiXp.Xp==0,"one purchase crosses multiple thresholds");
+        xpTable.levels[0].requiredXp=0;Check(xpTable.Validate()!=null,"zero required XP rejected");
+        xpTable.levels[0].requiredXp=-1;Check(xpTable.Validate()!=null,"negative required XP rejected");
+        xpTable.levels[0].requiredXp=1000001;Check(xpTable.Validate()!=null,"excessive required XP rejected");
+        Check(variableXp.Balance.levels[0].requiredXp==3,"XP table snapshot isolated from edits");
+        Check(passive.Level==2 && passive.Xp==0,"passive XP levels player");
+        for(int i=0;i<180;i++) Round(passive);
+        Check(passive.Level==32 && passive.Xp==0,"32-level cap");
+        Check(passive.RequiredXp==0&&!passive.BuyXp(),"max level has no next threshold");
+        var stock=Game(0,3);Check(stock.Offers.Count(t=>t==0)==3 && stock.Offers.Count(t=>t==-1)==2,"limited pool creates empty slots");
+        Check(stock.Buy(0),"purchase reserved stock");Round(stock);
+        Check(stock.Offers.Count(t=>t==0)==2,"unsold reservations returned, purchased stock consumed");
+        stock.Buy(0);stock.Buy(1);Round(stock);
+        Check(stock.Offers.All(t=>t==-1),"exhausted pool stays empty");
+        var empty=Game(0,0);Check(empty.Offers.All(t=>t==-1) && !empty.Buy(0),"zero inventory safe");
+        var settings=new ArenaBalance();Check(settings.Validate()==null,"default data table");
+        settings.levels[0].weights[0]++;Check(settings.Validate()!=null,"invalid probability sum rejected");
+        settings=new ArenaBalance();settings.poolCounts[0]=-1;Check(settings.Validate()!=null,"negative stock rejected");
+        var shop=Game(4);Check(shop.Buy(0),"expensive purchase");Check(!shop.Buy(1)&&!shop.Bought[1],"insufficient gold does not consume candidate");
+        var merge=Game(2);merge.Pieces.Add(new ArenaRules.Piece{Id=10,Tier=2,Cell=31});
+        merge.Pieces.Add(new ArenaRules.Piece{Id=11,Tier=2,BenchSlot=0});
+        for(int tier=3;tier<=4;tier++)for(int i=0;i<2;i++)merge.Pieces.Add(new ArenaRules.Piece{Id=20+tier*2+i,Tier=tier,BenchSlot=1+(tier-3)*2+i});
+        Check(merge.Buy(0)&&merge.Pieces.Count==1&&merge.Pieces[0].Tier==5&&merge.Pieces[0].Cell==31,"chain to WarGreymon preserves cell 31");
+        var full=Game();for(int i=0;i<10;i++) full.Pieces.Add(new ArenaRules.Piece{Id=100+i,Tier=1+i/2,BenchSlot=i});
+        Check(!full.Buy(0)&&full.Gold==8&&!full.Bought[0],"full bench rejects purchase atomically");
+        full.Pieces[0].Tier=full.Pieces[1].Tier=0;Check(full.Buy(0),"full bench permits instant merge");
+        var damage=Game();Round(damage,false,3);Check(damage.Health==94,"stage-one damage");
+        Round(damage,false,6);Check(damage.Health==82,"survivor-scaled damage");
+        for(int i=0;i<6;i++) Round(damage);Round(damage,false,3);Check(damage.Health==70,"stage-two damage");
+        damage.StartBattle();damage.ResolveBattle(false,100);int before=damage.Round;damage.BeginRound();Check(damage.Health==0&&damage.Round==before,"game over freezes round");
+        Check(new ArenaRules(1).Gold==5,"initial capital is five before income");
+        var expanded=new DigimonCatalog();
+        var newcomer=expanded.allies[0].Copy();newcomer.id="new_ally";newcomer.name="New ally";newcomer.evolvesTo="ally_0";
+        var newEnemy=expanded.enemies[0].Copy();newEnemy.id="new_enemy";newEnemy.name="New enemy";newEnemy.startStage=9;
+        expanded.allies=expanded.allies.Concat(new[]{newcomer}).ToArray();expanded.enemies=expanded.enemies.Concat(new[]{newEnemy}).ToArray();
+        Check(expanded.Validate()==null,"catalog expands beyond thirteen units");
+        Check(expanded.EnemyAt(9)==7&&expanded.EnemyAt(100)==7,"new enemy participates in stage progression");
+        var found=new System.Collections.Generic.HashSet<int>();
+        for(int seed=0;seed<20;seed++)
+        {
+            var draw=new ArenaRules(seed,TierBalance(0),expanded);draw.BeginRound();
+            foreach(int offer in draw.Offers) { Check(offer==0||offer==6,"same cost candidates only");found.Add(offer); }
+        }
+        Check(found.SetEquals(new[]{0,6}),"both existing and added units drawn at shared cost");
+        var addedGame=new ArenaRules(8,TierBalance(0),expanded);addedGame.BeginRound();
+        for(int i=0;i<3;i++) { addedGame.Offers[i]=6;Check(addedGame.Buy(i),"purchase added unit"); }
+        Check(addedGame.Pieces.Count==1&&addedGame.Pieces[0].Tier==0,"ID evolution supports lower array index");
+        Round(addedGame);Check(addedGame.RemainingPool[0]==52,"shared cost reservations returned");
+        var reordered=expanded.Copy();Array.Reverse(reordered.allies);
+        Check(reordered.allies[reordered.Evolution(0)].id=="ally_0","evolution reference survives reorder");
+        expanded.allies[0].evolvesTo="new_ally";Check(expanded.Validate()!=null,"cyclic evolution rejected");
+        expanded.allies[0].evolvesTo="missing";Check(expanded.Validate()!=null,"missing evolution target rejected");
+        expanded.allies[0].evolvesTo="ally_1";newEnemy.id="ally_0";Check(expanded.Validate()!=null,"duplicate IDs rejected across sides");
+        var minimal=new DigimonCatalog { allies=new[]{new DigimonData{id="solo",name="Solo"}}, enemies=new[]{new DigimonData{id="creep",name="Creep"}} };
+        Check(minimal.Validate()==null,"original thirteen rows not required");
+        var absent=new ArenaRules(1,TierBalance(4),minimal);absent.BeginRound();Check(absent.Offers.All(i=>i<0),"cost without any registered unit is unavailable");
+        var catalog=new DigimonCatalog();Check(catalog.Validate()==null,"13 unit defaults valid");
+        var copy=catalog.Copy();copy.allies[0].HP=456;Check(catalog.allies[0].HP==90,"catalog snapshot isolation");
+        copy.allies[0].SPD=float.NaN;Check(copy.Validate()!=null,"NaN rejected");
+        for(int a=0;a<6;a++) for(int b=0;b<6;b++)
+        {
+            float expected=1;
+            if(a<3&&b==(a+1)%3) expected=2;
+            if(a==3&&b<3||a<3&&b==5) expected=1.1f;
+            Check(Math.Abs(DigimonDamage.TypeMultiplier((DigimonType)a,(DigimonType)b)-expected)<0.001f,"type matrix "+a+":"+b);
+        }
+        int[,] edges={{1,0},{0,2},{2,1},{3,4},{4,5},{5,3},{6,7},{7,6}};
+        for(int a=0;a<9;a++) for(int b=0;b<9;b++)
+        {
+            bool advantage=false;for(int i=0;i<8;i++) advantage|=edges[i,0]==a&&edges[i,1]==b;
+            Check(DigimonDamage.ElementMultiplier((DigimonElement)a,(DigimonElement)b)==(advantage?1.5f:1),"element matrix "+a+":"+b);
+        }
+        var source=new DigimonData{ATK=100,INT=200,type=DigimonType.Vaccine,element=DigimonElement.Fire};
+        var target=new DigimonData{DEF=0,type=DigimonType.Virus,element=DigimonElement.Grass};
+        Check(DigimonDamage.Calculate(source,target)==300,"stacked advantage three times");
+        target.DEF=100;Check(DigimonDamage.Calculate(source,target)==150,"defense halves damage at 100");
+        source.attack=AttackKind.Special;Check(DigimonDamage.Calculate(source,target)==300,"special uses INT");
+        Check(DigimonDamage.Calculate(source,target,2)==600,"ability scales attack category");
+        var custom=new DigimonCatalog();custom.allies[0]=new DigimonData{HP=10000,SP=20,ATK=10,INT=70,DEF=0,SPD=0,range=20,attack=AttackKind.Special,type=DigimonType.Free,element=DigimonElement.Neutral};
+        custom.enemies[0]=new DigimonData{HP=100000,ATK=0,INT=0,DEF=0,SPD=0,range=20,type=DigimonType.Free,element=DigimonElement.Neutral};
+        custom.allies[0].id="ally_0";custom.allies[0].name="test ally";
+        custom.enemies[0].id="enemy_0";custom.enemies[0].name="test enemy";
+        var combatRules=new ArenaRules(1,TierBalance(0),custom);combatRules.BeginRound();combatRules.Buy(0);combatRules.AutoDeploy(combatRules.Pieces[0].Id);combatRules.StartBattle();
+        var measured=new ArenaBattle(combatRules);var attacker=measured.Fighters[0];var victim=measured.Fighters[1];
+        attacker.X=victim.X=0;attacker.Y=0;victim.Y=1;
+        measured.Tick(.5f);Check(attacker.Sp==20&&attacker.LastDamage==70,"basic special attack gains SP and uses INT");
+        measured.Tick(1);Check(attacker.Sp==0&&attacker.UsedSkill&&attacker.LastDamage==140,"full SP consumes resource for ability");
+        attacker.Data.range=.1f;victim.Data.range=.1f;float held=attacker.Y;
+        measured.Tick(1);Check(attacker.Y==held,"zero SPD does not move");
+        attacker.Data.SPD=2;measured.Tick(.1f);Check(Math.Abs(attacker.Y-held-.2f)<.001f,"SPD sets grid cells per second");
+        attacker.Data.SPD=0;
+        measured.Tick(100);Check(measured.Finished&&!measured.Won&&measured.Time==30,"timeout exactly thirty seconds");
+        var train=new ArenaTrain();float prior=train.Center;train.Advance(1);Check(train.Center<prior,"train moves right to left");
+        int exit=0;for(int r=2;r<20;r++){train.Advance(r);if(!train.Visible){exit=r;break;}}
+        Check(exit>0,"train exits map");train.Advance(exit+1);Check(!train.Visible,"first hidden round");
+        train.Advance(exit+2);Check(!train.Visible,"second hidden round");train.Advance(exit+3);Check(train.Visible&&train.Center==7,"returns three rounds after exit on right");
+        var route=new ArenaTrain();route.Advance(1);route.Advance(2);route.Advance(3);
+        Check(route.Blocks(4,3,4,5),"tram blocks direct crossing");
+        route.Waypoint(4,3,4,5,out float wx,out float wy);Check(!route.Blocks(4,3,wx,wy)&&Math.Abs(wx-4)>0.1f,"detour picks clear corner");
+        for(int stage=1;stage<=8;stage++)
+        {
+            var duel=Game(2);for(int r=1;r<stage;r++)Round(duel);
+            duel.Buy(0);duel.AutoDeploy(duel.Pieces[0].Id);duel.StartBattle();var battle=new ArenaBattle(duel);float frozen=duel.Train.Center;
+            Check(battle.Fighters.Where(f=>!f.Enemy).All(f=>f.Y<=3)&&battle.Fighters.Where(f=>f.Enemy).All(f=>f.Y>=5),"vertical deployment");
+            for(int tick=0;tick<2000&&!battle.Finished;tick++)
+            {
+                var positions=battle.Fighters.Select(f=>new[]{f.X,f.Y}).ToArray();battle.Tick(0.025f);
+                for(int i=0;i<positions.Length;i++) Check(!duel.Train.Blocks(positions[i][0],positions[i][1],battle.Fighters[i].X,battle.Fighters[i].Y),"movement never penetrates tram");
+            }
+            Check(battle.Finished&&battle.Won,"combat resolves around train round="+stage+" time="+battle.Time+" fighters="+string.Join(";",battle.Fighters.Select(f=>f.X+","+f.Y+":"+f.Hp)));Check(duel.Train.Center==frozen,"train frozen in combat");
+        }
+#if ARENA_HEADLESS
+        Console.WriteLine("DIGITAL ARENA VALIDATION PASSED: "+checks+" checks");
+#else
+        Debug.Log("DIGITAL ARENA VALIDATION PASSED: "+checks+" checks");
+#endif
+    }
+}

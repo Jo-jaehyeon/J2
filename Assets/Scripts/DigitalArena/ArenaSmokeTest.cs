@@ -74,6 +74,33 @@ namespace DigitalArena
             Check(Field<bool>("mainMenu")&&Field<bool>("multiplayerNotice")&&Field<ArenaRules>("rules")==null,"multiplayer TODO leaves game unstarted");
             Call("StartSinglePlayer");
             Check(!Field<bool>("mainMenu"),"single selection starts game");
+            Check(Resources.Load<Shader>("UI/DigimonTypeBadge").isSupported,"type badge texture shader supported");
+            string iconOutput=Path.GetFullPath(Path.Combine(Application.dataPath,"../../../Logs/TypeIcons"));Directory.CreateDirectory(iconOutput);
+            foreach(DigimonType type in Enum.GetValues(typeof(DigimonType)))
+            {
+                Check(DigimonBadge.Source(type)!=null,"provided type PNG loaded "+type);
+                var badge=DigimonBadge.Create(type,DigimonElement.Fire);
+                Check(badge.GetPixel(0,0).a<.01f&&badge.GetPixel(32,32).a>.99f,"badge transparency "+type);
+                int minX=64,maxX=-1,minY=64,maxY=-1;
+                for(int y=0;y<64;y++)for(int x=0;x<64;x++)
+                {
+                    var pixel=badge.GetPixel(x,y);if(pixel.r<.7f||pixel.g>.5f||pixel.b>.5f)continue;
+                    minX=Mathf.Min(minX,x);maxX=Mathf.Max(maxX,x);minY=Mathf.Min(minY,y);maxY=Mathf.Max(maxY,y);
+                }
+                Check(maxX>=minX&&Mathf.Abs((minX+maxX)*.5f-31.5f)<=1.5f&&Mathf.Abs((minY+maxY)*.5f-31.5f)<=1.5f,"visible symbol centered "+type);
+                File.WriteAllBytes(Path.Combine(iconOutput,type+".png"),badge.EncodeToPNG());Destroy(badge);
+            }
+            Color? fixedBackground=null,fixedBorder=null;
+            foreach(DigimonElement element in Enum.GetValues(typeof(DigimonElement)))
+            {
+                var badge=DigimonBadge.Create(DigimonType.Vaccine,element);
+                var background=badge.GetPixel(32,5);var border=badge.GetPixel(32,1);
+                if(fixedBackground.HasValue) Check(background==fixedBackground.Value&&border==fixedBorder.Value,"frame independent of element "+element);
+                fixedBackground=background;fixedBorder=border;
+                var expected=DigimonBadge.Colors[(int)element];
+                Check(badge.GetPixels().Count(p=>p.a>.99f&&Mathf.Abs(p.r-expected.r)+Mathf.Abs(p.g-expected.g)+Mathf.Abs(p.b-expected.b)<.09f)>20,"symbol uses element color "+element);
+                File.WriteAllBytes(Path.Combine(iconOutput,"Vaccine_"+element+".png"),badge.EncodeToPNG());Destroy(badge);
+            }
             float scale=Mathf.Min(Screen.width/1440f,Screen.height/900f);
             Set("uiScale",scale);
             Set("uiOffset",new Vector2((Screen.width-1440*scale)/2,(Screen.height-900*scale)/2));

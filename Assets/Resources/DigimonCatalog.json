@@ -16,7 +16,7 @@
             "INT": 15.0,
             "SPD": 1.25,
             "attack": 0,
-            "type": 1,
+            "type": 5,
             "element": 8,
             "spPerAttack": 20.0,
             "skillPower": 2.0
@@ -37,7 +37,7 @@
             "INT": 30.0,
             "SPD": 1.25,
             "attack": 0,
-            "type": 2,
+            "type": 0,
             "element": 8,
             "spPerAttack": 20.0,
             "skillPower": 2.0
@@ -144,7 +144,7 @@
             "INT": 15.0,
             "SPD": 1.25,
             "attack": 1,
-            "type": 3,
+            "type": 5,
             "element": 7,
             "spPerAttack": 20.0,
             "skillPower": 2.0
@@ -165,7 +165,7 @@
             "INT": 30.0,
             "SPD": 1.25,
             "attack": 1,
-            "type": 1,
+            "type": 3,
             "element": 7,
             "spPerAttack": 20.0,
             "skillPower": 2.0

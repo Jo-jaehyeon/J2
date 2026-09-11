@@ -132,20 +132,43 @@ public static class DigitalArenaValidation
         target.DEF=100;Check(DigimonDamage.Calculate(source,target)==150,"defense halves damage at 100");
         source.attack=AttackKind.Special;Check(DigimonDamage.Calculate(source,target)==300,"special uses INT");
         Check(DigimonDamage.Calculate(source,target,2)==600,"ability scales attack category");
-        var custom=new DigimonCatalog();custom.allies[0]=new DigimonData{HP=10000,SP=20,ATK=10,INT=70,DEF=0,SPD=0,range=20,attack=AttackKind.Special,type=DigimonType.Free,element=DigimonElement.Neutral};
-        custom.enemies[0]=new DigimonData{HP=100000,ATK=0,INT=0,DEF=0,SPD=0,range=20,type=DigimonType.Free,element=DigimonElement.Neutral};
+        var custom=new DigimonCatalog();custom.allies[0]=new DigimonData{HP=10000,SP=20,ATK=10,INT=70,DEF=0,SPD=0,range=4,attack=AttackKind.Special,type=DigimonType.Free,element=DigimonElement.Neutral};
+        custom.enemies[0]=new DigimonData{HP=100000,ATK=0,INT=0,DEF=0,SPD=0,range=4,type=DigimonType.Free,element=DigimonElement.Neutral};
         custom.allies[0].id="ally_0";custom.allies[0].name="test ally";
         custom.enemies[0].id="enemy_0";custom.enemies[0].name="test enemy";
         var combatRules=new ArenaRules(1,TierBalance(0),custom);combatRules.BeginRound();combatRules.Buy(0);combatRules.AutoDeploy(combatRules.Pieces[0].Id);combatRules.StartBattle();
         var measured=new ArenaBattle(combatRules);var attacker=measured.Fighters[0];var victim=measured.Fighters[1];
-        attacker.X=victim.X=0;attacker.Y=0;victim.Y=1;
+        attacker.Cell=0;victim.Cell=1;attacker.X=0;victim.X=1;attacker.Y=victim.Y=0;
         measured.Tick(.5f);Check(attacker.Sp==20&&attacker.LastDamage==70,"basic special attack gains SP and uses INT");
         measured.Tick(1);Check(attacker.Sp==0&&attacker.UsedSkill&&attacker.LastDamage==140,"full SP consumes resource for ability");
-        attacker.Data.range=.1f;victim.Data.range=.1f;float held=attacker.Y;
-        measured.Tick(1);Check(attacker.Y==held,"zero SPD does not move");
-        attacker.Data.SPD=2;measured.Tick(.1f);Check(Math.Abs(attacker.Y-held-.2f)<.001f,"SPD sets grid cells per second");
+        attacker.Data.range=1;victim.Data.range=1;victim.Cell=3;victim.X=3;
+        measured.Tick(1);Check(attacker.X==0&&!attacker.Moving,"zero SPD does not move");
+        attacker.Data.SPD=2;measured.Tick(.1f);Check(attacker.Moving&&attacker.NextCell==1,"movement reserves next tile");
+        measured.Tick(.1f);Check(Math.Abs(attacker.X-.2f)<.001f,"SPD controls tile transition duration");
+        Check(measured.Occupied(0)&&measured.Occupied(1),"source and destination reserved in transit");
+        measured.Tick(.4f);Check(attacker.Cell==1&&attacker.X==1,"move arrives exactly at tile center");
         attacker.Data.SPD=0;
         measured.Tick(100);Check(measured.Finished&&!measured.Won&&measured.Time==30,"timeout exactly thirty seconds");
+        Check(ArenaBattle.TileDistance(24,32)==1&&ArenaBattle.TileDistance(24,40)==2,"rail gap excluded from front line range");
+        Check(ArenaBattle.TileDistance(24,42)==2&&ArenaBattle.TileDistance(24,43)==3,"diagonally touching tiles count as one");
+        for(int range=1;range<=4;range++) Check(ArenaBattle.TileDistance(24,(3+range)*8)==range,"range row boundary "+range);
+        var rangeCatalog=new DigimonCatalog();rangeCatalog.allies[0].range=0;Check(rangeCatalog.Validate()!=null,"zero range rejected");
+        rangeCatalog.allies[0].range=5;Check(rangeCatalog.Validate()!=null,"range above four rejected");
+        var crowdRules=Game();
+        for(int i=0;i<32;i++) crowdRules.Pieces.Add(new ArenaRules.Piece{Id=100+i,Tier=0,Cell=i});
+        crowdRules.StartBattle();var crowd=new ArenaBattle(crowdRules);
+        foreach(var f in crowd.Fighters) {f.Hp=100000;f.Data.ATK=f.Data.INT=0;}
+        for(int i=0;i<500;i++)
+        {
+            crowd.Tick(.025f);
+            var owned=new System.Collections.Generic.HashSet<int>();
+            foreach(var f in crowd.Fighters.Where(f=>f.Alive))
+            {
+                Check(owned.Add(f.Cell),"one live fighter per cell");
+                if(f.Moving) Check(owned.Add(f.NextCell),"destination reservation unique");
+                Check(f.Cell>=0&&f.Cell<64,"fighter remains on grid");
+            }
+        }
         var train=new ArenaTrain();float prior=train.Center;train.Advance(1);Check(train.Center<prior,"train moves right to left");
         int exit=0;for(int r=2;r<20;r++){train.Advance(r);if(!train.Visible){exit=r;break;}}
         Check(exit>0,"train exits map");train.Advance(exit+1);Check(!train.Visible,"first hidden round");

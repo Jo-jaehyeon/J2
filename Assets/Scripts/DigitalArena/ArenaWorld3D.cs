@@ -167,7 +167,7 @@ namespace DigitalArena
                 foreach (var piece in rules.Pieces)
                     Add(piece.Id, piece.Tier, false, piece.Cell < 0 ? BenchPosition(piece.BenchSlot) : CellPosition(piece.Cell), null);
                 for (int i = 0; i < ArenaBattle.EnemyCount(rules.Stage, rules.StageRound); i++)
-                    Add(-1, rules.Catalog.EnemyAt(rules.Stage,i), true, Position(i % 8, 6+i/8), null);
+                    Add(-1, rules.Catalog.EnemyAt(rules.Stage,i), true, Position(i % 8, 5+i/8), null);
             }
             else
             {
@@ -201,8 +201,10 @@ namespace DigitalArena
                     unit.Root.gameObject.SetActive(unit.Fighter.Alive || unit.Motion!=null&&!unit.Motion.DeathComplete);
                     if (!unit.Fighter.Alive) continue;
                     var f = unit.Fighter;
+                    Vector3 travel=Position(f.X,f.Y)-unit.Home;
                     unit.Home = Position(f.X,f.Y);
-                    if (f.Target != null)
+                    if(travel.sqrMagnitude>.000001f) unit.Root.rotation=Quaternion.LookRotation(travel);
+                    else if (f.Target != null)
                     {
                         Vector3 direction = Position(f.Target.X,f.Target.Y)-unit.Home;
                         if (direction.sqrMagnitude > 0.001f) unit.Root.rotation = Quaternion.LookRotation(direction);

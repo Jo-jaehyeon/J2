@@ -15,6 +15,9 @@ namespace DigitalArena
         readonly System.Collections.Generic.Dictionary<int,Texture2D> badges=new System.Collections.Generic.Dictionary<int,Texture2D>();
         ArenaWorld3D.UnitView selectedUnit;
         Font font;
+        Texture2D mainBackground;
+        bool mainMenu=true, multiplayerNotice;
+        Camera menuCamera;
         float remaining, resultTime, elapsed, shopProgress, uiScale;
         Vector2 uiOffset, mouseDown;
         int pressedId = -1, dragId = -1;
@@ -35,12 +38,17 @@ namespace DigitalArena
         {
             font = Font.CreateDynamicFontFromOSFont(new[] { "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans CJK KR", "Arial" }, 18);
             Application.targetFrameRate = 60;
-            world = gameObject.AddComponent<ArenaWorld3D>(); world.Initialize();
-
-            ResetRun();
+            mainBackground=Resources.Load<Texture2D>("UI/DigiTacticsMainBackground");
+            menuCamera=new GameObject("Main Menu Camera").AddComponent<Camera>();
+            menuCamera.transform.SetParent(transform);menuCamera.cullingMask=0;
+            menuCamera.clearFlags=CameraClearFlags.SolidColor;menuCamera.backgroundColor=Hex(0x112A3A);
         }
+        void StartSinglePlayer() { if(mainMenu) ResetRun(); }
+        void SelectMultiplayer() { multiplayerNotice=true; } // TODO: multiplayer lobby and network session.
         void ResetRun()
         {
+            mainMenu=false;multiplayerNotice=false;
+            if(world==null) { world=gameObject.AddComponent<ArenaWorld3D>();world.Initialize(); }
             var data=Resources.Load<TextAsset>("ArenaBalance");
             var catalog=Resources.Load<TextAsset>("DigimonCatalog");
             rules = new ArenaRules(Environment.TickCount,data==null?new ArenaBalance():JsonUtility.FromJson<ArenaBalance>(data.text),catalog==null?new DigimonCatalog():JsonUtility.FromJson<DigimonCatalog>(catalog.text));
@@ -64,7 +72,7 @@ namespace DigitalArena
         }
         void Update()
         {
-            if (help || rules.Health <= 0) return;
+            if (mainMenu || help || rules.Health <= 0) return;
             elapsed += Time.deltaTime;
             shopProgress = Mathf.MoveTowards(shopProgress, shopOpen ? 1 : 0, Time.deltaTime * 5);
             if (rules.Preparing)
@@ -108,6 +116,7 @@ namespace DigitalArena
             uiScale = Mathf.Min(Screen.width / 1440f, Screen.height / 900f);
             uiOffset = new Vector2((Screen.width - 1440*uiScale)/2,(Screen.height-900*uiScale)/2);
             GUI.matrix = Matrix4x4.TRS(uiOffset, Quaternion.identity, new Vector3(uiScale,uiScale,1));
+            if(mainMenu) { MainMenu();GUI.matrix=Matrix4x4.identity;return; }
             bool modal = help || rules.Health <= 0;
             GUI.enabled = !modal;
             UnitLabels(); Header(); PlayerList(); BottomControls(); UnitDetails();
@@ -117,6 +126,17 @@ namespace DigitalArena
             GUI.enabled = true;
             if (help) Help(); else if (rules.Health <= 0) GameOver();
             GUI.matrix = Matrix4x4.identity;
+        }
+        void MainMenu()
+        {
+            if(mainBackground!=null) GUI.DrawTexture(new Rect(0,0,1440,900),mainBackground,ScaleMode.ScaleAndCrop);
+            Label(200,165,1040,110,"DigiTactics",82,new Color(0,0,0,.55f),true,TextAnchor.MiddleCenter);
+            Label(200,161,1040,110,"DigiTactics",82,Ink,true,TextAnchor.MiddleCenter);
+            Label(390,277,660,34,"디지털 월드에서 시작되는 나만의 전술",20,Ink,false,TextAnchor.MiddleCenter);
+            if(Button(new Rect(402,686,310,62),"싱글 플레이",Hex(0x285B55))) StartSinglePlayer();
+            if(Button(new Rect(728,686,310,62),"멀티 플레이  ·  준비 중",Hex(0x24394F))) SelectMultiplayer();
+            if(multiplayerNotice) Label(350,762,740,48,"멀티 플레이는 추후 업데이트 예정입니다. (TODO)",18,Ink,false,TextAnchor.MiddleCenter);
+            Label(390,831,660,24,"DIGITAL WORLD · SINGLE PLAYER PROTOTYPE",12,Ink,false,TextAnchor.MiddleCenter);
         }
         void Header()
         {
@@ -253,7 +273,7 @@ namespace DigitalArena
         }
         bool HandlePointer(EventType type,int button,int clicks,Vector2 mouse)
         {
-            if(help || rules.Health<=0) return false;
+            if(mainMenu || help || rules.Health<=0) return false;
             Vector2 screen=ScreenPoint(mouse);
             if(type==EventType.MouseDown && button==0 && !OverUi(mouse))
             {

@@ -66,7 +66,7 @@ public sealed class DigimonTableEditor : EditorWindow
         row.HP=EditorGUILayout.FloatField("HP",row.HP);row.SP=EditorGUILayout.FloatField("최대 SP",row.SP);
         row.ATK=EditorGUILayout.FloatField("ATK",row.ATK);row.DEF=EditorGUILayout.FloatField("DEF",row.DEF);
         row.INT=EditorGUILayout.FloatField("INT",row.INT);row.SPD=EditorGUILayout.FloatField("SPD (칸/초)",row.SPD);
-        row.range=EditorGUILayout.FloatField("기본 공격 사거리 (칸)",row.range);
+        row.range=EditorGUILayout.IntSlider("기본 공격 사거리 (칸)",row.range,1,4);
         row.attack=(AttackKind)EditorGUILayout.Popup("공격 타입",(int)row.attack,new[]{"물리형","특수형"});
         row.type=(DigimonType)EditorGUILayout.Popup("타입",(int)row.type,DigimonCatalog.TypeNames);
         row.element=(DigimonElement)EditorGUILayout.Popup("속성",(int)row.element,DigimonCatalog.ElementNames);

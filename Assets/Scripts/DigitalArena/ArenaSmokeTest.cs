@@ -68,6 +68,12 @@ namespace DigitalArena
             yield return null; yield return null;
             game=FindAnyObjectByType<DigitalArenaGame>();
             Check(game!=null,"game bootstraps");
+            Check(Field<bool>("mainMenu")&&Field<ArenaRules>("rules")==null,"boot stays on main menu without round income");
+            Check(Resources.Load<Texture2D>("UI/DigiTacticsMainBackground")!=null,"generated main background bundled");
+            Call("SelectMultiplayer");yield return new WaitForSeconds(.25f);
+            Check(Field<bool>("mainMenu")&&Field<bool>("multiplayerNotice")&&Field<ArenaRules>("rules")==null,"multiplayer TODO leaves game unstarted");
+            Call("StartSinglePlayer");
+            Check(!Field<bool>("mainMenu"),"single selection starts game");
             float scale=Mathf.Min(Screen.width/1440f,Screen.height/900f);
             Set("uiScale",scale);
             Set("uiOffset",new Vector2((Screen.width-1440*scale)/2,(Screen.height-900*scale)/2));
@@ -75,7 +81,7 @@ namespace DigitalArena
             Check(rules.Gold==8,"five starting gold plus three income");
             Check(Resources.Load<TextAsset>("DigimonCatalog")!=null,"catalog bundled in player");
             Check(rules.Catalog.Validate()==null,"loaded catalog valid");
-            Check(Mathf.Abs(world.Units.First(u=>u.Enemy).Data.HP-rules.Catalog.enemies[0].HP*.58f)<.01f,"enemy preview applies stage stats");
+            Check(Mathf.Abs(world.Units.First(u=>u.Enemy).Data.HP-rules.Catalog.enemies[rules.Catalog.EnemyAt(rules.Stage)].HP*.58f)<.01f,"enemy preview applies selected stage stats");
             Check(world.GetComponentsInChildren<Transform>().Count(t=>t.name.StartsWith("Enemy bench "))==10,"ten enemy bench squares");
             Check(world.Camera.enabled && !world.Camera.orthographic,"perspective 3D camera");
             Check(Resources.Load<Shader>("ArenaSolid").isSupported,"3D shader supported in player");

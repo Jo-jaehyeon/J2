@@ -10,8 +10,8 @@ namespace DigitalArena
     public sealed class DigimonData
     {
         public string id="", name="", evolvesTo="", prefabPath="";
-        public int cost=1, modelTier, startStage=1;
-        public float HP=90, SP=100, ATK=15, DEF=10, INT=15, SPD=1.25f, range=0.85f;
+        public int cost=1, modelTier, startStage=1, range=1;
+        public float HP=90, SP=100, ATK=15, DEF=10, INT=15, SPD=1.25f;
         public AttackKind attack;
         public DigimonType type;
         public DigimonElement element;
@@ -38,7 +38,7 @@ namespace DigitalArena
             HP=(float)(90*Math.Pow(2.1,i)), ATK=(float)(15*Math.Pow(2,i)), INT=(float)(15*Math.Pow(2,i)),
             type=enemy?DigimonType.Unknown:i<2?DigimonType.Free:DigimonType.Vaccine,
             element=enemy?DigimonElement.Dark:i<2?DigimonElement.Neutral:DigimonElement.Fire,
-            attack=enemy?AttackKind.Special:AttackKind.Physical, range=i>=4?2.4f:0.85f
+            attack=enemy?AttackKind.Special:AttackKind.Physical, range=i>=4?3:1
         }).ToArray();
         public DigimonCatalog Copy() => new DigimonCatalog { allies=allies.Select(d=>d.Copy()).ToArray(),enemies=enemies.Select(d=>d.Copy()).ToArray() };
         public string Validate()
@@ -52,6 +52,7 @@ namespace DigitalArena
                 if(d==null) return "비어 있는 기물 데이터입니다.";
                 if(string.IsNullOrWhiteSpace(d.id)||string.IsNullOrWhiteSpace(d.name)) return "ID와 이름을 입력하세요.";
                 if(d.cost<0||d.cost>5||d.modelTier<0||d.modelTier>6||d.startStage<1) return "코스트 0~5, 기본 외형 0~6, 등장 스테이지 1 이상이어야 합니다.";
+                if(d.range<1||d.range>4) return "Attack range must be an integer from 1 to 4.";
                 var values=new[]{d.HP,d.SP,d.ATK,d.DEF,d.INT,d.SPD,d.range,d.spPerAttack,d.skillPower};
                 if(values.Any(v=>float.IsNaN(v)||float.IsInfinity(v)||v<0||v>1000000) || d.HP<=0 || d.SP<=0 || d.range<=0 || d.skillPower<=0)
                     return "수치는 0~1,000,000, HP·SP·사거리·스킬 배율은 0보다 커야 합니다.";

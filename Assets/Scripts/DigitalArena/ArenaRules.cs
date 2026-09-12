@@ -35,6 +35,10 @@ namespace DigitalArena
         public int StageRound => (Round - 1) % 8 + 1;
         public int LastIncome { get; private set; }
         public int LastInterest { get; private set; }
+        public int WinStreak { get; private set; }
+        public int LastVictoryGold { get; private set; }
+        public int LastStreakGold { get; private set; }
+        public int Interest => Math.Min(5,Gold/10);
         public int PurchaseCount => Bought.Count(b=>b);
         public bool Preparing { get; private set; }
         public int LastBattleXp { get; private set; }
@@ -59,8 +63,8 @@ namespace DigitalArena
             if (Health <= 0 || Preparing) return;
             for(int i=0;i<5;i++) if(Offers[i]>=0 && !Bought[i]) RemainingPool[Catalog.allies[Offers[i]].cost-1]++;
             Round++; Train.Advance(Round);
-            LastInterest = Gold / 10;
-            LastIncome = (Round==1?2:5) + LastInterest;
+            LastInterest = Interest;
+            LastIncome = (Stage==1?2:5) + LastInterest;
             Gold = (int)Math.Min(int.MaxValue,(long)Gold+LastIncome);
             Array.Clear(Bought,0,5);
             LastBattleXp = 0;
@@ -192,6 +196,10 @@ namespace DigitalArena
         {
             if (Round <= 0 || Preparing || battleResolved || Health <= 0) return;
             battleResolved = true;
+            WinStreak=won?WinStreak+1:0;
+            LastVictoryGold=won?1:0;
+            LastStreakGold=won&&WinStreak>=3?1:0;
+            Gold=(int)Math.Min(int.MaxValue,(long)Gold+LastVictoryGold+LastStreakGold);
             LastBattleXp = Level < MaxLevel ? 2 : 0;
             GrantXp(LastBattleXp);
             if (won) Notice = "전투 승리! 다음 라운드를 준비하세요.";
@@ -202,6 +210,7 @@ namespace DigitalArena
                 Notice = "전투 패배 · 남은 크립 " + Math.Max(0, survivors) + "기 × 스테이지 " + Stage + " × 2 = 체력 -" + damage;
             }
             Notice += LastBattleXp > 0 ? " · 기본 경험치 +2 XP" : " · 최대 레벨";
+            if(won) Notice+=" · 승리 +1 골드"+(LastStreakGold>0?" · "+WinStreak+"연승 +1 골드":"");
         }
     }
 }

@@ -30,7 +30,7 @@ public static class DigitalArenaValidation
         game.BeginRound();Check(game.Round==1 && game.Gold==2,"duplicate income blocked");
         Round(game);
         for(int i=0;i<5;i++) Check(game.Buy(i),"purchase candidate "+i);
-        Check(game.PurchaseCount==5 && game.Gold==2,"all five candidates can be purchased");
+        Check(game.PurchaseCount==5 && game.Gold==0,"all five candidates can be purchased");
         Check(!game.Buy(0) && !game.Buy(5),"sold slot and sixth purchase blocked");
         Check(game.Pieces.Count==3 && game.Pieces.Count(p=>p.Tier==1)==1,"automatic three-copy evolution");
         Check(game.Pieces.Select(p=>p.BenchSlot).Distinct().Count()==game.Pieces.Count,"merge retains unique bench slots");
@@ -47,12 +47,12 @@ public static class DigitalArenaValidation
         Check(game.Xp==4 && game.Health==100,"duplicate results ignored");
         for(int i=0;i<6;i++) { game.BeginRound();game.StartBattle(); }
         Check(game.Stage==1 && game.StageRound==8,"eight rounds per stage");game.BeginRound();Check(game.Stage==2 && game.StageRound==1,"stage advance");
-        var xp=Game();Round(xp);Round(xp);Check(xp.BuyXp()&&xp.BuyXp() && xp.Level==2 && xp.Xp==2 && xp.Gold==4,"paid XP costs four"); Round(xp); Round(xp); Check(xp.BuyXp() && xp.Level==3 && xp.Xp==0,"paid and passive XP overflow");
+        var xp=Game();Round(xp);Round(xp);Check(xp.BuyXp()&&xp.BuyXp() && xp.Level==2 && xp.Xp==2 && xp.Gold==0,"paid XP costs four"); Round(xp); Round(xp); Check(xp.BuyXp() && xp.Level==3 && xp.Xp==0,"paid and passive XP overflow");
         var passive=Game();for(int i=0;i<5;i++) Round(passive);
         var xpTable=TierBalance(0);xpTable.levels[0].requiredXp=3;xpTable.levels[1].requiredXp=7;
         var variableXp=new ArenaRules(1,xpTable);variableXp.BeginRound();variableXp.StartBattle();variableXp.BeginRound();
         Check(variableXp.BuyXp()&&variableXp.Level==2&&variableXp.Xp==1&&variableXp.RequiredXp==7,"table XP purchase and carry");
-        Round(variableXp);Check(variableXp.Xp==3&&variableXp.Level==2,"passive XP uses same table");
+        Round(variableXp);variableXp.StartBattle();variableXp.BeginRound();Check(variableXp.Xp==3&&variableXp.Level==2,"passive XP uses same table");
         Check(variableXp.BuyXp()&&variableXp.Level==3&&variableXp.Xp==0&&variableXp.RequiredXp==10,"next level has different XP threshold");
         xpTable.levels[0].requiredXp=1;xpTable.levels[1].requiredXp=1;xpTable.levels[2].requiredXp=2;
         var multiXp=new ArenaRules(1,xpTable);multiXp.BeginRound();multiXp.StartBattle();multiXp.BeginRound();multiXp.BuyXp();
@@ -75,7 +75,7 @@ public static class DigitalArenaValidation
         settings.levels[0].weights[0]++;Check(settings.Validate()!=null,"invalid probability sum rejected");
         settings=new ArenaBalance();settings.poolCounts[0]=-1;Check(settings.Validate()!=null,"negative stock rejected");
         var shop=Game(4);while(shop.Gold<81) Round(shop);Check(shop.Buy(0),"expensive purchase");Check(!shop.Buy(1)&&!shop.Bought[1],"insufficient gold does not consume candidate");
-        var merge=Game(2);Round(merge);Round(merge);merge.Pieces.Add(new ArenaRules.Piece{Id=10,Tier=2,Cell=31});
+        var merge=Game(2);while(merge.Gold<9) Round(merge);merge.Pieces.Add(new ArenaRules.Piece{Id=10,Tier=2,Cell=31});
         merge.Pieces.Add(new ArenaRules.Piece{Id=11,Tier=2,BenchSlot=0});
         for(int tier=3;tier<=3;tier++)for(int i=0;i<2;i++)merge.Pieces.Add(new ArenaRules.Piece{Id=20+tier*2+i,Tier=tier,BenchSlot=1+(tier-3)*2+i});
         Check(merge.Buy(0)&&merge.Pieces.Count==1&&merge.Pieces[0].Tier==4&&merge.Pieces[0].Cell==31,"chain to WarGreymon preserves cell 31");
@@ -88,8 +88,21 @@ public static class DigitalArenaValidation
         damage.StartBattle();damage.ResolveBattle(false,100);int before=damage.Round;damage.BeginRound();Check(damage.Health==0&&damage.Round==before,"game over freezes round");
         Check(new ArenaRules(1).Gold==0,"no extra capital before first income");
         var income=Game();Check(income.LastIncome==2&&income.Gold==2,"first round income two");
-        Round(income);Check(income.LastIncome==5&&income.Gold==7,"subsequent base income five");
-        Round(income);Round(income);Check(income.LastInterest==1&&income.LastIncome==6,"interest added to five");
+        Round(income);Check(income.LastIncome==2&&income.Gold==5,"stage one keeps base two plus previous victory");
+                income.StartBattle();int beforeReward=income.Gold;income.ResolveBattle(true,0);
+        Check(income.WinStreak==2&&income.Gold==beforeReward+1,"second victory pays one");
+        income.ResolveBattle(true,0);Check(income.Gold==beforeReward+1&&income.WinStreak==2,"duplicate victory cannot pay twice");
+        income.BeginRound();income.StartBattle();beforeReward=income.Gold;income.ResolveBattle(true,0);
+        Check(income.WinStreak==3&&income.Gold==beforeReward+2,"third victory pays two");
+        income.BeginRound();income.StartBattle();beforeReward=income.Gold;income.ResolveBattle(false,0);
+        Check(income.WinStreak==0&&income.Gold==beforeReward&&income.LastStreakGold==0,"loss resets streak and pays nothing");
+        income.BeginRound();income.StartBattle();beforeReward=income.Gold;income.ResolveBattle(true,0);
+        Check(income.WinStreak==1&&income.Gold==beforeReward+1,"win after loss starts new streak");
+        income.BeginRound();while(income.Round<8) Round(income);
+        Check(income.Stage==1&&income.LastIncome-income.LastInterest==2,"round eight is stage one");
+        Round(income);Check(income.Stage==2&&income.LastIncome-income.LastInterest==5,"round nine starts stage two income");
+        while(income.Gold<100) Round(income);
+        Check(income.LastInterest==5&&income.LastIncome+income.LastVictoryGold+income.LastStreakGold==12,"income cap twelve with capped interest and streak");
         int[] salePrices={1,2,6,18,54};
         for(int stage=0;stage<5;stage++)
         {
@@ -217,7 +230,7 @@ public static class DigitalArenaValidation
         route.Waypoint(4,3,4,5,out float wx,out float wy);Check(!route.Blocks(4,3,wx,wy)&&Math.Abs(wx-4)>0.1f,"detour picks clear corner");
         for(int stage=1;stage<=8;stage++)
         {
-            var duel=Game(2);Round(duel);Round(duel);for(int r=1;r<stage;r++)Round(duel);
+            var duel=Game(2);while(duel.Gold<9) Round(duel);for(int r=1;r<stage;r++)Round(duel);
             duel.Buy(0);duel.AutoDeploy(duel.Pieces[0].Id);duel.StartBattle();var battle=new ArenaBattle(duel);float frozen=duel.Train.Center;
             Check(battle.Fighters.Where(f=>!f.Enemy).All(f=>f.Y<=3)&&battle.Fighters.Where(f=>f.Enemy).All(f=>f.Y>=5),"vertical deployment");
             for(int tick=0;tick<2000&&!battle.Finished;tick++)
@@ -234,5 +247,6 @@ public static class DigitalArenaValidation
 #endif
     }
 }
+
 
 

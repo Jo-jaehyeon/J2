@@ -160,6 +160,27 @@ namespace DigitalArena
             Check(rules.Health==0,"lethal damage ends game");
             Call("ResetRun"); rules=Field<ArenaRules>("rules");
             Check(rules.Health==100 && rules.Round==1 && rules.Pieces.Count==0,"restart resets state");
+            Set("shopOpen",false);Set("shopProgress",0f);
+            rules.Offers[0]=0;Check(rules.Buy(0),"purchase for sale input");world.Rebuild(rules,null);
+            var salePiece=rules.Pieces.Single();
+            Vector2 saleScreen=new Vector2(720,850)*Field<float>("uiScale")+Field<Vector2>("uiOffset");
+            void BeginSaleDrag()
+            {
+                var view=world.Units.Find(u=>u.Id==salePiece.Id);
+                Pointer(EventType.MouseDown,world.Project(view.Root.position+Vector3.up*.6f),1,1);
+                Pointer(EventType.MouseDrag,saleScreen,1,1);
+            }
+            BeginSaleDrag();Check(Field<bool>("saleHover"),"bottom drag reveals sale UI");
+            Pointer(EventType.MouseDrag,world.Project(ArenaWorld3D.BenchPosition(7)),1,1);
+            Check(!Field<bool>("saleHover"),"leaving bottom cancels sale preview");
+            Pointer(EventType.MouseUp,world.Project(ArenaWorld3D.BenchPosition(7)),1,1);
+            Check(rules.Pieces.Count==1&&rules.Gold==1,"cancelled sale keeps unit and gold");
+            BeginSaleDrag();Pointer(EventType.MouseUp,saleScreen,1,1);
+            Check(rules.Pieces.Count==0&&rules.Gold==2&&!Field<bool>("saleHover"),"bench drop sells once");
+            rules.Offers[1]=0;Check(rules.Buy(1),"purchase for field sale");salePiece=rules.Pieces.Single();
+            rules.AutoDeploy(salePiece.Id);world.Rebuild(rules,null);
+            BeginSaleDrag();Pointer(EventType.MouseUp,saleScreen,1,1);
+            Check(rules.Pieces.Count==0&&rules.Gold==2,"field drop sells unit");
             var expanded=rules.Catalog.Copy();
             var extra=expanded.allies[0].Copy();extra.id="smoke_added";extra.name="Added unit";extra.evolvesTo="";extra.cost=1;
             expanded.allies=expanded.allies.Concat(new[]{extra}).ToArray();

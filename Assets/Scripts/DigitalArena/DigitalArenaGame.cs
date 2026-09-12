@@ -176,8 +176,8 @@ namespace DigitalArena
                 Fill(new Rect(40,545,218,5),Edge); Fill(new Rect(40,545,218*(rules.Level==ArenaRules.MaxLevel?1:rules.Xp/(float)rules.RequiredXp),5),Mint);
                 if(Button(new Rect(40,566,218,45),"XP 구매 +"+xpPerPurchase+"   /   4 pt",Hex(0x304C43),rules.Preparing&&rules.Gold>=4&&rules.Level<ArenaRules.MaxLevel)) rules.BuyXp(xpPerPurchase);
                 Label(40,621,220,24,"라운드 수입 +"+rules.LastIncome+" pt",13,Gold);
-                Label(40,650,220,24,"다음 이자 예상 +"+rules.Gold/10+" pt",13,Muted);
-                Label(40,678,220,24,"전투 종료 시 기본 +2 XP",13,Mint);
+                Label(40,650,220,24,"다음 이자 예상 +"+rules.Interest+" pt",13,Muted);
+                Label(40,678,220,24,"연승 "+rules.WinStreak+" · 승리 +1 / 3연승 +1G",13,Mint);
             }
             if(Button(new Rect(1250,805,166,63),shopOpen?"기물 선택 닫기":"기물 선택 열기",Panel)) { CancelDrag(); shopOpen=!shopOpen; }
             if(Button(new Rect(1250,746,166,45),"플레이 가이드",Panel)) { CancelDrag(); help=true; }
@@ -394,4 +394,5 @@ namespace DigitalArena
         static void PanelBox(Rect rect) { Fill(rect,Panel); Frame(rect,Edge,1); }
     }
 }
+
 

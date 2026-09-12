@@ -269,6 +269,17 @@ namespace DigitalArena
                 }
                 Debug.LogWarning("Missing Digimon prefab: "+data.prefabPath);
             }
+            if(data.placeholder!=PlaceholderModel.Default)
+            {
+                var shape=data.placeholder==PlaceholderModel.BlueCube?PrimitiveType.Cube:
+                    data.placeholder==PlaceholderModel.GreenSphere?PrimitiveType.Sphere:PrimitiveType.Capsule;
+                Color color=data.placeholder==PlaceholderModel.BlueCube?C(0x64B5F6):
+                    data.placeholder==PlaceholderModel.GreenSphere?C(0x82C866):C(0xAD78D0);
+                float size=0.65f+0.15f*Mathf.Clamp(data.modelTier,1,5);
+                float height=shape==PrimitiveType.Capsule?size*1.4f:size;
+                Shape(root,shape,new Vector3(0,height/2,0),new Vector3(size,shape==PrimitiveType.Capsule?height/2:height,size),color);
+                return;
+            }
             BuildModel(root,data.modelTier,enemy);
         }
         void BuildModel(Transform root,int tier,bool enemy)
@@ -277,12 +288,12 @@ namespace DigitalArena
             Shape(root,PrimitiveType.Sphere,new Vector3(0,-0.06f,0),new Vector3(1.15f,0.04f,0.9f),C(0x283B3C));
             if(tier<2)
             {
-                body=enemy ? (tier==0 ? C(0xD8DFEE):body) : (tier==0 ? C(0x454255):C(0xF1A1B3));
+                body=enemy ? body : C(0xF1A1B3);
                 Shape(root,PrimitiveType.Sphere,new Vector3(0,0.48f,0),new Vector3(0.95f,0.8f,0.85f),body);
-                if(tier==1) for(int side=-1;side<=1;side+=2)
+                for(int side=-1;side<=1;side+=2)
                     Shape(root,PrimitiveType.Capsule,new Vector3(side*0.3f,1.04f,-0.02f),new Vector3(0.13f,0.39f,0.15f),body).localRotation=Quaternion.Euler(0,0,side*-13);
                 if(enemy) for(int i=0;i<4;i++) Shape(root,PrimitiveType.Capsule,new Vector3((i-1.5f)*0.25f,0.12f,0.2f),new Vector3(0.12f,0.22f,0.16f),body).localRotation=Quaternion.Euler(65,0,0);
-                Eyes(root,0.58f,0.37f,enemy && tier==0 ? 0:0.2f,enemy ? C(0xDF638E):C(0x2F735B));
+                Eyes(root,0.58f,0.37f,0.2f,enemy ? C(0xDF638E):C(0x2F735B));
                 return;
             }
             if(enemy && tier>=5) body=C(0x454455);

@@ -105,7 +105,7 @@ namespace DigitalArena
             Set("uiScale",scale);
             Set("uiOffset",new Vector2((Screen.width-1440*scale)/2,(Screen.height-900*scale)/2));
             var rules=Field<ArenaRules>("rules"); var world=Field<ArenaWorld3D>("world");
-            Check(rules.Gold==8,"five starting gold plus three income");
+            Check(rules.Gold==2,"first round starts with two gold");
             Check(Resources.Load<TextAsset>("DigimonCatalog")!=null,"catalog bundled in player");
             Check(rules.Catalog.Validate()==null,"loaded catalog valid");
             Check(Mathf.Abs(world.Units.First(u=>u.Enemy).Data.HP-rules.Catalog.enemies[rules.Catalog.EnemyAt(rules.Stage)].HP*.58f)<.01f,"enemy preview applies selected stage stats");
@@ -115,7 +115,7 @@ namespace DigitalArena
             Check(rules.Preparing && Field<bool>("shopOpen"),"round opens selection drawer");
             yield return new WaitForSeconds(0.4f);
             yield return Capture("01-round-start");
-            rules.Offers[0]=2; Check(rules.Buy(0),"buy Agumon");
+            rules.Offers[0]=0; Check(rules.Buy(0),"buy baby unit");
             Set("shopOpen",false); world.Rebuild(rules,null);
             yield return new WaitForSeconds(0.4f);
             var piece=rules.Pieces[0];
@@ -209,3 +209,5 @@ namespace DigitalArena
     }
 }
 #endif
+
+

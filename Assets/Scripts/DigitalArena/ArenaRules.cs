@@ -7,9 +7,13 @@ namespace DigitalArena
     // Engine-independent rules: all random draws use a seed for reproducible runs.
     public sealed class ArenaRules
     {
-        public static readonly string[] Names = { "깜몬", "코로몬", "아구몬", "그레이몬", "메탈그레이몬", "워그레이몬" };
-        public static readonly string[] EnemyNames = { "쿠라몬", "츠메몬", "케라몬", "크리사리몬", "인펠몬", "디아블로몬", "아마게몬" };
-        public static readonly int[] Costs = { 1, 2, 3, 4, 5, 0 };
+        public static readonly string[] Names = { "코로몬", "아구몬", "그레이몬", "메탈그레이몬", "워그레이몬" };
+        public static readonly string[] EnemyNames = { "츠메몬", "케라몬", "크리사리몬", "인펠몬", "디아블로몬", "아마게몬" };
+        public static readonly string[] EvolutionNames = { "유년기", "성장기", "성숙기", "완전체", "궁극체" };
+        public static readonly int[] Costs = { 1, 3, 9, 27, 81 };
+        public static int EvolutionRank(DigimonData data) => data.cost>0?data.cost:Math.Max(1,Math.Min(5,data.modelTier));
+        public static int PurchasePrice(DigimonData data) => Costs[EvolutionRank(data)-1];
+        public static int SalePrice(DigimonData data) => PurchasePrice(data)-(EvolutionRank(data)==1?0:Costs[EvolutionRank(data)-2]);
         public readonly ArenaBalance Balance;
         public readonly DigimonCatalog Catalog;
         public readonly ArenaTrain Train = new ArenaTrain();
@@ -21,7 +25,7 @@ namespace DigitalArena
         public readonly List<Piece> Pieces = new List<Piece>();
         public readonly int[] Offers = { -1,-1,-1,-1,-1 };
         public readonly bool[] Bought = new bool[5];
-        public int Gold { get; private set; } = 5;
+        public int Gold { get; private set; } = 0;
         public int Level { get; private set; } = 1;
         public int Xp { get; private set; }
         public int RequiredXp => Level >= MaxLevel ? 0 : Balance.levels[Level-1].requiredXp;
@@ -56,7 +60,7 @@ namespace DigitalArena
             for(int i=0;i<5;i++) if(Offers[i]>=0 && !Bought[i]) RemainingPool[Catalog.allies[Offers[i]].cost-1]++;
             Round++; Train.Advance(Round);
             LastInterest = Gold / 10;
-            LastIncome = 3 + LastInterest;
+            LastIncome = (Round==1?2:5) + LastInterest;
             Gold = (int)Math.Min(int.MaxValue,(long)Gold+LastIncome);
             Array.Clear(Bought,0,5);
             LastBattleXp = 0;
@@ -83,14 +87,26 @@ namespace DigitalArena
             if (!Preparing || index < 0 || index >= 5 || Bought[index]) return false;
             int tier = Offers[index];
             if(tier<0) return false;
-            if (Gold < Catalog.allies[tier].cost) { Notice = "포인트가 부족합니다."; return false; }
+            if (Gold < PurchasePrice(Catalog.allies[tier])) { Notice = "골드가 부족합니다."; return false; }
             if (Pieces.Count(p => p.Cell < 0) >= BenchSize && (Catalog.Evolution(tier)<0 || Pieces.Count(p => p.Tier == tier) < 2))
             { Notice = "대기석이 가득 찼습니다. 기물을 전장에 배치하세요."; return false; }
-            Gold -= Catalog.allies[tier].cost;
+            Gold -= PurchasePrice(Catalog.allies[tier]);
             Bought[index] = true;
             Pieces.Add(new Piece { Id = ++nextId, Tier = tier, BenchSlot=FirstBenchSlot() });
             Notice = Catalog.allies[tier].name + " 합류 · " + PurchaseCount + " / 5 구매";
             Merge();
+            return true;
+        }
+        public bool Sell(int id)
+        {
+            if(!Preparing || Health<=0) return false;
+            var piece=Pieces.Find(p=>p.Id==id);
+            if(piece==null) return false;
+            var data=Catalog.allies[piece.Tier];
+            int price=SalePrice(data);
+            Pieces.Remove(piece);
+            Gold=(int)Math.Min(int.MaxValue,(long)Gold+price);
+            Notice=data.name+" 판매 · +"+price+" 골드";
             return true;
         }
         void Merge()
@@ -189,3 +205,4 @@ namespace DigitalArena
         }
     }
 }
+

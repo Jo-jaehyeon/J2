@@ -6,6 +6,7 @@ namespace DigitalArena
     public enum AttackKind { Physical, Special }
     public enum DigimonType { Vaccine, Virus, Data, Unknown, Free, None }
     public enum DigimonElement { Fire, Water, Grass, Electric, Wind, Earth, Light, Dark, Neutral }
+    public enum PlaceholderModel { Default, BlueCube, GreenSphere, PurpleCapsule }
     [Serializable]
     public sealed class DigimonData
     {
@@ -15,6 +16,7 @@ namespace DigitalArena
         public AttackKind attack;
         public DigimonType type;
         public DigimonElement element;
+        public PlaceholderModel placeholder;
         public float spPerAttack=20, skillPower=2;
         public DigimonData Copy() => (DigimonData)MemberwiseClone();
     }
@@ -32,14 +34,34 @@ namespace DigitalArena
             var candidates=Enumerable.Range(0,enemies.Length).Where(i=>enemies[i].startStage==best).ToArray();
             return candidates[slot%candidates.Length];
         }
-        static DigimonData[] Defaults(bool enemy) => Enumerable.Range(0,enemy?7:6).Select(i=>new DigimonData {
-            id=(enemy?"enemy_":"ally_")+i,name=(enemy?ArenaRules.EnemyNames:ArenaRules.Names)[i],
-            cost=enemy?0:i<5?i+1:0,modelTier=i,startStage=enemy?i+1:1,evolvesTo=!enemy&&i<5?"ally_"+(i+1):"",
+        static DigimonData[] Defaults(bool enemy)
+        {
+            var rows=Enumerable.Range(1,enemy?6:5).Select(i=>new DigimonData {
+            id=(enemy?"enemy_":"ally_")+i,name=(enemy?ArenaRules.EnemyNames:ArenaRules.Names)[i-1],
+            cost=enemy?0:i,modelTier=i,startStage=enemy?i:1,evolvesTo=!enemy&&i<5?"ally_"+(i+1):"",
             HP=(float)(90*Math.Pow(2.1,i)), ATK=(float)(15*Math.Pow(2,i)), INT=(float)(15*Math.Pow(2,i)),
-            type=enemy?DigimonType.Unknown:i<2?DigimonType.Free:DigimonType.Vaccine,
+            type=enemy?DigimonType.Unknown:DigimonType.Vaccine,
             element=enemy?DigimonElement.Dark:i<2?DigimonElement.Neutral:DigimonElement.Fire,
-            attack=enemy?AttackKind.Special:AttackKind.Physical, range=i>=4?3:1
+            attack=enemy?AttackKind.Special:AttackKind.Physical, range=i==1?2:1
         }).ToArray();
+            if(enemy) return rows;
+            string[][] names={
+                new[]{"뿔몬","파피몬","가루몬","워가루몬","메탈가루몬"},
+                new[]{"시드몬","팔몬","니드몬","릴리몬","로제몬"},
+                new[]{"퍼그몬","피코데블몬","데블몬","묘티스몬","베놈묘티스몬"}
+            };
+            string[] prefixes={"garurumon_","rosemon_","myotismon_"};
+            return rows.Concat(Enumerable.Range(0,3).SelectMany(line=>Enumerable.Range(0,5).Select(stage=>{
+                var row=rows[stage].Copy();
+                row.id=prefixes[line]+(stage+1);row.name=names[line][stage];
+                row.evolvesTo=stage<4?prefixes[line]+(stage+2):"";
+                row.placeholder=(PlaceholderModel)(line+1);
+                row.type=line==0?DigimonType.Vaccine:line==1?DigimonType.Data:DigimonType.Virus;
+                row.element=line==0?DigimonElement.Water:line==1?DigimonElement.Grass:DigimonElement.Dark;
+                row.attack=line==2?AttackKind.Special:AttackKind.Physical;
+                return row;
+            }))).ToArray();
+        }
         public DigimonCatalog Copy() => new DigimonCatalog { allies=allies.Select(d=>d.Copy()).ToArray(),enemies=enemies.Select(d=>d.Copy()).ToArray() };
         public string Validate()
         {
@@ -57,6 +79,7 @@ namespace DigitalArena
                 if(values.Any(v=>float.IsNaN(v)||float.IsInfinity(v)||v<0||v>1000000) || d.HP<=0 || d.SP<=0 || d.range<=0 || d.skillPower<=0)
                     return "수치는 0~1,000,000, HP·SP·사거리·스킬 배율은 0보다 커야 합니다.";
                 if(!Enum.IsDefined(typeof(AttackKind),d.attack)||!Enum.IsDefined(typeof(DigimonType),d.type)||!Enum.IsDefined(typeof(DigimonElement),d.element)) return "유효하지 않은 분류입니다.";
+                if(!Enum.IsDefined(typeof(PlaceholderModel),d.placeholder)) return "유효하지 않은 임시 도형입니다.";
             }
             foreach(var origin in allies)
             {

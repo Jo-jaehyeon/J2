@@ -28,7 +28,7 @@ public sealed class DigimonTableEditor : EditorWindow
     void OnGUI()
     {
         EditorGUILayout.LabelField("디지몬 등록 · 아군 "+data.allies.Length+"종 / 크립 "+data.enemies.Length+"종",EditorStyles.boldLabel);
-        EditorGUILayout.HelpBox("추가 → 설정 → 저장 → 게임 재시작. 프리팹을 만들기만 해서는 자동 등록되지 않습니다. 같은 코스트의 기물은 균등 추첨하며 코스트별 재고를 공유합니다.",MessageType.Info);
+        EditorGUILayout.HelpBox("추가 → 설정 → 저장 → 게임 재시작. 프리팹을 만들기만 해서는 자동 등록되지 않습니다. 같은 진화 단계의 기물은 균등 추첨하며 진화 단계별 재고를 공유합니다.",MessageType.Info);
         int newSide=GUILayout.Toolbar(side,new[]{"플레이어","크립"});if(newSide!=side){side=newSide;selected=0;}
         EditorGUILayout.BeginHorizontal();
         if(GUILayout.Button("새 기물 추가")) Add(false);
@@ -42,7 +42,8 @@ public sealed class DigimonTableEditor : EditorWindow
         row.name=EditorGUILayout.TextField("이름",row.name);
         if(side==0)
         {
-            row.cost=EditorGUILayout.IntSlider("구매 코스트 (0: 합성 전용)",row.cost,0,5);
+            row.cost=EditorGUILayout.Popup("진화 단계",row.cost,new[]{"합성 전용 (외형 단계 기준)","유년기", "성장기", "성숙기", "완전체", "궁극체"});
+            EditorGUILayout.LabelField("구매 / 판매 골드",ArenaRules.PurchasePrice(row)+" / "+ArenaRules.SalePrice(row));
             var targets=data.allies.Where(d=>d.id!=row.id).ToArray();
             int target=Array.FindIndex(targets,d=>d.id==row.evolvesTo)+1;
             int next=EditorGUILayout.Popup("3개 합성 → 진화 대상",target,new[]{"없음"}.Concat(targets.Select(d=>d.name+" ["+d.id+"]")).ToArray());
@@ -51,6 +52,7 @@ public sealed class DigimonTableEditor : EditorWindow
         else row.startStage=EditorGUILayout.IntField("등장 시작 스테이지",row.startStage);
         EditorGUILayout.HelpBox("크립은 현재 스테이지 이하에서 가장 높은 등장 시작 스테이지의 기물을 사용합니다. 같은 스테이지로 등록한 크립은 순서대로 섞여 등장합니다.",MessageType.None);
         row.modelTier=EditorGUILayout.IntSlider("기본 도형 외형 번호",row.modelTier,0,6);
+        row.placeholder=(PlaceholderModel)EditorGUILayout.Popup("임시 도형",(int)row.placeholder,new[]{"기존 외형","파랑 정육면체","초록 구","보라 캡슐"});
         var prefab=string.IsNullOrEmpty(row.prefabPath)?null:Resources.Load<GameObject>(row.prefabPath);
         var chosen=(GameObject)EditorGUILayout.ObjectField("외형 프리팹 (선택)",prefab,typeof(GameObject),false);
         if(chosen!=prefab)
@@ -88,3 +90,4 @@ public sealed class DigimonTableEditor : EditorWindow
         EditorGUILayout.EndHorizontal();
     }
 }
+

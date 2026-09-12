@@ -22,7 +22,8 @@ namespace DigitalArena
         Vector2 uiOffset, mouseDown;
         int pressedId = -1, dragId = -1;
         Vector3? dragPoint;
-        bool help, shopOpen, economyOpen;
+        bool help, shopOpen, economyOpen, saleHover;
+        static readonly Rect SaleRect = new Rect(0,790,1440,110);
         GUIStyle textStyle, buttonStyle;
         static readonly Color Panel = Hex(0x16292E), Edge = Hex(0x556A62), Ink = Hex(0xF4EEDB);
         static readonly Color Muted = Hex(0xA7B8AF), Mint = Hex(0x7BE5BC), Gold = Hex(0xF3CF80), Pink = Hex(0xEF91A1);
@@ -92,7 +93,7 @@ namespace DigitalArena
         void OnApplicationFocus(bool focused) { if (!focused) CancelDrag(); }
         void CancelDrag()
         {
-            pressedId = dragId = -1; dragPoint = null;
+            pressedId = dragId = -1; dragPoint = null; saleHover=false;
             if (world != null) world.Highlight(-1);
         }
         void OnDestroy()
@@ -121,6 +122,7 @@ namespace DigitalArena
             GUI.enabled = !modal;
             UnitLabels(); Header(); PlayerList(); BottomControls(); UnitDetails();
             if (shopProgress > 0) Shop();
+            if(saleHover && dragId>=0) SaleOverlay();
             if (battle != null && battle.Finished && !battle.Won && rules.Health > 0) Result();
             if (!modal) HandlePlacement(Event.current);
             GUI.enabled = true;
@@ -165,7 +167,7 @@ namespace DigitalArena
         void BottomControls()
         {
 
-            if (Button(new Rect(24,805,250,63),"Lv. " + rules.Level + "   ·   " + (rules.Level==ArenaRules.MaxLevel?"MAX":rules.Xp + "/"+rules.RequiredXp+" XP    [+]"),Hex(0x304C43))) { economyOpen=!economyOpen; selectedUnit=null; }
+            if (Button(new Rect(24,805,250,63),"골드 " + rules.Gold + "   ·   Lv. " + rules.Level,Hex(0x304C43))) { economyOpen=!economyOpen; selectedUnit=null; }
             if (economyOpen)
             {
                 PanelBox(new Rect(24,463,250,264));
@@ -235,16 +237,16 @@ namespace DigitalArena
         {
             Rect panel=ShopRect; PanelBox(panel);
             PanelBox(new Rect(panel.x,panel.y-32,panel.width,30));
-            Label(panel.x+14,panel.y-29,160,24,"골드  "+rules.Gold+" pt",15,Gold,true);
-            Label(panel.x+169,panel.y-29,75,24,"Lv. "+rules.Level,13,Ink);
-            for(int i=0;i<5;i++) Label(panel.x+245+i*132,panel.y-29,132,24,(i+1)+"코스트 "+rules.Balance.levels[rules.Level-1].weights[i]+"%",13,Rarity(i));
+            Label(panel.x+14,panel.y-29,220,24,"진화 단계별 등장 확률",14,Ink,true);
+            
+            for(int i=0;i<5;i++) Label(panel.x+245+i*132,panel.y-29,132,24,ArenaRules.EvolutionNames[i]+" "+rules.Balance.levels[rules.Level-1].weights[i]+"%",13,Rarity(i));
             Label(panel.x+18,panel.y+9,790,27,"기물 선택  ·  원하는 후보를 개별 구매하세요  ·  "+rules.PurchaseCount+" / 5 구매",15,Ink,true);
             if(Button(new Rect(panel.xMax-61,panel.y+8,43,27),"닫기",Panel)) shopOpen=false;
             for(int i=0;i<5;i++)
             {
                 int tier=rules.Offers[i]; Rect card=new Rect(panel.x+16+i*179,panel.y+46,171,126);
                 if(tier<0||rules.Bought[i]) { PanelBox(card);continue; }
-                if(Button(card,"",Hex(0x243C3F),rules.Preparing&&rules.Gold>=rules.Catalog.allies[tier].cost))
+                if(Button(card,"",Hex(0x243C3F),rules.Preparing&&rules.Gold>=ArenaRules.PurchasePrice(rules.Catalog.allies[tier])))
                 {
                     if(rules.Buy(i)) { CancelDrag(); world.Rebuild(rules,null); }
                 }
@@ -255,8 +257,8 @@ namespace DigitalArena
                 GUI.DrawTexture(new Rect(card.xMax-39,card.y+7,32,32),Badge(d));
                 GUI.Label(new Rect(card.xMax-41,card.y+5,36,36),new GUIContent("",DigimonCatalog.TypeNames[(int)d.type]+" · "+DigimonCatalog.ElementNames[(int)d.element]));
                 Label(card.x+8,card.y+87,124,22,rules.Catalog.allies[tier].name,13,Ink,true);
-                Label(card.x+132,card.y+87,36,22,rules.Catalog.allies[tier].cost+"pt",14,Gold,true);
-                Label(card.x+8,card.y+109,157,16,DigimonCatalog.TypeNames[(int)d.type]+" · "+DigimonCatalog.ElementNames[(int)d.element],11,Muted);
+                Label(card.x+132,card.y+87,36,22,ArenaRules.PurchasePrice(rules.Catalog.allies[tier])+"G",14,Gold,true);
+                Label(card.x+8,card.y+109,157,16,ArenaRules.EvolutionNames[ArenaRules.EvolutionRank(d)-1]+" · "+DigimonCatalog.TypeNames[(int)d.type],11,Muted);
             }
         }
         bool OverUi(Vector2 point)
@@ -296,6 +298,7 @@ namespace DigitalArena
             else if(type==EventType.MouseDrag && pressedId>=0 && button==1 && rules.Preparing)
             {
                 if(Vector2.Distance(mouseDown,mouse)>6) dragId=pressedId;
+                saleHover=dragId>=0 && SaleRect.Contains(mouse);
                 if(dragId>=0 && world.GroundPoint(screen,out var point))
                 {
                     dragPoint=point;
@@ -305,7 +308,11 @@ namespace DigitalArena
             }
             else if(type==EventType.MouseUp && pressedId>=0 && button==1 && rules.Preparing)
             {
-                if(dragId>=0 && !OverUi(mouse) && world.GroundPoint(screen,out var point))
+                if(dragId>=0 && SaleRect.Contains(mouse))
+                {
+                    if(rules.Sell(dragId)) { selectedUnit=null; world.Rebuild(rules,null); }
+                }
+                else if(dragId>=0 && !OverUi(mouse) && world.GroundPoint(screen,out var point))
                 {
                     int slot=ArenaWorld3D.BenchSlot(point),cell=ArenaWorld3D.DropCell(point);
                     bool moved=slot>=0?rules.MoveToBench(dragId,slot):cell>=0&&rules.Place(dragId,cell);
@@ -314,6 +321,14 @@ namespace DigitalArena
                 CancelDrag(); return true;
             }
             return false;
+        }
+        void SaleOverlay()
+        {
+            var piece=rules.Pieces.Find(p=>p.Id==dragId); if(piece==null) return;
+            var data=rules.Catalog.allies[piece.Tier];
+            PanelBox(SaleRect);
+            Label(24,810,1392,40,data.name+" 판매 · +"+ArenaRules.SalePrice(data)+" 골드",24,Gold,true,TextAnchor.MiddleCenter);
+            Label(24,852,1392,25,"우클릭을 놓으면 판매 · 영역 밖으로 이동하면 취소",15,Ink,false,TextAnchor.MiddleCenter);
         }
         void Result()
         {
@@ -333,7 +348,7 @@ namespace DigitalArena
                 "준비 30초 후 전투가 시작됩니다. 전투 제한 시간도 30초입니다.",
                 "라운드 시작 시 기물 선택 창이 올라옵니다. 우측 하단에서 다시 열 수 있습니다.",
                 "골드 범위에서 원하는 후보를 각각 구매하세요. 같은 기물 3개는 진화합니다.",
-                "골드는 상점 위, 레벨은 좌측 하단에서 확인하고 4pt로 "+xpPerPurchase+"XP를 구매하세요.",
+                "골드·레벨은 좌측 하단에서 확인하고 버튼을 눌러 4pt로 "+xpPerPurchase+"XP를 구매하세요.",
                 "승패와 관계없이 전투 종료 시 플레이어 기본 경험치 2XP를 받습니다.",
                 "시작 체력 100. 패배 피해는 남은 크립 수 × 스테이지 × 2입니다.",
                 "체력 0이면 게임 종료. 가이드를 보고 있는 동안 일시 정지됩니다."
@@ -379,3 +394,4 @@ namespace DigitalArena
         static void PanelBox(Rect rect) { Fill(rect,Panel); Frame(rect,Edge,1); }
     }
 }
+

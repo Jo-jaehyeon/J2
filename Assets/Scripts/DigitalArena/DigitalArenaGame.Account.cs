@@ -4,14 +4,17 @@ namespace DigitalArena
 {
     public sealed partial class DigitalArenaGame
     {
+        [SerializeField] bool externalLoginEnabled = false;
+        bool CanEnterGame => !externalLoginEnabled || (account != null && account.Ready && !account.Busy);
         ArenaAccountClient account;
         ArenaNicknamePanel nicknamePanel;
-        bool NeedsNickname => mainMenu && account != null && account.Profile != null && !account.Ready;
+        bool NeedsNickname => externalLoginEnabled && mainMenu && account != null && account.Profile != null && !account.Ready;
         Texture2D googleLogin, naverLogin, kakaoLogin;
 
         void InitializeAccount()
         {
             account = gameObject.AddComponent<ArenaAccountClient>();
+            if (!externalLoginEnabled) return;
             googleLogin = Resources.Load<Texture2D>("UI/Login/google");
             naverLogin = Resources.Load<Texture2D>("UI/Login/naver");
             kakaoLogin = Resources.Load<Texture2D>("UI/Login/kakao");

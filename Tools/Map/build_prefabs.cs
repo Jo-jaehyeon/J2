@@ -36,24 +36,20 @@ for(int side=0;side<2;side++) {
 var anchor=marker("CameraAnchor",arena.transform,new UnityEngine.Vector3(0,21,-24));
 var target=marker("CameraTarget",arena.transform,new UnityEngine.Vector3(0,0,-.6f));anchor.LookAt(target);
 var arenaPrefab=UnityEditor.PrefabUtility.SaveAsPrefabAsset(arena,basePath+"/Battlefield.prefab");UnityEngine.Object.DestroyImmediate(arena);
-var cornerArena=UnityEngine.Object.Instantiate(arenaPrefab);cornerArena.name="CornerBattlefield";
-UnityEngine.Object.DestroyImmediate(cornerArena.transform.Find("Battlefield Visual").gameObject);
-visual("CornerBattlefield",cornerArena.transform);
-foreach(var groupName in new[]{"AllyCells","EnemyCells","AllyBench","EnemyBench"})foreach(UnityEngine.Transform t in cornerArena.transform.Find(groupName)) {
-    var p=t.localPosition;p.x+=p.x>0?3.25f:-3.25f;t.localPosition=p;
-}
-var cornerPrefab=UnityEditor.PrefabUtility.SaveAsPrefabAsset(cornerArena,basePath+"/CornerBattlefield.prefab");UnityEngine.Object.DestroyImmediate(cornerArena);
+// Preserve the old corner prefab GUID while restoring its geometry to the shared arena.
+var compatibleArena=UnityEngine.Object.Instantiate(arenaPrefab);compatibleArena.name="CornerBattlefield";
+UnityEditor.PrefabUtility.SaveAsPrefabAsset(compatibleArena,basePath+"/CornerBattlefield.prefab");UnityEngine.Object.DestroyImmediate(compatibleArena);
 var root=new UnityEngine.GameObject("DragonEyeMultiplayer");
 var layout=root.AddComponent<J2.MultiplayerMap.MultiplayerMapLayout>();
 var arenas=marker("Arenas",root.transform,UnityEngine.Vector3.zero);
 int slot=0;
 for(int row=1;row>=-1;row--)for(int col=-1;col<=1;col++) {
     if(row==0&&col==0)continue;
-    var a=(UnityEngine.GameObject)UnityEditor.PrefabUtility.InstantiatePrefab((slot==0||slot==2||slot==5||slot==7)?cornerPrefab:arenaPrefab);a.name="Arena_"+slot.ToString("D2");a.transform.SetParent(arenas,false);a.transform.localPosition=new UnityEngine.Vector3(col*40,0,row*40);
+    var a=(UnityEngine.GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(arenaPrefab);a.name="Arena_"+slot.ToString("D2");a.transform.SetParent(arenas,false);a.transform.localPosition=new UnityEngine.Vector3(col*(row==0?62:40),0,row*40);
     if(slot==3||slot==4)a.transform.localRotation=UnityEngine.Quaternion.Euler(0,90,0);
     layout.Arenas[slot]=a.transform;layout.CameraAnchors[slot]=a.transform.Find("CameraAnchor");layout.CameraTargets[slot]=a.transform.Find("CameraTarget");slot++;
 }
-visual("LakeEnvironment",root.transform);visual("SquareRailway",root.transform);
+visual("LakeEnvironment",root.transform);visual("RectangularRailway",root.transform);
 var trainRoot=marker("SharedTrain",root.transform,UnityEngine.Vector3.zero);visual("LakeTram",trainRoot);
 var driver=root.AddComponent<J2.MultiplayerMap.MultiplayerMapTrain>();driver.Train=trainRoot;
 var route=Newtonsoft.Json.Linq.JObject.Parse(System.IO.File.ReadAllText(basePath+"/Source~/rail-route.json"));

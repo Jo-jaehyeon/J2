@@ -49,8 +49,8 @@ namespace DigitalArena
             menuCamera.transform.SetParent(transform);menuCamera.cullingMask=0;
             menuCamera.clearFlags=CameraClearFlags.SolidColor;menuCamera.backgroundColor=Hex(0x112A3A);
         }
-        void StartSinglePlayer() { if(mainMenu && account.Ready && !account.Busy) ResetRun(); }
-        void SelectMultiplayer() { if(account.Ready && !account.Busy) multiplayerNotice=true; } // TODO: multiplayer lobby and network session.
+        void StartSinglePlayer() { if(mainMenu && CanEnterGame) ResetRun(); }
+        void SelectMultiplayer() { EnterMultiplayerPreview(); }
         void ResetRun()
         {
             mainMenu=false;multiplayerNotice=false;
@@ -86,6 +86,7 @@ namespace DigitalArena
         }
         void Update()
         {
+            if (multiplayerPreview != null) { UpdateMultiplayerPreview(); return; }
             UpdateTouchInput();
             UpdateMouseInput();
             nicknamePanel?.Sync(NeedsNickname, uiScale, uiOffset);
@@ -117,6 +118,7 @@ namespace DigitalArena
         }
         void OnDestroy()
         {
+            if (multiplayerPreview != null) multiplayerPreview.Shutdown();
             nicknamePanel?.Dispose();
             ui?.Dispose();
             if (partners != null) foreach (var t in partners) Destroy(t);
@@ -130,6 +132,7 @@ namespace DigitalArena
         {
             UpdateUiMetrics();
             ui.Begin(uiScale, uiOffset);
+            if (multiplayerPreview != null) { DrawMultiplayerPreview(); ui.End(); return; }
             if(mainMenu) { MainMenu(); ui.End(); return; }
             bool modal = help || rules.Health <= 0;
             ui.Enabled = !modal;
@@ -148,12 +151,12 @@ namespace DigitalArena
             Label(200,165,1040,110,"DigiTactics",82,new Color(0,0,0,.55f),true,TextAnchor.MiddleCenter);
             Label(200,161,1040,110,"DigiTactics",82,Ink,true,TextAnchor.MiddleCenter);
             Label(390,277,660,34,"디지털 월드에서 시작되는 나만의 전술",20,Ink,false,TextAnchor.MiddleCenter);
-            if (!account.Ready) { AccountMenu(); return; }
-            AccountSummary();
-            ui.Button("single",new Rect(402,686,310,62),"싱글 플레이",Hex(0x285B55),StartSinglePlayer,!account.Busy);
-            ui.Button("multi",new Rect(728,686,310,62),"멀티 플레이  ·  준비 중",Hex(0x24394F),SelectMultiplayer,!account.Busy);
-            if(multiplayerNotice) Label(350,762,740,48,"멀티 플레이는 추후 업데이트 예정입니다. (TODO)",18,Ink,false,TextAnchor.MiddleCenter);
-            else Label(350,762,740,48,account.Message,16,Ink,false,TextAnchor.MiddleCenter);
+            if (externalLoginEnabled && !account.Ready) { AccountMenu(); return; }
+            if (externalLoginEnabled) AccountSummary();
+            ui.Button("single",new Rect(402,686,310,62),"싱글 플레이",Hex(0x285B55),StartSinglePlayer,CanEnterGame);
+            ui.Button("multi",new Rect(728,686,310,62),"멀티 플레이",Hex(0x24394F),SelectMultiplayer,CanEnterGame);
+            if(multiplayerNotice) Label(350,762,740,48,"맵을 불러오지 못했습니다. 다시 시도해 주세요.",18,Ink,false,TextAnchor.MiddleCenter);
+            else if (externalLoginEnabled) Label(350,762,740,48,account.Message,16,Ink,false,TextAnchor.MiddleCenter);
             Label(390,831,660,24,"DIGITAL WORLD · SINGLE PLAYER PROTOTYPE",12,Ink,false,TextAnchor.MiddleCenter);
         }
         void Header()

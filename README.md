@@ -122,6 +122,8 @@ Unity 메뉴 **Digital Arena > Balance Table**에서 다음 항목을 수정하�
 
 ## 계정 로그인
 
+현재 멀티플레이 개발을 위해 외부 로그인을 임시로 숨겼습니다. 실행하면 인증 없이 싱글/멀티 선택 화면으로 진입합니다. 로그인 복구 요청 시 `DigitalArenaGame.Account.cs`의 `externalLoginEnabled`를 다시 활성화합니다. 계정 서버와 기존 연동 코드는 유지합니다.
+
 게임 시작 시 Google·네이버·카카오 로그인 후 최초 닉네임을 설정하고 싱글/멀티 선택으로 진입합니다. Python 로그인 서버는 `C:\Jerry\CPP_Server\J2_Server\LoginServer` 하위 프로젝트에 있고 계정은 로컬 MySQL의 J2 DB에 저장됩니다. Unity Editor → 로그인 서버는 HTTP 8787번, 로그인 서버 → MySQL은 3306번 포트를 사용합니다. **실제 외부 로그인을 사용하려면 제공자 앱 키와 콜백 설정이 필요합니다.** [계정 설정 안내](Docs/Account-Setup.md)를 확인하세요.
 
 ## 게임 UI

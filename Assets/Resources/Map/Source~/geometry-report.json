@@ -1,7 +1,7 @@
 {
   "battlefields": 8,
-  "grid": "3x3 center empty",
-  "spacing": 40,
+  "grid": "3 / 2 / 3, center empty; side arenas widened to +/-62",
+  "rowSpacing": 40,
   "tilesPerSide": 32,
   "benchesPerSide": 10,
   "cellSpacing": 1.7,
@@ -19,11 +19,11 @@
       40
     ],
     [
-      -40,
+      -62,
       0
     ],
     [
-      40,
+      62,
       0
     ],
     [
@@ -40,17 +40,15 @@
     ]
   ],
   "meshObjects": {
-    "Battlefield_Geometry.006": 19,
-    "CornerBattlefield_Geometry.004": 19,
-    "Tram_Geometry.006": 6,
-    "Lake_Geometry.006": 25,
-    "Railway_Geometry.005": 3
+    "Battlefield_Geometry.007": 19,
+    "Tram_Geometry.007": 6,
+    "Lake_Geometry.007": 25,
+    "Railway_Geometry.006": 3
   },
   "triangles": {
-    "Battlefield_Geometry.006": 111174,
-    "CornerBattlefield_Geometry.004": 111174,
-    "Tram_Geometry.006": 2624,
-    "Lake_Geometry.006": 376862,
-    "Railway_Geometry.005": 25728
+    "Battlefield_Geometry.007": 111174,
+    "Tram_Geometry.007": 2624,
+    "Lake_Geometry.007": 376862,
+    "Railway_Geometry.006": 30144
   }
 }

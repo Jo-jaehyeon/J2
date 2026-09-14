@@ -116,11 +116,13 @@ for side in [-1,1]:
 cube('Pantograph contact',(0,0,2.18),(.8,.36,.055),'Steel')
 # Continuous enclosing shore, distant mountains and two waterfall cascades.
 lake=build_environment(scene,mats)
-# Shared square loop crosses arena centers. Side arenas rotate ninety degrees.
+# Shared rectangular loop crosses identical arenas; all turns are outside the arenas. Side arenas rotate ninety degrees.
 parent=rail
 route=[]
-radius=.65
-for cx,cy,start in [(40-radius,40-radius,0),(-40+radius,40-radius,90),(-40+radius,-40+radius,180),(40-radius,-40+radius,270)]:
+radius=4.0
+half_width=62.0
+half_depth=40.0
+for cx,cy,start in [(half_width-radius,half_depth-radius,0),(-half_width+radius,half_depth-radius,90),(-half_width+radius,-half_depth+radius,180),(half_width-radius,-half_depth+radius,270)]:
     for i in range(13):
         angle=math.radians(start+i*90/12)
         route.append(Vector((cx+radius*math.cos(angle),cy+radius*math.sin(angle),.285)))
@@ -144,7 +146,7 @@ for i,a in enumerate(path):
     for side in [-1,1]:rail_box(mid+normal*side*.48,(d.length+.035,.085,.12),angle,'Rail')
 for mat,(vs,fs) in rail_batches.items():
     me=bpy.data.meshes.new('ThroughRail_'+mat);me.from_pydata(vs,[],fs);me.materials.append(mats[mat]);o=bpy.data.objects.new('ThroughRail_'+mat,me);scene.collection.objects.link(o);o.parent=rail
-(SRC/'rail-route.json').write_text(json.dumps({'points':[[round(v.x,5),.325,round(v.y,5)] for v in path],'closed':True,'trainCount':1,'routing':'square through all eight battlefields; arenas 4 and 5 rotate 90 degrees','extent':40,'cornerRadius':radius,'cornerCellHalfOffset':3.25},indent=2))
+(SRC/'rail-route.json').write_text(json.dumps({'points':[[round(v.x,5),.325,round(v.y,5)] for v in path],'closed':True,'trainCount':1,'routing':'rectangle through eight identical battlefields; arenas 4 and 5 rotate 90 degrees; turns outside all battlefields','halfWidth':half_width,'halfDepth':half_depth,'cornerRadius':radius,'arenaVariant':'shared identical Battlefield'},indent=2))
 # Consolidate static geometry by material to keep eight instances economical.
 for rt in [stage,tram,lake,rail]:
     for mat in mats.values():
@@ -155,40 +157,16 @@ for rt in [stage,tram,lake,rail]:
         bpy.context.view_layer.objects.active=obs[0];bpy.ops.object.convert(target='MESH');bpy.ops.object.join()
         o=bpy.context.object;o.name=rt.name+'_'+mat.name
         bpy.ops.object.transform_apply(location=True,rotation=True,scale=True)
-# Corner variant retains 64 cells and 20 bench slots, adding room for the perpendicular rail leg.
-corner=root('CornerBattlefield_Geometry')
-tree_materials={'MP_Bark','MP_BarkLight','MP_BarkDark','MP_LeafSun','MP_LeafFresh','MP_LeafDeep','MP_LeafMid'}
-for original_mesh in stage.children:
-    name=original_mesh.data.materials[0].name.split('.')[0]
-    if name in tree_materials:continue
-    o=original_mesh.copy();o.data=original_mesh.data.copy();scene.collection.objects.link(o);o.parent=corner;o.name=original_mesh.name.replace('Battlefield','CornerBattlefield')
-    if name in ['MP_Grass','MP_GrassLight','MP_EnemyGrass','MP_EnemyGrassLight','MP_Bench','MP_EnemyBench']:
-        for v in o.data.vertices:v.co.x+=3.25 if v.co.x>0 else -3.25
-    if name in ['MP_Sand','MP_WetSand']:
-        for v in o.data.vertices:v.co.x*=1.3;v.co.y*=1.1
-    if name=='MP_Rock':
-        for v in o.data.vertices:v.co.x+=3.25 if v.co.x>0 else -3.25
-# Regenerate complete trees at their corrected positions; never distort joined tree vertices.
-for side in [-1,1]:
-    for i,y in enumerate([-8,-4,4,8]):
-        x=side*(12.55+(.4 if i%2 else 0));add_tree(scene,corner,mats,x,y,3.7+i*.15,int((x+100)*1000+y*10))
-for x in [-10.25,-7.25,2.2,7.25,10.25]:add_tree(scene,corner,mats,x,11.5,4.4,int((x+100)*1000+115))
-for mat in mats.values():
-    obs=[o for o in corner.children if o.type=='MESH' and o.data.materials[0]==mat]
-    if len(obs)<2:continue
-    bpy.ops.object.select_all(action='DESELECT')
-    for o in obs:o.select_set(True)
-    bpy.context.view_layer.objects.active=obs[0];bpy.ops.object.join();bpy.ops.object.transform_apply(location=True,rotation=True,scale=True)
-for rt,filename in [(stage,'Battlefield'),(corner,'CornerBattlefield'),(tram,'LakeTram'),(lake,'LakeEnvironment'),(rail,'SquareRailway')]:
+for rt,filename in [(stage,'Battlefield'),(stage,'CornerBattlefield'),(tram,'LakeTram'),(lake,'LakeEnvironment'),(rail,'RectangularRailway')]:
     bpy.ops.object.select_all(action='DESELECT')
     rt.select_set(True)
     for o in rt.children:o.select_set(True)
     bpy.ops.export_scene.fbx(filepath=str(OUT/(filename+'.fbx')),use_selection=True,object_types={'MESH','EMPTY'},axis_forward='-Z',axis_up='Y',apply_unit_scale=True,bake_anim=False,add_leaf_bones=False)
 # Separate preview scene with linked geometry and no changes to the original Blender scene.
 preview=bpy.data.scenes.new('J2_Multiplayer_Overview');bpy.context.window.scene=preview
-positions=[(-40,40),(0,40),(40,40),(-40,0),(40,0),(-40,-40),(0,-40),(40,-40)]
+positions=[(-40,40),(0,40),(40,40),(-62,0),(62,0),(-40,-40),(0,-40),(40,-40)]
 for idx,(x,y) in enumerate(positions):
-    for rt in [corner if idx in [0,2,5,7] else stage]:
+    for rt in [stage]:
         for ob in rt.children:
             o=ob.copy();o.data=ob.data;o.parent=None;preview.collection.objects.link(o);o.location=ob.matrix_world.translation+Vector((x,y,0));o.rotation_euler.z=-math.pi/2 if idx in [3,4] else 0
 for ob in tram.children:
@@ -200,9 +178,9 @@ ld=bpy.data.lights.new('Sun','SUN');ld.energy=2;lo=bpy.data.objects.new('Sun',ld
 cd=bpy.data.cameras.new('Overview');cam=bpy.data.objects.new('Overview',cd);preview.collection.objects.link(cam);cam.location=(80,-125,160);cam.rotation_euler=(Vector((0,0,0))-cam.location).to_track_quat('-Z','Y').to_euler();cd.type='ORTHO';cd.ortho_scale=188;preview.camera=cam
 preview.render.engine='CYCLES';preview.cycles.samples=24;preview.cycles.use_denoising=True;preview.render.resolution_x=1400;preview.render.resolution_y=1400;preview.render.resolution_percentage=100
 preview.view_settings.view_transform='AgX'
-bpy.data.libraries.write(str(SRC/'DragonEyeMultiplayerLake.blend'),{scene,preview},fake_user=True)
+bpy.data.libraries.write(str(SRC/'DragonEyeMultiplayerRectangle.blend'),{scene,preview},fake_user=True)
 (OUT/'Source~'/'palette.json').write_text(json.dumps(palette,indent=2))
-report={'battlefields':8,'grid':'3x3 center empty','spacing':40,'tilesPerSide':32,'benchesPerSide':10,'cellSpacing':1.7,'positions':positions,'meshObjects':{r.name:len(r.children) for r in [stage,corner,tram,lake,rail]},'triangles':{r.name:sum(sum(len(p.vertices)-2 for p in o.data.polygons) for o in r.children) for r in [stage,corner,tram,lake,rail]}}
+report={'battlefields':8,'grid':'3 / 2 / 3, center empty; side arenas widened to +/-62','rowSpacing':40,'tilesPerSide':32,'benchesPerSide':10,'cellSpacing':1.7,'positions':positions,'meshObjects':{r.name:len(r.children) for r in [stage,tram,lake,rail]},'triangles':{r.name:sum(sum(len(p.vertices)-2 for p in o.data.polygons) for o in r.children) for r in [stage,tram,lake,rail]}}
 (SRC/'geometry-report.json').write_text(json.dumps(report,indent=2))
 bpy.context.window.scene=original
 print(json.dumps(report))

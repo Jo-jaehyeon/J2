@@ -1,8 +1,9 @@
-PASS: projected 5.15 x 1.49 train roof clears all 512 cell footprints; 4538 poses across every route segment at <= 0.1 m spacing, including both sides of route vertices.
-PASS: eight unique outer 3x3 arena slots; center empty.
+PASS: all eight arenas reference the SAME Battlefield prefab with identical scale and all cell/bench positions.
+PASS: projected 5.15 x 1.49 train roof clears all 512 cell footprints; 5606 poses across every route segment at <= 0.1 m spacing, including both sides of route vertices.
+PASS: eight unique outer 3/2/3 arena slots; center empty.
 PASS: each arena has 32+32 cells, 10+10 benches and valid camera anchors.
 PASS: instantiated FBX axes and scale agree with gameplay anchor coordinates.
 PASS: one shared train; 1000 route samples; closed loop; negative-distance wrapping.
-PASS: square route crosses all eight arenas; side arenas 4 and 5 rotate 90 degrees.
-Route length: 318.8812
+PASS: rectangular route crosses all eight identical arenas; side arenas 4 and 5 rotate 90 degrees.
+Route length: 401.1147
 Unity preview rendered.

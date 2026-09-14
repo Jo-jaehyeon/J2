@@ -14,6 +14,17 @@ try {
         var bench=System.Linq.Enumerable.First(a.GetComponentsInChildren<UnityEngine.Renderer>(),r=>r.name.Contains("MP_Bench"));
         if(UnityEngine.Mathf.Abs(bench.bounds.center.y-.08f)>.01f || UnityEngine.Vector3.Distance(bench.bounds.center,a.TransformPoint(new UnityEngine.Vector3(0,.08f,-9)))>.01f)throw new System.Exception("FBX axis mismatch "+bench.bounds);
     }
+    var sharedArena=UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>("Assets/Resources/Map/Battlefield.prefab");
+    for(int i=0;i<8;i++) {
+        var arena=layout.Arenas[i];
+        if(UnityEditor.PrefabUtility.GetCorrespondingObjectFromOriginalSource(arena.gameObject)!=sharedArena)throw new System.Exception("Arena uses a different prefab: "+i);
+        if(arena.localScale!=UnityEngine.Vector3.one)throw new System.Exception("Arena scale differs: "+i);
+        foreach(var group in new[]{"AllyCells","EnemyCells","AllyBench","EnemyBench"}) {
+            var actual=arena.Find(group);var reference=sharedArena.transform.Find(group);
+            for(int j=0;j<actual.childCount;j++)if(UnityEngine.Vector3.Distance(actual.GetChild(j).localPosition,reference.GetChild(j).localPosition)>.0001f)throw new System.Exception("Arena cell shape differs: "+i);
+        }
+    }
+    report.AppendLine("PASS: all eight arenas reference the SAME Battlefield prefab with identical scale and all cell/bench positions.");
     if(root.GetComponentsInChildren<J2.MultiplayerMap.MultiplayerMapTrain>().Length!=1 || root.transform.Find("SharedTrain")==null)throw new System.Exception("Train count");
     var train=layout.SharedTrain;float length=train.RouteLength;
     for(int i=0;i<8;i++) {
@@ -21,23 +32,20 @@ try {
         if(UnityEngine.Quaternion.Angle(layout.Arenas[i].localRotation,UnityEngine.Quaternion.Euler(0,expected,0))>.01f)throw new System.Exception("Wrong arena orientation "+i);
         var a=layout.Arenas[i];
         // Inspect the central straight corridor end-to-end, not just the nearest route point.
-        for(float x=-6;x<=6;x+=.5f) {
+        for(float x=-12;x<=12;x+=.5f) {
             var wanted=a.TransformPoint(new UnityEngine.Vector3(x,0,0));float best=float.MaxValue;
             for(int j=0;j<train.Route.Length;j++) {
                 var p0=train.transform.TransformPoint(train.Route[j]);var p1=train.transform.TransformPoint(train.Route[(j+1)%train.Route.Length]);p0.y=0;p1.y=0;
                 var delta=p1-p0;float t=UnityEngine.Mathf.Clamp01(UnityEngine.Vector3.Dot(wanted-p0,delta)/delta.sqrMagnitude);best=UnityEngine.Mathf.Min(best,UnityEngine.Vector3.Distance(wanted,p0+delta*t));
             }
-            // Corner slots turn through the center rather than continuing out the far edge.
-            bool corner=(i==0||i==2||i==5||i==7);
-            bool outgoingOutside=corner && ((a.position.x>0&&x>0)||(a.position.x<0&&x<0));
-            if(!outgoingOutside && best>.3f)throw new System.Exception("Rail misses arena corridor "+i+" x="+x+" gap="+best);
+            if(best>.01f)throw new System.Exception("Rail misses complete straight arena corridor "+i+" x="+x+" gap="+best);
         }
     }
 
     train.SetAuthoritativeDistance(0);var first=train.Train.position;
     for(int i=1;i<=1000;i++) {
         train.SetAuthoritativeDistance(length*i/1000);var p=train.Train.position;
-        if(float.IsNaN(p.x)||UnityEngine.Mathf.Abs(p.y-.325f)>.001f||UnityEngine.Mathf.Max(UnityEngine.Mathf.Abs(p.x),UnityEngine.Mathf.Abs(p.z))>40.01f)throw new System.Exception("Train off route");
+        if(float.IsNaN(p.x)||UnityEngine.Mathf.Abs(p.y-.325f)>.001f||(UnityEngine.Mathf.Abs(p.x)>62.01f||UnityEngine.Mathf.Abs(p.z)>40.01f))throw new System.Exception("Train off route");
     }
     if(UnityEngine.Vector3.Distance(first,train.Train.position)>.001f)throw new System.Exception("Loop seam");
     train.SetAuthoritativeDistance(-1);var neg=train.Train.position;train.SetAuthoritativeDistance(length-1);
@@ -180,8 +188,9 @@ train.SetAuthoritativeDistance(length*.6f);
         cam.orthographic=false;cam.fieldOfView=60;cam.transform.position=new UnityEngine.Vector3(28,40,-117);cam.transform.LookAt(new UnityEngine.Vector3(0,13,27));
         cam.Render();UnityEngine.RenderTexture.active=rt;tex=new UnityEngine.Texture2D(1400,1400,UnityEngine.TextureFormat.RGB24,false);tex.ReadPixels(new UnityEngine.Rect(0,0,1400,1400),0,0);tex.Apply();System.IO.File.WriteAllBytes("Assets/Resources/Map/Source~/UnityLakeScenery.png",UnityEngine.ImageConversion.EncodeToPNG(tex));UnityEngine.Object.DestroyImmediate(tex);
     } finally { cam.targetTexture=null;UnityEngine.RenderTexture.active=prev;rt.Release();UnityEngine.Object.DestroyImmediate(rt); }
-    report.AppendLine("PASS: eight unique outer 3x3 arena slots; center empty.");report.AppendLine("PASS: each arena has 32+32 cells, 10+10 benches and valid camera anchors.");report.AppendLine("PASS: instantiated FBX axes and scale agree with gameplay anchor coordinates.");report.AppendLine("PASS: one shared train; 1000 route samples; closed loop; negative-distance wrapping.");report.AppendLine("PASS: square route crosses all eight arenas; side arenas 4 and 5 rotate 90 degrees.");report.AppendLine("Route length: "+length);report.AppendLine("Unity preview rendered.");
+    report.AppendLine("PASS: eight unique outer 3/2/3 arena slots; center empty.");report.AppendLine("PASS: each arena has 32+32 cells, 10+10 benches and valid camera anchors.");report.AppendLine("PASS: instantiated FBX axes and scale agree with gameplay anchor coordinates.");report.AppendLine("PASS: one shared train; 1000 route samples; closed loop; negative-distance wrapping.");report.AppendLine("PASS: rectangular route crosses all eight identical arenas; side arenas 4 and 5 rotate 90 degrees.");report.AppendLine("Route length: "+length);report.AppendLine("Unity preview rendered.");
     System.IO.File.WriteAllText("Assets/Resources/Map/Source~/unity-validation.txt",report.ToString());return report.ToString();
 } finally { UnityEditor.SceneManagement.EditorSceneManager.ClosePreviewScene(preview); }
+
 
 

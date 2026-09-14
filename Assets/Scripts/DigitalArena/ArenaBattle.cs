@@ -7,7 +7,7 @@ namespace DigitalArena
     {
         public sealed class Fighter
         {
-            public int Tier, AttackCount, HitCount;
+            public int Tier, AttackCount, HitCount, Stars = 1;
             public DigimonData Data;
             public float Sp, LastDamage;
             public bool UsedSkill, Enemy;
@@ -37,13 +37,13 @@ namespace DigitalArena
         public ArenaBattle(ArenaRules rules)
         {
             train=rules.Train;
-            foreach(var piece in rules.Pieces.Where(p=>p.Cell>=0)) Add(rules,piece.Tier,false,(3-piece.Cell/8)*8+piece.Cell%8);
+            foreach(var piece in rules.Pieces.Where(p=>p.Cell>=0)) Add(rules,piece.Tier,false,(3-piece.Cell/8)*8+piece.Cell%8,piece.Stars);
             for(int i=0;i<EnemyCount(rules.Stage,rules.StageRound);i++) Add(rules,rules.Catalog.EnemyAt(rules.Stage,i),true,32+i);
         }
-        void Add(ArenaRules rules,int tier,bool enemy,int cell)
+        void Add(ArenaRules rules,int tier,bool enemy,int cell,int stars=1)
         {
             var d=CreateData(rules,tier,enemy);
-            Fighters.Add(new Fighter{Tier=tier,Enemy=enemy,Cell=cell,X=cell%8,Y=WorldRow(cell),Data=d,Hp=d.HP,MaxHp=d.HP,Damage=d.attack==AttackKind.Physical?d.ATK:d.INT,Cooldown=.3f+Fighters.Count*.06f});
+            Fighters.Add(new Fighter{Tier=tier,Stars=stars,Enemy=enemy,Cell=cell,X=cell%8,Y=WorldRow(cell),Data=d,Hp=d.HP,MaxHp=d.HP,Damage=d.attack==AttackKind.Physical?d.ATK:d.INT,Cooldown=.3f+Fighters.Count*.06f});
         }
         public bool Occupied(int cell,Fighter except=null)=>Fighters.Any(f=>f!=except&&f.Alive&&(f.Cell==cell||f.NextCell==cell));
         bool Clear(int a,int b)=>!train.Blocks(a%8,WorldRow(a),b%8,WorldRow(b));

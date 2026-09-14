@@ -1,0 +1,161 @@
+{
+  "vertices": 2946,
+  "triangles": 5556,
+  "bones": 14,
+  "materials": [
+    {
+      "name": "Diaboromon_Tendon",
+      "color": [
+        0.3199999928474426,
+        0.32499998807907104,
+        0.20000000298023224,
+        1.0
+      ]
+    },
+    {
+      "name": "Diaboromon_DarkArmor",
+      "color": [
+        0.11999999731779099,
+        0.11500000208616257,
+        0.23000000417232513,
+        1.0
+      ]
+    },
+    {
+      "name": "Diaboromon_Rust",
+      "color": [
+        0.4300000071525574,
+        0.15000000596046448,
+        0.0949999988079071,
+        1.0
+      ]
+    },
+    {
+      "name": "Diaboromon_DarkArmorEdge",
+      "color": [
+        0.23000000417232513,
+        0.2199999988079071,
+        0.36000001430511475,
+        1.0
+      ]
+    },
+    {
+      "name": "Diaboromon_TendonLight",
+      "color": [
+        0.46000000834465027,
+        0.46000000834465027,
+        0.30000001192092896,
+        1.0
+      ]
+    },
+    {
+      "name": "Diaboromon_Mouth",
+      "color": [
+        0.25,
+        0.02500000037252903,
+        0.04500000178813934,
+        1.0
+      ]
+    },
+    {
+      "name": "Diaboromon_Ivory",
+      "color": [
+        0.9100000262260437,
+        0.9100000262260437,
+        0.7599999904632568,
+        1.0
+      ]
+    },
+    {
+      "name": "Diaboromon_Black",
+      "color": [
+        0.017999999225139618,
+        0.019999999552965164,
+        0.029999999329447746,
+        1.0
+      ]
+    },
+    {
+      "name": "Diaboromon_Green",
+      "color": [
+        0.10999999940395355,
+        0.6600000262260437,
+        0.10000000149011612,
+        1.0
+      ]
+    },
+    {
+      "name": "Diaboromon_White",
+      "color": [
+        0.9800000190734863,
+        0.9800000190734863,
+        0.9599999785423279,
+        1.0
+      ]
+    },
+    {
+      "name": "Diaboromon_Yellow",
+      "color": [
+        0.9800000190734863,
+        0.7799999713897705,
+        0.07500000298023224,
+        1.0
+      ]
+    },
+    {
+      "name": "Diaboromon_Gold",
+      "color": [
+        0.8299999833106995,
+        0.6600000262260437,
+        0.17000000178813934,
+        1.0
+      ]
+    }
+  ],
+  "name": "Diaboromon",
+  "korean": "디아블로몬",
+  "costFolder": "5코스트",
+  "targetHeight": 2.2,
+  "maxWidth": 2.1,
+  "maxDepth": 2.0,
+  "references": [
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\디아블로몬_앞.png",
+      "sha256": "5bffc070fefb1b1ad7ef712222b995dec8e9e082f0feb0484228ce6eefd333fc"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\디아블로몬_옆.png",
+      "sha256": "0ad7feff140fb762507809e8f6102653e41bd4b6f7c52dafb6c98399e0d76359"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\디아블로몬_뒤.png",
+      "sha256": "5b3055ee78aa36c45fe0b8cafc45dd71b791c00f5aa54ee95b396bf138710a81"
+    }
+  ],
+  "clips": [
+    {
+      "name": "Idle",
+      "firstFrame": 1,
+      "lastFrame": 49,
+      "loop": true
+    },
+    {
+      "name": "Walk",
+      "firstFrame": 60,
+      "lastFrame": 84,
+      "loop": true
+    },
+    {
+      "name": "Attack",
+      "firstFrame": 90,
+      "lastFrame": 108,
+      "loop": false
+    },
+    {
+      "name": "Death",
+      "firstFrame": 120,
+      "lastFrame": 150,
+      "loop": false
+    }
+  ]
+}

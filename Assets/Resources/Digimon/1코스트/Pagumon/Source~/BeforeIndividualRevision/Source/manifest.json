@@ -1,0 +1,137 @@
+{
+  "vertices": 10170,
+  "triangles": 20244,
+  "bones": 5,
+  "materials": [
+    {
+      "name": "Pagumon_BlueLight.002",
+      "color": [
+        0.5799999833106995,
+        0.6299999952316284,
+        0.8600000143051147,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Pagumon_Ivory.002",
+      "color": [
+        0.9100000262260437,
+        0.9100000262260437,
+        0.7599999904632568,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Pagumon_Black.002",
+      "color": [
+        0.017999999225139618,
+        0.019999999552965164,
+        0.029999999329447746,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Pagumon_Ruby.002",
+      "color": [
+        0.6700000166893005,
+        0.03500000014901161,
+        0.07999999821186066,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Pagumon_White.002",
+      "color": [
+        0.9800000190734863,
+        0.9800000190734863,
+        0.9599999785423279,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Pagumon_Yellow.002",
+      "color": [
+        0.9800000190734863,
+        0.7799999713897705,
+        0.07500000298023224,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Pagumon_Mouth.002",
+      "color": [
+        0.25,
+        0.02500000037252903,
+        0.04500000178813934,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Pagumon_Tongue.002",
+      "color": [
+        0.699999988079071,
+        0.10999999940395355,
+        0.18000000715255737,
+        1.0
+      ],
+      "vertexColor": true
+    }
+  ],
+  "name": "Pagumon",
+  "korean": "퍼그몬",
+  "costFolder": "1코스트",
+  "targetHeight": 1.05,
+  "maxWidth": 1.65,
+  "maxDepth": 1.4,
+  "references": [
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\퍼그몬_뒤.png",
+      "sha256": "21705f3e3c858fde77db6370b7d9616ae3ce5308cfab9c578c3dacd53c6f6a5e"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\퍼그몬_앞.png",
+      "sha256": "5c9365ed55a1c10a466529c29167fab329098d9834255f42abd6e75d903a3dea"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\퍼그몬_옆.png",
+      "sha256": "c9ae22c29948027153fc52895cec3f0c2a8607d6e55c154526a9bef47ea83c2d"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\퍼그몬_확대.png",
+      "sha256": "da36b5ea34014bc4c18756ab313fc8ad939d95bfd5ac0e1a3a97d2b2ca8ee719"
+    }
+  ],
+  "clips": [
+    {
+      "name": "Idle",
+      "firstFrame": 1,
+      "lastFrame": 49,
+      "loop": true
+    },
+    {
+      "name": "Walk",
+      "firstFrame": 60,
+      "lastFrame": 84,
+      "loop": true
+    },
+    {
+      "name": "Attack",
+      "firstFrame": 90,
+      "lastFrame": 108,
+      "loop": false
+    },
+    {
+      "name": "Death",
+      "firstFrame": 120,
+      "lastFrame": 150,
+      "loop": false
+    }
+  ]
+}

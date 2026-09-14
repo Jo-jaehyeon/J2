@@ -1,0 +1,107 @@
+{
+  "vertices": 946,
+  "triangles": 1824,
+  "bones": 10,
+  "materials": [
+    {
+      "name": "Tsumemon_BlueSkin",
+      "color": [
+        0.38999998569488525,
+        0.46000000834465027,
+        0.699999988079071,
+        1.0
+      ]
+    },
+    {
+      "name": "Tsumemon_Black",
+      "color": [
+        0.017999999225139618,
+        0.019999999552965164,
+        0.029999999329447746,
+        1.0
+      ]
+    },
+    {
+      "name": "Tsumemon_Ruby",
+      "color": [
+        0.6700000166893005,
+        0.03500000014901161,
+        0.07999999821186066,
+        1.0
+      ]
+    },
+    {
+      "name": "Tsumemon_White",
+      "color": [
+        0.9800000190734863,
+        0.9800000190734863,
+        0.9599999785423279,
+        1.0
+      ]
+    },
+    {
+      "name": "Tsumemon_BlueLight",
+      "color": [
+        0.5799999833106995,
+        0.6299999952316284,
+        0.8600000143051147,
+        1.0
+      ]
+    },
+    {
+      "name": "Tsumemon_Ivory",
+      "color": [
+        0.9100000262260437,
+        0.9100000262260437,
+        0.7599999904632568,
+        1.0
+      ]
+    }
+  ],
+  "name": "Tsumemon",
+  "korean": "츠메몬",
+  "costFolder": "1코스트",
+  "targetHeight": 1.35,
+  "maxWidth": 1.55,
+  "maxDepth": 1.55,
+  "references": [
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\츠메몬_앞.png",
+      "sha256": "aa0d3dc4331e09bc434c334a34f7cf8453dbc984818c45e06b950bde38054221"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\츠메몬_옆.png",
+      "sha256": "50a35d625acb5aed7c0e8383bb5013df9285f42251a567820c70fe3f9d42e96f"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\츠메몬_뒤.png",
+      "sha256": "b8e47f02ae56bdd64a67a1b4e37bc86a02a01ab90608fd7a8a1775841a0142c3"
+    }
+  ],
+  "clips": [
+    {
+      "name": "Idle",
+      "firstFrame": 1,
+      "lastFrame": 49,
+      "loop": true
+    },
+    {
+      "name": "Walk",
+      "firstFrame": 60,
+      "lastFrame": 84,
+      "loop": true
+    },
+    {
+      "name": "Attack",
+      "firstFrame": 90,
+      "lastFrame": 108,
+      "loop": false
+    },
+    {
+      "name": "Death",
+      "firstFrame": 120,
+      "lastFrame": 150,
+      "loop": false
+    }
+  ]
+}

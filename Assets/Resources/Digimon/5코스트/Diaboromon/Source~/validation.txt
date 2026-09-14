@@ -1,0 +1,1 @@
+Diaboromon: PASS; triangles=4941; size=(1.29, 1.84, 2.00); 4 clips, loop seams, skin weights, materials verified

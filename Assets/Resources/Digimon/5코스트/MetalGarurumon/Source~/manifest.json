@@ -1,0 +1,178 @@
+{
+  "vertices": 31908,
+  "triangles": 63228,
+  "bones": 14,
+  "materials": [
+    {
+      "name": "MetalGarurumon_SteelDark.001",
+      "color": [
+        0.2199999988079071,
+        0.27000001072883606,
+        0.3100000023841858,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "MetalGarurumon_Silver.004",
+      "color": [
+        0.5299999713897705,
+        0.5899999737739563,
+        0.6299999952316284,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "MetalGarurumon_Gold.004",
+      "color": [
+        0.8299999833106995,
+        0.6600000262260437,
+        0.17000000178813934,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "MetalGarurumon_Fur.004",
+      "color": [
+        0.7799999713897705,
+        0.8600000143051147,
+        0.9399999976158142,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "MetalGarurumon_Suit.004",
+      "color": [
+        0.20000000298023224,
+        0.20000000298023224,
+        0.4300000071525574,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "MetalGarurumon_HairRed.004",
+      "color": [
+        0.8399999737739563,
+        0.14000000059604645,
+        0.04500000178813934,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "MetalGarurumon_Black.004",
+      "color": [
+        0.017999999225139618,
+        0.019999999552965164,
+        0.029999999329447746,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "MetalGarurumon_Ivory.004",
+      "color": [
+        0.9100000262260437,
+        0.9100000262260437,
+        0.7599999904632568,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "MetalGarurumon_BlueSkin.001",
+      "color": [
+        0.38999998569488525,
+        0.46000000834465027,
+        0.699999988079071,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "MetalGarurumon_DarkArmor.004",
+      "color": [
+        0.11999999731779099,
+        0.11500000208616257,
+        0.23000000417232513,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "MetalGarurumon_Yellow.004",
+      "color": [
+        0.9800000190734863,
+        0.7799999713897705,
+        0.07500000298023224,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "MetalGarurumon_Leather.001",
+      "color": [
+        0.20999999344348907,
+        0.11500000208616257,
+        0.054999999701976776,
+        1.0
+      ],
+      "vertexColor": true
+    }
+  ],
+  "name": "MetalGarurumon",
+  "korean": "메탈가루몬",
+  "costFolder": "5코스트",
+  "targetHeight": 1.9,
+  "maxWidth": 2.35,
+  "maxDepth": 2.35,
+  "references": [
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\메탈가루몬_뒤.png",
+      "sha256": "310740d69b1081f7902d434c6b476d939936256b917430d060e61365f41e7b72"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\메탈가루몬_앞.png",
+      "sha256": "be5b38eec09f5d25d29e02000f799337beae3650584916edb4f0c8f7e717f20c"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\메탈가루몬_옆.png",
+      "sha256": "21481358697fb7da8d608b3612dc4fda2b251ee9589466fb1c4a688938c49205"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\메탈가루몬_확대.png",
+      "sha256": "0d0c46c3535a1f2260f25b8d69fcc78fd9bc1a3e25164b2087c0b56964704453"
+    }
+  ],
+  "clips": [
+    {
+      "name": "Idle",
+      "firstFrame": 1,
+      "lastFrame": 49,
+      "loop": true
+    },
+    {
+      "name": "Walk",
+      "firstFrame": 60,
+      "lastFrame": 84,
+      "loop": true
+    },
+    {
+      "name": "Attack",
+      "firstFrame": 90,
+      "lastFrame": 108,
+      "loop": false
+    },
+    {
+      "name": "Death",
+      "firstFrame": 120,
+      "lastFrame": 150,
+      "loop": false
+    }
+  ],
+  "revision": "existing-model-reference-repair"
+}

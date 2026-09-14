@@ -1,0 +1,1 @@
+Rosemon: PASS; triangles=109244; size=(1.83, 2.15, 0.67); 4 clips, loop seams, skin weights, materials verified

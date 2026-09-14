@@ -1,0 +1,1 @@
+Togemon: PASS; triangles=43056; size=(1.90, 1.79, 0.80); 4 clips, loop seams, skin weights, materials verified

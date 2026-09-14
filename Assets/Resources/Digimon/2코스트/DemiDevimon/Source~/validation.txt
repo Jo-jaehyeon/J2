@@ -1,0 +1,1 @@
+DemiDevimon: PASS; triangles=38172; size=(1.88, 1.45, 0.73); 4 clips, loop seams, skin weights, materials verified

@@ -1,0 +1,1 @@
+Keramon: PASS; triangles=4704; size=(1.51, 1.85, 0.54); 4 clips, loop seams, skin weights, materials verified

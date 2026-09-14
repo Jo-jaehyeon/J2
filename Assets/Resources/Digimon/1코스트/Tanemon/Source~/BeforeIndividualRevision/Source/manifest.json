@@ -1,0 +1,153 @@
+{
+  "vertices": 16186,
+  "triangles": 32232,
+  "bones": 5,
+  "materials": [
+    {
+      "name": "Tanemon_Plant.002",
+      "color": [
+        0.47999998927116394,
+        0.6899999976158142,
+        0.25,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Tanemon_Cream.002",
+      "color": [
+        1.0,
+        0.8799999952316284,
+        0.6000000238418579,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Tanemon_Ivory.002",
+      "color": [
+        0.9100000262260437,
+        0.9100000262260437,
+        0.7599999904632568,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Tanemon_Black.002",
+      "color": [
+        0.017999999225139618,
+        0.019999999552965164,
+        0.029999999329447746,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Tanemon_Ruby.002",
+      "color": [
+        0.6700000166893005,
+        0.03500000014901161,
+        0.07999999821186066,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Tanemon_White.002",
+      "color": [
+        0.9800000190734863,
+        0.9800000190734863,
+        0.9599999785423279,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Tanemon_Mouth.002",
+      "color": [
+        0.25,
+        0.02500000037252903,
+        0.04500000178813934,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Tanemon_Leaf.002",
+      "color": [
+        0.1899999976158142,
+        0.4300000071525574,
+        0.10000000149011612,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Tanemon_LeafLight.002",
+      "color": [
+        0.5099999904632568,
+        0.699999988079071,
+        0.2199999988079071,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Tanemon_Silver.002",
+      "color": [
+        0.5299999713897705,
+        0.5899999737739563,
+        0.6299999952316284,
+        1.0
+      ],
+      "vertexColor": true
+    }
+  ],
+  "name": "Tanemon",
+  "korean": "시드몬",
+  "costFolder": "1코스트",
+  "targetHeight": 1.05,
+  "maxWidth": 1.55,
+  "maxDepth": 1.4,
+  "references": [
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\시드몬_뒤.png",
+      "sha256": "43baff830713331d87cafccb0755907f1927dbd5e8c07179595d7607b15dc0ae"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\시드몬_앞.png",
+      "sha256": "60c5f28cbdc7ba5f4a5d5da5fbd429b7a221a0f009f41761dbf4a9cc8ce26239"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\시드몬_옆.png",
+      "sha256": "47804575aed7e82f62e3c29f33040189d602bc4441abddeeea01dafcfab00f05"
+    }
+  ],
+  "clips": [
+    {
+      "name": "Idle",
+      "firstFrame": 1,
+      "lastFrame": 49,
+      "loop": true
+    },
+    {
+      "name": "Walk",
+      "firstFrame": 60,
+      "lastFrame": 84,
+      "loop": true
+    },
+    {
+      "name": "Attack",
+      "firstFrame": 90,
+      "lastFrame": 108,
+      "loop": false
+    },
+    {
+      "name": "Death",
+      "firstFrame": 120,
+      "lastFrame": 150,
+      "loop": false
+    }
+  ]
+}

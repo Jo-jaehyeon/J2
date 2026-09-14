@@ -16,9 +16,13 @@ $compilerPath = Join-Path $sdkVersion.FullName 'Roslyn/bincore/csc.dll'
 $assemblyPath = Join-Path $outputDir 'ArenaValidation.dll'
 & "$DotnetRoot/dotnet.exe" $compilerPath /nologo /target:exe /define:ARENA_HEADLESS /nostdlib+ "/out:$assemblyPath" @references @unityReferences @sources "$projectRoot/Assets/Editor/DigitalArenaValidation.cs"
 if ($LASTEXITCODE -ne 0) { throw 'Compilation failed.' }
-$editorReferences = @('/reference:' + "$UnityEditor/Data/Managed/UnityEngine/UnityEditor.CoreModule.dll")
+$editorReferences = @(Get-ChildItem "$UnityEditor/Data/Managed/UnityEngine" -Filter 'UnityEditor*.dll' | ForEach-Object { '/reference:' + $_.FullName })
+$editorSources = @(Get-ChildItem "$projectRoot/Assets/Editor" -Filter '*.cs' | ForEach-Object { $_.FullName })
 $editorAssemblyPath = Join-Path $outputDir 'ArenaEditorValidation.dll'
-& "$DotnetRoot/dotnet.exe" $compilerPath /nologo /target:library /define:UNITY_EDITOR /nostdlib+ "/out:$editorAssemblyPath" @references @unityReferences @editorReferences @sources "$projectRoot/Assets/Editor/DigitalArenaValidation.cs"
+$editorResponsePath = Join-Path $outputDir 'editor-compile.rsp'
+$editorArguments = @('/nologo','/target:library','/define:UNITY_EDITOR','/nostdlib+',"/out:$editorAssemblyPath") + $references + $unityReferences + $editorReferences + $sources + $editorSources
+$editorArguments | ForEach-Object { '"' + $_ + '"' } | Set-Content -LiteralPath $editorResponsePath -Encoding utf8
+& "$DotnetRoot/dotnet.exe" $compilerPath "@$editorResponsePath"
 if ($LASTEXITCODE -ne 0) { throw 'Editor compilation failed.' }
 $runtimeVersion = $referenceVersion.Name
 $runtimeConfig = @{ runtimeOptions = @{ tfm = $frameworkDir.Name; framework = @{ name = 'Microsoft.NETCore.App'; version = $runtimeVersion } } } | ConvertTo-Json -Depth 5

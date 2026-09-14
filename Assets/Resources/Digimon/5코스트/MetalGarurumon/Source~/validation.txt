@@ -1,0 +1,1 @@
+MetalGarurumon: PASS; triangles=63228; size=(2.07, 1.75, 2.35); 4 clips, loop seams, skin weights, materials verified

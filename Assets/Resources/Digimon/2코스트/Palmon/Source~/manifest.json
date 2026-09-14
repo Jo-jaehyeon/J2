@@ -1,0 +1,184 @@
+{
+  "vertices": 44664,
+  "triangles": 88956,
+  "bones": 9,
+  "materials": [
+    {
+      "name": "Palmon_SeedGreen",
+      "color": [
+        0.6600000262260437,
+        0.7699999809265137,
+        0.23000000417232513,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Palmon_Leaf.003",
+      "color": [
+        0.1899999976158142,
+        0.4300000071525574,
+        0.10000000149011612,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Palmon_Emerald.003",
+      "color": [
+        0.03500000014901161,
+        0.38999998569488525,
+        0.2199999988079071,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Palmon_Green",
+      "color": [
+        0.10999999940395355,
+        0.6600000262260437,
+        0.10000000149011612,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Palmon_EyeDark",
+      "color": [
+        0.20000000298023224,
+        0.03500000014901161,
+        0.03500000014901161,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Palmon_White.003",
+      "color": [
+        0.9800000190734863,
+        0.9800000190734863,
+        0.9599999785423279,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Palmon_PurpleLight",
+      "color": [
+        0.5,
+        0.3799999952316284,
+        0.7300000190734863,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Palmon_SeedVein",
+      "color": [
+        0.38999998569488525,
+        0.46000000834465027,
+        0.11999999731779099,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Palmon_Mouth.003",
+      "color": [
+        0.25,
+        0.02500000037252903,
+        0.04500000178813934,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Palmon_Ivory.003",
+      "color": [
+        0.9100000262260437,
+        0.9100000262260437,
+        0.7599999904632568,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Palmon_Petal.003",
+      "color": [
+        0.949999988079071,
+        0.2800000011920929,
+        0.5400000214576721,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Palmon_Yellow.003",
+      "color": [
+        0.9800000190734863,
+        0.7799999713897705,
+        0.07500000298023224,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Palmon_SkinOrange.003",
+      "color": [
+        0.9200000166893005,
+        0.3400000035762787,
+        0.03500000014901161,
+        1.0
+      ],
+      "vertexColor": true
+    }
+  ],
+  "name": "Palmon",
+  "korean": "팔몬",
+  "costFolder": "2코스트",
+  "targetHeight": 1.6,
+  "maxWidth": 1.6,
+  "maxDepth": 1.5,
+  "clips": [
+    {
+      "name": "Idle",
+      "firstFrame": 1,
+      "lastFrame": 49,
+      "loop": true
+    },
+    {
+      "name": "Walk",
+      "firstFrame": 60,
+      "lastFrame": 84,
+      "loop": true
+    },
+    {
+      "name": "Attack",
+      "firstFrame": 90,
+      "lastFrame": 108,
+      "loop": false
+    },
+    {
+      "name": "Death",
+      "firstFrame": 120,
+      "lastFrame": 150,
+      "loop": false
+    }
+  ],
+  "references": [
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\confirm\\팔몬_뒤.png",
+      "sha256": "1d8bc3a1eaec60a80b02c8181b1aeea2b2183d16c0c90f29bc742ec142070e96"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\confirm\\팔몬_앞.png",
+      "sha256": "aca88b296a048df411b143d5c386ac842758ca99f399638ccb4ad243291a178c"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\confirm\\팔몬_옆.png",
+      "sha256": "11bb12bdca8462c855f035c56dc0ce53fadee4a1c0153d7c1b6a3e74ee071ff2"
+    }
+  ],
+  "revision": "individual-reference-rebuild"
+}

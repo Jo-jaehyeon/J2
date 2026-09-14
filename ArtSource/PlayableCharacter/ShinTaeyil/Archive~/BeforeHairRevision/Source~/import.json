@@ -1,0 +1,194 @@
+{
+  "vertices": 58026,
+  "triangles": 115512,
+  "bones": 15,
+  "materials": [
+    {
+      "name": "SDTamer_TamerBlue",
+      "color": [
+        0.02500000037252903,
+        0.30000001192092896,
+        0.6200000047683716,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "SDTamer_TamerYellow",
+      "color": [
+        1.0,
+        0.6600000262260437,
+        0.04500000178813934,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "SDTamer_TamerSkin",
+      "color": [
+        0.9599999785423279,
+        0.6499999761581421,
+        0.4000000059604645,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "SDTamer_TamerFace",
+      "color": [
+        1.0,
+        0.75,
+        0.5199999809265137,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "SDTamer_TamerHair",
+      "color": [
+        0.10499999672174454,
+        0.035999998450279236,
+        0.017999999225139618,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "SDTamer_White",
+      "color": [
+        0.9800000190734863,
+        0.9800000190734863,
+        0.9599999785423279,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "SDTamer_TamerIris",
+      "color": [
+        0.3199999928474426,
+        0.12999999523162842,
+        0.04500000178813934,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "SDTamer_Mouth",
+      "color": [
+        0.25,
+        0.02500000037252903,
+        0.04500000178813934,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "SDTamer_Ivory",
+      "color": [
+        0.9100000262260437,
+        0.9100000262260437,
+        0.7599999904632568,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "SDTamer_Tongue",
+      "color": [
+        0.699999988079071,
+        0.10999999940395355,
+        0.18000000715255737,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "SDTamer_TamerHairLight",
+      "color": [
+        0.23000000417232513,
+        0.07500000298023224,
+        0.028999999165534973,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "SDTamer_TamerBrown",
+      "color": [
+        0.2800000011920929,
+        0.11999999731779099,
+        0.054999999701976776,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "SDTamer_TamerLens",
+      "color": [
+        0.014999999664723873,
+        0.3799999952316284,
+        0.6000000238418579,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "SDTamer_TamerLensLight",
+      "color": [
+        0.11999999731779099,
+        0.7699999809265137,
+        0.9399999976158142,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "SDTamer_Leather",
+      "color": [
+        0.20999999344348907,
+        0.11500000208616257,
+        0.054999999701976776,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "SDTamer_SilverLight",
+      "color": [
+        0.800000011920929,
+        0.8399999737739563,
+        0.8500000238418579,
+        1.0
+      ],
+      "vertexColor": true
+    }
+  ],
+  "name": "SDTamer",
+  "clips": [
+    {
+      "name": "Idle",
+      "firstFrame": 1,
+      "lastFrame": 49,
+      "loop": true
+    },
+    {
+      "name": "Walk",
+      "firstFrame": 60,
+      "lastFrame": 84,
+      "loop": true
+    },
+    {
+      "name": "Attack",
+      "firstFrame": 90,
+      "lastFrame": 108,
+      "loop": false
+    },
+    {
+      "name": "Death",
+      "firstFrame": 120,
+      "lastFrame": 150,
+      "loop": false
+    }
+  ]
+}

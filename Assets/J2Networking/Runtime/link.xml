@@ -1,0 +1,4 @@
+<linker>
+  <assembly fullname="J2.Protocol" preserve="all" />
+  <assembly fullname="Google.Protobuf" preserve="all" />
+</linker>

@@ -1,0 +1,1 @@
+Agumon: PASS; triangles=3680; size=(1.12, 1.48, 1.60); 4 clips, loop seams, skin weights, materials verified

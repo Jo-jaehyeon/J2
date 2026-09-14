@@ -1,0 +1,137 @@
+{
+  "vertices": 10726,
+  "triangles": 21340,
+  "bones": 3,
+  "materials": [
+    {
+      "name": "Tsunomon_SkinOrange.003",
+      "color": [
+        0.9200000166893005,
+        0.3400000035762787,
+        0.03500000014901161,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Tsunomon_Cream.003",
+      "color": [
+        1.0,
+        0.8799999952316284,
+        0.6000000238418579,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Tsunomon_Ivory.003",
+      "color": [
+        0.9100000262260437,
+        0.9100000262260437,
+        0.7599999904632568,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Tsunomon_Black.003",
+      "color": [
+        0.017999999225139618,
+        0.019999999552965164,
+        0.029999999329447746,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Tsunomon_Ruby.003",
+      "color": [
+        0.6700000166893005,
+        0.03500000014901161,
+        0.07999999821186066,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Tsunomon_White.003",
+      "color": [
+        0.9800000190734863,
+        0.9800000190734863,
+        0.9599999785423279,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Tsunomon_Mouth.003",
+      "color": [
+        0.25,
+        0.02500000037252903,
+        0.04500000178813934,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Tsunomon_SteelDark.003",
+      "color": [
+        0.2199999988079071,
+        0.27000001072883606,
+        0.3100000023841858,
+        1.0
+      ],
+      "vertexColor": true
+    }
+  ],
+  "name": "Tsunomon",
+  "korean": "뿔몬",
+  "costFolder": "1코스트",
+  "targetHeight": 1.1,
+  "maxWidth": 1.45,
+  "maxDepth": 1.35,
+  "references": [
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\뿔몬_뒤.png",
+      "sha256": "65758d5dfc7dbfccb258affee016dadd1206943efb3c0c232d1124326bb196dc"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\뿔몬_앞.png",
+      "sha256": "4b900f75da00b6bed585690f45046281cd84ac1134620787ff65cff296d57a75"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\뿔몬_옆.png",
+      "sha256": "dcaf2c644c23ad3553f460699c69e4fcf5bbbb5c158689dd91c93c5315e089a7"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\뿔몬_확대.png",
+      "sha256": "7f551bbd22ae76bfae664cd063eac7390c062aebe5f87186cb4435ccfe22655d"
+    }
+  ],
+  "clips": [
+    {
+      "name": "Idle",
+      "firstFrame": 1,
+      "lastFrame": 49,
+      "loop": true
+    },
+    {
+      "name": "Walk",
+      "firstFrame": 60,
+      "lastFrame": 84,
+      "loop": true
+    },
+    {
+      "name": "Attack",
+      "firstFrame": 90,
+      "lastFrame": 108,
+      "loop": false
+    },
+    {
+      "name": "Death",
+      "firstFrame": 120,
+      "lastFrame": 150,
+      "loop": false
+    }
+  ]
+}

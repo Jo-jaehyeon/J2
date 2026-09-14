@@ -1,0 +1,187 @@
+{
+  "vertices": 27376,
+  "triangles": 54140,
+  "bones": 12,
+  "materials": [
+    {
+      "name": "Gabumon_Yellow.002",
+      "color": [
+        0.9800000190734863,
+        0.7799999713897705,
+        0.07500000298023224,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Gabumon_Fur.002",
+      "color": [
+        0.7799999713897705,
+        0.8600000143051147,
+        0.9399999976158142,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Gabumon_Black.002",
+      "color": [
+        0.017999999225139618,
+        0.019999999552965164,
+        0.029999999329447746,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Gabumon_Mouth.002",
+      "color": [
+        0.25,
+        0.02500000037252903,
+        0.04500000178813934,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Gabumon_Tongue.002",
+      "color": [
+        0.699999988079071,
+        0.10999999940395355,
+        0.18000000715255737,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Gabumon_Ivory.002",
+      "color": [
+        0.9100000262260437,
+        0.9100000262260437,
+        0.7599999904632568,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Gabumon_Ruby.001",
+      "color": [
+        0.6700000166893005,
+        0.03500000014901161,
+        0.07999999821186066,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Gabumon_White.002",
+      "color": [
+        0.9800000190734863,
+        0.9800000190734863,
+        0.9599999785423279,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Gabumon_WolfBlue.002",
+      "color": [
+        0.12999999523162842,
+        0.20000000298023224,
+        0.5299999713897705,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Gabumon_Gold.002",
+      "color": [
+        0.8299999833106995,
+        0.6600000262260437,
+        0.17000000178813934,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Gabumon_Stripe.002",
+      "color": [
+        0.07000000029802322,
+        0.2800000011920929,
+        0.36000001430511475,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Gabumon_PetalLight.002",
+      "color": [
+        1.0,
+        0.5099999904632568,
+        0.699999988079071,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Gabumon_Purple.002",
+      "color": [
+        0.3400000035762787,
+        0.23999999463558197,
+        0.5699999928474426,
+        1.0
+      ],
+      "vertexColor": true
+    }
+  ],
+  "name": "Gabumon",
+  "korean": "파피몬",
+  "costFolder": "2코스트",
+  "targetHeight": 1.65,
+  "maxWidth": 1.55,
+  "maxDepth": 1.7,
+  "references": [
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\파피몬_뒤.png",
+      "sha256": "066af91793a64bea5c2da42c183d1b5ac21d6e47ab615abf22776208b64967da"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\파피몬_앞.png",
+      "sha256": "4baa35909f662cfa6ebce1682b5483af0f70ca86f58792232afa69eedac2c4d9"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\파피몬_옆.png",
+      "sha256": "116efcc3bb0f461c91d0b4b5225d54fe37646cf1ba0e556bb5b927a99440b55b"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\파피몬_확대.png",
+      "sha256": "62c64be88f26f094bdc67404538936e986b75a19770d0d1d1b1d96be5235eff4"
+    }
+  ],
+  "clips": [
+    {
+      "name": "Idle",
+      "firstFrame": 1,
+      "lastFrame": 49,
+      "loop": true
+    },
+    {
+      "name": "Walk",
+      "firstFrame": 60,
+      "lastFrame": 84,
+      "loop": true
+    },
+    {
+      "name": "Attack",
+      "firstFrame": 90,
+      "lastFrame": 108,
+      "loop": false
+    },
+    {
+      "name": "Death",
+      "firstFrame": 120,
+      "lastFrame": 150,
+      "loop": false
+    }
+  ]
+}

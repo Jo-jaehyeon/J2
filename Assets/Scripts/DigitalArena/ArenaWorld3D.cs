@@ -6,6 +6,7 @@ namespace DigitalArena
 {
     public sealed class ArenaWorld3D : MonoBehaviour
     {
+        public const float IslandRadiusX=12f, IslandRadiusZ=13f, IslandCenterZ=-1f;
         public sealed class UnitView
         {
             public Transform Root;
@@ -53,7 +54,7 @@ namespace DigitalArena
         {
             var water=Shape(transform,PrimitiveType.Cube,new Vector3(0,-0.85f,0),new Vector3(85,0.3f,80),C(0x53B9CD));
             water.name="Dragon Eye Lake";
-            Shape(transform,PrimitiveType.Cylinder,new Vector3(0,-0.6f,-1),new Vector3(24,0.6f,26),C(0xB9AC7C));
+            Shape(transform,PrimitiveType.Cylinder,new Vector3(0,-0.6f,IslandCenterZ),new Vector3(IslandRadiusX*2,0.6f,IslandRadiusZ*2),C(0xB9AC7C));
             Shape(transform,PrimitiveType.Cylinder,new Vector3(-1,-0.23f,-1),new Vector3(22,0.15f,24),C(0xDDD1A2));
             for (int row = 0; row < 9; row++) for (int col = 0; col < 8; col++)
             {

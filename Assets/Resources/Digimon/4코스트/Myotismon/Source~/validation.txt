@@ -1,0 +1,1 @@
+Myotismon: PASS; triangles=58456; size=(1.16, 2.15, 0.63); 4 clips, loop seams, skin weights, materials verified

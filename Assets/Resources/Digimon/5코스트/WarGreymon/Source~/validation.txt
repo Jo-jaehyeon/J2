@@ -1,0 +1,1 @@
+WarGreymon: PASS; triangles=10256; size=(1.48, 2.15, 0.71); 4 clips, loop seams, skin weights, materials verified

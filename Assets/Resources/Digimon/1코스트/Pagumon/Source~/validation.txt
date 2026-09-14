@@ -1,0 +1,1 @@
+Pagumon: PASS; triangles=66528; size=(1.65, 0.88, 0.69); 4 clips, loop seams, skin weights, materials verified

@@ -1,0 +1,124 @@
+{
+  "vertices": 45372,
+  "triangles": 90404,
+  "bones": 12,
+  "materials": [
+    {
+      "name": "Garurumon_Fur.003",
+      "color": [
+        0.7799999713897705,
+        0.8600000143051147,
+        0.9399999976158142,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Garurumon_Black.003",
+      "color": [
+        0.017999999225139618,
+        0.019999999552965164,
+        0.029999999329447746,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Garurumon_Mouth.003",
+      "color": [
+        0.25,
+        0.02500000037252903,
+        0.04500000178813934,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Garurumon_WolfBlue.003",
+      "color": [
+        0.12999999523162842,
+        0.20000000298023224,
+        0.5299999713897705,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Garurumon_Ivory.003",
+      "color": [
+        0.9100000262260437,
+        0.9100000262260437,
+        0.7599999904632568,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Garurumon_Gold.003",
+      "color": [
+        0.8299999833106995,
+        0.6600000262260437,
+        0.17000000178813934,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Garurumon_Purple.003",
+      "color": [
+        0.3400000035762787,
+        0.23999999463558197,
+        0.5699999928474426,
+        1.0
+      ],
+      "vertexColor": true
+    }
+  ],
+  "name": "Garurumon",
+  "korean": "가루몬",
+  "costFolder": "3코스트",
+  "targetHeight": 1.65,
+  "maxWidth": 1.75,
+  "maxDepth": 2.3,
+  "clips": [
+    {
+      "name": "Idle",
+      "firstFrame": 1,
+      "lastFrame": 49,
+      "loop": true
+    },
+    {
+      "name": "Walk",
+      "firstFrame": 60,
+      "lastFrame": 84,
+      "loop": true
+    },
+    {
+      "name": "Attack",
+      "firstFrame": 90,
+      "lastFrame": 108,
+      "loop": false
+    },
+    {
+      "name": "Death",
+      "firstFrame": 120,
+      "lastFrame": 150,
+      "loop": false
+    }
+  ],
+  "references": [
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\confirm\\가루몬_뒤.png",
+      "sha256": "c2122a3b6fc98ff06e30da11f3205da7c347cf3e7b8872f8c60f4227a8c5c980"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\confirm\\가루몬_앞.png",
+      "sha256": "dd714a7539f39fb91075456391257e3e92296798264b5968e4bf632ac7dff741"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\confirm\\가루몬_옆.png",
+      "sha256": "c99f9d0b3ceaa449a3ab652027551dfe2ef8fa5430a7e6ee2d361432e7ce13f1"
+    }
+  ],
+  "revision": "individual-reference-rebuild"
+}

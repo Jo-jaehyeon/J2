@@ -1,0 +1,1 @@
+Tanemon: PASS; triangles=32232; size=(0.93, 1.05, 0.60); 4 clips, loop seams, skin weights, materials verified

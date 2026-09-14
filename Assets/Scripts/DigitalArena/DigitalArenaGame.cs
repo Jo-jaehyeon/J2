@@ -4,18 +4,20 @@ using UnityEngine;
 
 namespace DigitalArena
 {
-    public sealed class DigitalArenaGame : MonoBehaviour
+    public sealed partial class DigitalArenaGame : MonoBehaviour
     {
         [SerializeField, Min(1)] float preparationSeconds = 30;
         [SerializeField, Min(1)] int xpPerPurchase = 4;
         ArenaRules rules;
         ArenaBattle battle;
         ArenaWorld3D world;
+        PlayableCharacterMotor playableCharacter;
+        bool viewingOpponent;
         Texture2D[] partners, enemyPortraits;
         readonly System.Collections.Generic.Dictionary<int,Texture2D> badges=new System.Collections.Generic.Dictionary<int,Texture2D>();
         ArenaWorld3D.UnitView selectedUnit;
         Font font;
-        Texture2D mainBackground;
+        Texture2D mainBackground, rankStar;
         bool mainMenu=true, multiplayerNotice;
         Camera menuCamera;
         float remaining, resultTime, elapsed, shopProgress, uiScale;
@@ -40,6 +42,7 @@ namespace DigitalArena
             font = Font.CreateDynamicFontFromOSFont(new[] { "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans CJK KR", "Arial" }, 18);
             Application.targetFrameRate = 60;
             mainBackground=Resources.Load<Texture2D>("UI/DigiTacticsMainBackground");
+            rankStar=Resources.Load<Texture2D>("UI/RankStar");
             menuCamera=new GameObject("Main Menu Camera").AddComponent<Camera>();
             menuCamera.transform.SetParent(transform);menuCamera.cullingMask=0;
             menuCamera.clearFlags=CameraClearFlags.SolidColor;menuCamera.backgroundColor=Hex(0x112A3A);
@@ -50,6 +53,14 @@ namespace DigitalArena
         {
             mainMenu=false;multiplayerNotice=false;
             if(world==null) { world=gameObject.AddComponent<ArenaWorld3D>();world.Initialize(); }
+            if(playableCharacter==null)
+            {
+                var prefab=Resources.Load<GameObject>("PlayableCharacter/ShinTaeyil/ShinTaeyil");
+                if(prefab!=null) playableCharacter=Instantiate(prefab,world.transform).GetComponent<PlayableCharacterMotor>();
+                else Debug.LogError("ShinTaeyil playable character prefab is missing.");
+            }
+            if(playableCharacter!=null) playableCharacter.ResetPosition(new Vector3(0,.25f,-7.9f));
+            ViewPlayer(false);
             var data=Resources.Load<TextAsset>("ArenaBalance");
             var catalog=Resources.Load<TextAsset>("DigimonCatalog");
             rules = new ArenaRules(Environment.TickCount,data==null?new ArenaBalance():JsonUtility.FromJson<ArenaBalance>(data.text),catalog==null?new DigimonCatalog():JsonUtility.FromJson<DigimonCatalog>(catalog.text));
@@ -73,6 +84,8 @@ namespace DigitalArena
         }
         void Update()
         {
+            UpdateTouchInput();
+            if(playableCharacter!=null) playableCharacter.Tick(Time.deltaTime,!mainMenu && !help && rules!=null && rules.Health>0);
             if (mainMenu || help || rules.Health <= 0) return;
             elapsed += Time.deltaTime;
             shopProgress = Mathf.MoveTowards(shopProgress, shopOpen ? 1 : 0, Time.deltaTime * 5);
@@ -91,9 +104,11 @@ namespace DigitalArena
             world.Animate(elapsed, dragId, dragPoint);
         }
         void OnApplicationFocus(bool focused) { if (!focused) CancelDrag(); }
+        void OnApplicationPause(bool paused) { if (paused) CancelDrag(); }
         void CancelDrag()
         {
             pressedId = dragId = -1; dragPoint = null; saleHover=false;
+            touchCancelled = true; pendingUiTap = false;
             if (world != null) world.Highlight(-1);
         }
         void OnDestroy()
@@ -114,10 +129,10 @@ namespace DigitalArena
         void OnGUI()
         {
             Styles();
-            uiScale = Mathf.Min(Screen.width / 1440f, Screen.height / 900f);
-            uiOffset = new Vector2((Screen.width - 1440*uiScale)/2,(Screen.height-900*uiScale)/2);
+            UpdateUiMetrics();
+            if (SuppressTouchMouse && Event.current.isMouse) Event.current.Use();
             GUI.matrix = Matrix4x4.TRS(uiOffset, Quaternion.identity, new Vector3(uiScale,uiScale,1));
-            if(mainMenu) { MainMenu();GUI.matrix=Matrix4x4.identity;return; }
+            if(mainMenu) { MainMenu(); FinishTouchGui(); GUI.matrix=Matrix4x4.identity;return; }
             bool modal = help || rules.Health <= 0;
             GUI.enabled = !modal;
             UnitLabels(); Header(); PlayerList(); BottomControls(); UnitDetails();
@@ -127,6 +142,7 @@ namespace DigitalArena
             if (!modal) HandlePlacement(Event.current);
             GUI.enabled = true;
             if (help) Help(); else if (rules.Health <= 0) GameOver();
+            FinishTouchGui();
             GUI.matrix = Matrix4x4.identity;
         }
         void MainMenu()
@@ -158,11 +174,20 @@ namespace DigitalArena
             Label(1284,211,118,25,"나 · 테이머",15,Ink,true);
             Label(1284,242,118,28,rules.Health + " / 100",22,Pink,true);
             Fill(new Rect(1230,280,172,4),Edge); Fill(new Rect(1230,280,172*rules.Health/100f,4),Mint);
+            if(TouchButton(new Rect(1216,198,200,99)) || GUI.Button(new Rect(1216,198,200,99),GUIContent.none,GUIStyle.none)) ViewPlayer(false);
             Label(1216,308,205,27,"배치 " + rules.Pieces.Count(p=>p.Cell>=0) + " / " + rules.Level,16,Ink);
             Label(1216,337,200,22,"적: " + rules.Catalog.enemies[rules.Catalog.EnemyAt(rules.Stage)].name,13,Muted);
+            if(Button(new Rect(1216,369,200,38),viewingOpponent?"상대 시점 · 선택됨":"현재 상대 시점",Panel)) ViewPlayer(true);
             if(selectedUnit!=null) return;
             Label(24,198,230,27,"용의 눈 호수",21,Ink,true);
             Label(24,236,240,45,rules.Train.Visible?"기차가 가로막는 길을 우회하세요.":"기차 재등장: "+(rules.Train.ReturnRound-rules.Round)+"라운드 후",12,Gold);
+        }
+        void ViewPlayer(bool opponent)
+        {
+            viewingOpponent=opponent; selectedUnit=null; CancelDrag();
+            if(world==null) return;
+            world.Camera.transform.position=new Vector3(0,21,opponent?24:-24);
+            world.Camera.transform.LookAt(new Vector3(0,0,opponent?.6f:-.6f));
         }
         void BottomControls()
         {
@@ -183,7 +208,7 @@ namespace DigitalArena
             if(Button(new Rect(1250,746,166,45),"플레이 가이드",Panel)) { CancelDrag(); help=true; }
             Label(330,862,900,24,rules.Notice,13,Ink,false,TextAnchor.MiddleCenter);
             if(shopProgress<0.05f && rules.Preparing)
-                Label(330,827,900,22,"대기석 기물 더블 클릭: 자동배치   ·   우클릭 드래그: 배치 / 교환 / 대기석 회수",13,Muted,false,TextAnchor.MiddleCenter);
+                Label(330,827,900,22,TouchControls ? "기물 탭: 정보   ·   드래그: 배치 / 교환 / 하단 판매   ·   빈 바닥 탭: 테이머 이동" : "빈 전장 우클릭: 테이머 이동   ·   기물 더블 클릭: 자동배치   ·   좌클릭 드래그: 배치 / 교환",13,Muted,false,TextAnchor.MiddleCenter);
         }
         void UnitLabels()
         {
@@ -214,8 +239,16 @@ namespace DigitalArena
             if(selectedUnit==null) return;
             if(selectedUnit.Root==null||!world.Units.Contains(selectedUnit)) { selectedUnit=null;return; }
             var u=selectedUnit;var d=u.Data;
-            PanelBox(new Rect(24,300,250,420));
-            if(Button(new Rect(229,310,32,24),"×",Panel)) { selectedUnit=null;return; }
+            PanelBox(new Rect(24,268,250,452));
+            if(!u.Enemy)
+            {
+                int stars=u.Fighter!=null?u.Fighter.Stars:rules.Pieces.Find(p=>p.Id==u.Id)?.Stars??1;
+                for(int i=0;i<stars;i++)
+                    if(rankStar!=null) GUI.DrawTexture(new Rect(38+i*28,276,24,24),rankStar,ScaleMode.ScaleToFit,true);
+                    else Label(38+i*28,276,24,24,"★",22,Gold,true);
+                Label(130,276,130,24,d.cost+"코스트 · "+stars+"성",13,Gold);
+            }
+            if(Button(new Rect(223,302,48,36),"×",Panel)) { selectedUnit=null;return; }
             GUI.DrawTexture(new Rect(38,339,84,84),(u.Enemy?enemyPortraits:partners)[u.Tier]);
             GUI.DrawTexture(new Rect(133,346,44,44),Badge(d));
             Label(38,306,185,28,d.name,18,Ink,true);
@@ -225,79 +258,83 @@ namespace DigitalArena
             Label(38,435,222,22,"HP  "+hp.ToString("0")+" / "+d.HP.ToString("0"),13,Ink,false,TextAnchor.MiddleCenter);
             Fill(new Rect(38,463,222,22),Edge);Fill(new Rect(38,463,222*sp/d.SP,22),Hex(0x2D7CAC));
             Label(38,463,222,22,"SP  "+sp.ToString("0")+" / "+d.SP.ToString("0"),13,Ink,false,TextAnchor.MiddleCenter);
-            Label(38,495,224,26,d.attack==AttackKind.Physical?"물리형 · ATK 기반 공격":"특수형 · INT 기반 공격",14,Gold,true);
+            Label(38,495,224,26,(d.attack==AttackKind.Physical?"물리형":"특수형")+" / "+DigimonCatalog.RoleName(d.role),14,Gold,true);
             Label(38,527,220,25,"ATK  "+d.ATK.ToString("0.#")+"     DEF  "+d.DEF.ToString("0.#"),15,Ink);
             Label(38,559,220,25,"INT  "+d.INT.ToString("0.#")+"     SPD  "+d.SPD.ToString("0.##"),15,Ink);
             Label(38,591,220,25,"기본 공격 사거리  "+d.range.ToString("0.##")+"칸",14,Ink);
             Label(38,625,220,24,"공격당 SP +"+d.spPerAttack+"  ·  스킬 ×"+d.skillPower,12,Mint);
             Label(38,658,222,24,"방어 피해 감소  "+(100*d.DEF/(100+d.DEF)).ToString("0.#")+"%",12,Muted);
-            Label(38,686,222,23,u.Enemy?"적 기물":"좌클릭 조회 · 우클릭 드래그",12,Muted);
+            Label(38,686,222,23,TouchControls?"기물 탭: 조회 / 닫기 · 드래그: 배치":u.Enemy?"적 기물":"우클릭 조회 / 닫기 · 좌클릭 드래그",12,Muted);
         }
         void Shop()
         {
             Rect panel=ShopRect; PanelBox(panel);
             PanelBox(new Rect(panel.x,panel.y-32,panel.width,30));
-            Label(panel.x+14,panel.y-29,220,24,"진화 단계별 등장 확률",14,Ink,true);
+            Label(panel.x+14,panel.y-29,220,24,"코스트별 등장 확률",14,Ink,true);
             
-            for(int i=0;i<5;i++) Label(panel.x+245+i*132,panel.y-29,132,24,ArenaRules.EvolutionNames[i]+" "+rules.Balance.levels[rules.Level-1].weights[i]+"%",13,Rarity(i));
-            Label(panel.x+18,panel.y+9,790,27,"기물 선택  ·  원하는 후보를 개별 구매하세요  ·  "+rules.PurchaseCount+" / 5 구매",15,Ink,true);
+            for(int i=0;i<5;i++) Label(panel.x+245+i*132,panel.y-29,132,24,ArenaRules.CostNames[i]+" "+rules.Balance.levels[rules.Level-1].weights[i]+"%",13,Rarity(i));
+            if(Button(new Rect(panel.x+16,panel.y+8,150,29),"리롤 · "+ArenaRules.RerollCost+"골드",Hex(0x304C43),rules.CanReroll)) rules.Reroll();
             if(Button(new Rect(panel.xMax-61,panel.y+8,43,27),"닫기",Panel)) shopOpen=false;
             for(int i=0;i<5;i++)
             {
-                int tier=rules.Offers[i]; Rect card=new Rect(panel.x+16+i*179,panel.y+46,171,126);
+                int tier=rules.Offers[i]; Rect card=new Rect(panel.x+16+i*179,panel.y+46,171,114);
                 if(tier<0||rules.Bought[i]) { PanelBox(card);continue; }
                 if(Button(card,"",Hex(0x243C3F),rules.Preparing&&rules.Gold>=ArenaRules.PurchasePrice(rules.Catalog.allies[tier])))
                 {
                     if(rules.Buy(i)) { CancelDrag(); world.Rebuild(rules,null); }
                 }
                 if(rules.Bought[i]) { PanelBox(card);continue; }
-                Fill(new Rect(card.x,card.y,card.width,3),Rarity(rules.Catalog.allies[tier].cost-1));
                 GUI.DrawTexture(new Rect(card.x+4,card.y+5,163,83),partners[tier],ScaleMode.ScaleToFit);
                 var d=rules.Catalog.Get(tier,false);
                 GUI.DrawTexture(new Rect(card.xMax-39,card.y+7,32,32),Badge(d));
                 GUI.Label(new Rect(card.xMax-41,card.y+5,36,36),new GUIContent("",DigimonCatalog.TypeNames[(int)d.type]+" · "+DigimonCatalog.ElementNames[(int)d.element]));
                 Label(card.x+8,card.y+87,124,22,rules.Catalog.allies[tier].name,13,Ink,true);
                 Label(card.x+132,card.y+87,36,22,ArenaRules.PurchasePrice(rules.Catalog.allies[tier])+"G",14,Gold,true);
-                Label(card.x+8,card.y+109,157,16,ArenaRules.EvolutionNames[ArenaRules.EvolutionRank(d)-1]+" · "+DigimonCatalog.TypeNames[(int)d.type],11,Muted);
+                Frame(card,Rarity(d.cost-1),3);
             }
         }
         bool OverUi(Vector2 point)
         {
-            return new Rect(470,18,500,74).Contains(point) || new Rect(1216,166,200,203).Contains(point)
+            return new Rect(470,18,500,74).Contains(point) || new Rect(1216,166,200,245).Contains(point)
                 || new Rect(24,economyOpen?463:805,250,economyOpen?405:63).Contains(point)
-                || selectedUnit!=null && new Rect(24,300,250,420).Contains(point)
+                || selectedUnit!=null && new Rect(24,268,250,452).Contains(point)
                 || new Rect(1250,746,166,122).Contains(point) || shopProgress>0 && new Rect(ShopRect.x,ShopRect.y-32,ShopRect.width,ShopRect.height+32).Contains(point);
         }
         void HandlePlacement(Event e)
         {
             if(e.type==EventType.KeyDown && e.keyCode==KeyCode.Escape) { CancelDrag(); shopOpen=false; e.Use(); return; }
+            if(SuppressTouchMouse) return;
             if(HandlePointer(e.rawType==EventType.MouseUp?EventType.MouseUp:e.type,e.button,e.clickCount,e.mousePosition)) e.Use();
         }
         bool HandlePointer(EventType type,int button,int clicks,Vector2 mouse)
         {
             if(mainMenu || help || rules.Health<=0) return false;
             Vector2 screen=ScreenPoint(mouse);
-            if(type==EventType.MouseDown && button==0 && !OverUi(mouse))
+            if(type==EventType.MouseDown && button==1 && !OverUi(mouse))
             {
-                selectedUnit=world.PickUnit(screen); economyOpen=false;
-                if(selectedUnit==null) return false;
-                int id=selectedUnit.Id;
-                if(clicks==2 && rules.Preparing && !selectedUnit.Enemy)
+                CancelDrag();
+                var picked=world.PickUnit(screen);
+                economyOpen=false;
+                if(picked!=null)
                 {
-                    if(rules.AutoDeploy(id)) world.Rebuild(rules,null);
-                    CancelDrag();
+                    selectedUnit=selectedUnit==picked?null:picked;
+                    return true;
                 }
-
-                return true;
+                selectedUnit=null;
+                return !viewingOpponent && playableCharacter!=null && world.GroundPoint(screen,out var destination) && playableCharacter.MoveTo(destination);
             }
-            else if(type==EventType.MouseDown && button==1 && rules.Preparing && !OverUi(mouse))
+            else if(type==EventType.MouseDown && button==0 && rules.Preparing && !OverUi(mouse) && !viewingOpponent)
             {
                 int id=world.Pick(screen);if(id<0) return false;
+                if(clicks==2)
+                {
+                    if(rules.AutoDeploy(id)) world.Rebuild(rules,null);
+                    CancelDrag();return true;
+                }
                 pressedId=id;mouseDown=mouse;return true;
-            }
-            else if(type==EventType.MouseDrag && pressedId>=0 && button==1 && rules.Preparing)
+            }            else if(type==EventType.MouseDrag && pressedId>=0 && button==0 && rules.Preparing)
             {
-                if(Vector2.Distance(mouseDown,mouse)>6) dragId=pressedId;
+                if(Vector2.Distance(mouseDown,mouse)>(touchFinger>=0?TouchDragThreshold:6)) dragId=pressedId;
                 saleHover=dragId>=0 && SaleRect.Contains(mouse);
                 if(dragId>=0 && world.GroundPoint(screen,out var point))
                 {
@@ -306,7 +343,7 @@ namespace DigitalArena
                 }
                 return true;
             }
-            else if(type==EventType.MouseUp && pressedId>=0 && button==1 && rules.Preparing)
+            else if(type==EventType.MouseUp && pressedId>=0 && button==0 && rules.Preparing)
             {
                 if(dragId>=0 && SaleRect.Contains(mouse))
                 {
@@ -327,8 +364,8 @@ namespace DigitalArena
             var piece=rules.Pieces.Find(p=>p.Id==dragId); if(piece==null) return;
             var data=rules.Catalog.allies[piece.Tier];
             PanelBox(SaleRect);
-            Label(24,810,1392,40,data.name+" 판매 · +"+ArenaRules.SalePrice(data)+" 골드",24,Gold,true,TextAnchor.MiddleCenter);
-            Label(24,852,1392,25,"우클릭을 놓으면 판매 · 영역 밖으로 이동하면 취소",15,Ink,false,TextAnchor.MiddleCenter);
+            Label(24,810,1392,40,data.name+" "+piece.Stars+"성 판매 · +"+rules.SalePrice(piece)+" 골드",24,Gold,true,TextAnchor.MiddleCenter);
+            Label(24,852,1392,25,TouchControls?"손가락을 놓으면 판매 · 영역 밖으로 이동하면 취소":"좌클릭을 놓으면 판매 · 영역 밖으로 이동하면 취소",15,Ink,false,TextAnchor.MiddleCenter);
         }
         void Result()
         {
@@ -343,11 +380,11 @@ namespace DigitalArena
             Label(340,185,760,48,"3D 전장 가이드",29,Mint,true);
             string[] lines={
                 "상단은 적 전장, 하단은 내 전장입니다. 양쪽에 대기석 10칸이 있습니다.",
-                "대기석 기물을 더블 클릭하면 해당 기물만 빈 전장 칸에 자동배치합니다.",
-                "기물을 우클릭 드래그해 8×4 전장에 배치·교환하거나 대기석 안에서 옮기세요.",
+                TouchControls?"아군·적 기물을 탭하면 정보를 확인합니다. 빈 바닥을 탭하면 테이머가 이동합니다.":"대기석 기물을 더블 클릭하면 해당 기물만 빈 전장 칸에 자동배치합니다.",
+                TouchControls?"기물을 끌어서 배치·교환하세요. 하단 판매 영역에서 손을 놓으면 판매합니다.":"기물을 좌클릭 드래그해 8×4 전장에 배치·교환하거나 대기석 안에서 옮기세요.",
                 "준비 30초 후 전투가 시작됩니다. 전투 제한 시간도 30초입니다.",
                 "라운드 시작 시 기물 선택 창이 올라옵니다. 우측 하단에서 다시 열 수 있습니다.",
-                "골드 범위에서 원하는 후보를 각각 구매하세요. 같은 기물 3개는 진화합니다.",
+                "골드 범위에서 원하는 후보를 각각 구매하세요. 동일 기물·동일 별 3개로 3성까지 강화합니다.",
                 "골드·레벨은 좌측 하단에서 확인하고 버튼을 눌러 4pt로 "+xpPerPurchase+"XP를 구매하세요.",
                 "승패와 관계없이 전투 종료 시 플레이어 기본 경험치 2XP를 받습니다.",
                 "시작 체력 100. 패배 피해는 남은 크립 수 × 스테이지 × 2입니다.",
@@ -386,7 +423,7 @@ namespace DigitalArena
             bool hover=rect.Contains(Event.current.mousePosition)&&GUI.enabled;
             Fill(rect,hover?Color.Lerp(color,Mint,0.15f):color); Frame(rect,hover?Mint:Edge,1);
             buttonStyle.fontSize=14; buttonStyle.normal.textColor=enabled?Ink:Muted;
-            bool clicked=GUI.Button(rect,value,buttonStyle); GUI.enabled=previous; return clicked;
+            bool clicked=TouchButton(rect) | GUI.Button(rect,value,buttonStyle); GUI.enabled=previous; return clicked;
         }
         static void Fill(Rect rect,Color color) { Color previous=GUI.color; GUI.color=color; GUI.DrawTexture(rect,Texture2D.whiteTexture); GUI.color=previous; }
         static void Frame(Rect r,Color c,float w)
@@ -394,5 +431,6 @@ namespace DigitalArena
         static void PanelBox(Rect rect) { Fill(rect,Panel); Frame(rect,Edge,1); }
     }
 }
+
 
 

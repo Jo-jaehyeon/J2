@@ -1,0 +1,25 @@
+{
+  "vertices": 5414,
+  "triangles": 9592,
+  "bones": 16,
+  "materials": 13,
+  "clips": {
+    "Idle": [
+      1,
+      49
+    ],
+    "Walk": [
+      60,
+      84
+    ],
+    "Attack": [
+      90,
+      108
+    ],
+    "Death": [
+      120,
+      150
+    ]
+  },
+  "fbx": "C:\\Jerry\\Unity Project\\J2\\Assets\\Resources\\Digimon\\\uc6cc\uadf8\ub808\uc774\ubaac\\WarGreymon_Model.fbx"
+}

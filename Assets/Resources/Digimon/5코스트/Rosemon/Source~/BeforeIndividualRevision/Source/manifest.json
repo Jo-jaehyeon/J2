@@ -1,0 +1,157 @@
+{
+  "vertices": 54882,
+  "triangles": 109244,
+  "bones": 15,
+  "materials": [
+    {
+      "name": "Rosemon_Peach.004",
+      "color": [
+        0.9800000190734863,
+        0.7799999713897705,
+        0.6700000166893005,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Rosemon_Rose.004",
+      "color": [
+        0.6499999761581421,
+        0.02500000037252903,
+        0.06499999761581421,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Rosemon_Black.004",
+      "color": [
+        0.017999999225139618,
+        0.019999999552965164,
+        0.029999999329447746,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Rosemon_PetalLight.004",
+      "color": [
+        1.0,
+        0.5099999904632568,
+        0.699999988079071,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Rosemon_RoseLight.004",
+      "color": [
+        0.8799999952316284,
+        0.054999999701976776,
+        0.10000000149011612,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Rosemon_Leaf.004",
+      "color": [
+        0.1899999976158142,
+        0.4300000071525574,
+        0.10000000149011612,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Rosemon_LeafLight.004",
+      "color": [
+        0.5099999904632568,
+        0.699999988079071,
+        0.2199999988079071,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Rosemon_Gold.004",
+      "color": [
+        0.8299999833106995,
+        0.6600000262260437,
+        0.17000000178813934,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Rosemon_PurpleLight.004",
+      "color": [
+        0.5,
+        0.3799999952316284,
+        0.7300000190734863,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Rosemon_Cream.004",
+      "color": [
+        1.0,
+        0.8799999952316284,
+        0.6000000238418579,
+        1.0
+      ],
+      "vertexColor": true
+    }
+  ],
+  "name": "Rosemon",
+  "korean": "로제몬",
+  "costFolder": "5코스트",
+  "targetHeight": 2.15,
+  "maxWidth": 2.0,
+  "maxDepth": 1.8,
+  "references": [
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\로제몬_뒤.png",
+      "sha256": "fb666fa9add59c7597ba7c6063971bd610f1535a2e9124ef7d7b749ab340f420"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\로제몬_앞.png",
+      "sha256": "ef39a5e611548dcde81bec2eeca6da60b29b1848da2418a0914ffe419f29b718"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\로제몬_옆.png",
+      "sha256": "7adaefd504acfc28b0ce138093d34feb9d4c402f36d700e28058307cb451b724"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\로제몬_확대.png",
+      "sha256": "e0872d00575c48600762f4899a89c884ab39269269217be1828d1e6bc9e23e73"
+    }
+  ],
+  "clips": [
+    {
+      "name": "Idle",
+      "firstFrame": 1,
+      "lastFrame": 49,
+      "loop": true
+    },
+    {
+      "name": "Walk",
+      "firstFrame": 60,
+      "lastFrame": 84,
+      "loop": true
+    },
+    {
+      "name": "Attack",
+      "firstFrame": 90,
+      "lastFrame": 108,
+      "loop": false
+    },
+    {
+      "name": "Death",
+      "firstFrame": 120,
+      "lastFrame": 150,
+      "loop": false
+    }
+  ]
+}

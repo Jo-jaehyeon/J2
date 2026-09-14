@@ -1,0 +1,1 @@
+Koromon: PASS; triangles=1564; size=(1.60, 0.84, 0.78); 4 clips, loop seams, skin weights, materials verified

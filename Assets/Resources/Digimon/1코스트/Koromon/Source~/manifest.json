@@ -1,0 +1,124 @@
+{
+  "vertices": 824,
+  "triangles": 1564,
+  "bones": 5,
+  "materials": [
+    {
+      "name": "Koromon_Pink.004",
+      "color": [
+        0.9599999785423279,
+        0.5600000023841858,
+        0.7300000190734863,
+        1.0
+      ]
+    },
+    {
+      "name": "Koromon_Mouth.004",
+      "color": [
+        0.25,
+        0.02500000037252903,
+        0.04500000178813934,
+        1.0
+      ]
+    },
+    {
+      "name": "Koromon_PinkShadow.003",
+      "color": [
+        0.6899999976158142,
+        0.28999999165534973,
+        0.4300000071525574,
+        1.0
+      ]
+    },
+    {
+      "name": "Koromon_Ivory.004",
+      "color": [
+        0.9100000262260437,
+        0.9100000262260437,
+        0.7599999904632568,
+        1.0
+      ]
+    },
+    {
+      "name": "Koromon_Black.004",
+      "color": [
+        0.017999999225139618,
+        0.019999999552965164,
+        0.029999999329447746,
+        1.0
+      ]
+    },
+    {
+      "name": "Koromon_Ruby.004",
+      "color": [
+        0.6700000166893005,
+        0.03500000014901161,
+        0.07999999821186066,
+        1.0
+      ]
+    },
+    {
+      "name": "Koromon_White.004",
+      "color": [
+        0.9800000190734863,
+        0.9800000190734863,
+        0.9599999785423279,
+        1.0
+      ]
+    },
+    {
+      "name": "Koromon_PinkLight.004",
+      "color": [
+        1.0,
+        0.7599999904632568,
+        0.8600000143051147,
+        1.0
+      ]
+    }
+  ],
+  "name": "Koromon",
+  "korean": "코로몬",
+  "costFolder": "1코스트",
+  "targetHeight": 1.05,
+  "maxWidth": 1.6,
+  "maxDepth": 1.5,
+  "references": [
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\코로몬_확대.png",
+      "sha256": "572431e7ecbfd002d5b1b13e9bb8dd5a548eef949d80b9f9de47be422d360e54"
+    }
+  ],
+  "previousReferences": [
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\코로몬_확대.png",
+      "sha256": "572431e7ecbfd002d5b1b13e9bb8dd5a548eef949d80b9f9de47be422d360e54"
+    }
+  ],
+  "clips": [
+    {
+      "name": "Idle",
+      "firstFrame": 1,
+      "lastFrame": 49,
+      "loop": true
+    },
+    {
+      "name": "Walk",
+      "firstFrame": 60,
+      "lastFrame": 84,
+      "loop": true
+    },
+    {
+      "name": "Attack",
+      "firstFrame": 90,
+      "lastFrame": 108,
+      "loop": false
+    },
+    {
+      "name": "Death",
+      "firstFrame": 120,
+      "lastFrame": 150,
+      "loop": false
+    }
+  ],
+  "revision": "face-and-anatomy-2"
+}

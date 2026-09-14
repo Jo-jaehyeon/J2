@@ -1,0 +1,1 @@
+Myotismon: PASS; FBX vertex colors retained and material switch enabled

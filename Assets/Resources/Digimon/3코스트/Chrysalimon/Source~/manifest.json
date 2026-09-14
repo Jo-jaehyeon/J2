@@ -1,0 +1,115 @@
+{
+  "vertices": 1641,
+  "triangles": 3106,
+  "bones": 9,
+  "materials": [
+    {
+      "name": "Chrysalimon_Purple.003",
+      "color": [
+        0.3400000035762787,
+        0.23999999463558197,
+        0.5699999928474426,
+        1.0
+      ]
+    },
+    {
+      "name": "Chrysalimon_PurpleLight.003",
+      "color": [
+        0.5,
+        0.3799999952316284,
+        0.7300000190734863,
+        1.0
+      ]
+    },
+    {
+      "name": "Chrysalimon_Rust.003",
+      "color": [
+        0.4300000071525574,
+        0.15000000596046448,
+        0.0949999988079071,
+        1.0
+      ]
+    },
+    {
+      "name": "Chrysalimon_Black.003",
+      "color": [
+        0.017999999225139618,
+        0.019999999552965164,
+        0.029999999329447746,
+        1.0
+      ]
+    },
+    {
+      "name": "Chrysalimon_Yellow.003",
+      "color": [
+        0.9800000190734863,
+        0.7799999713897705,
+        0.07500000298023224,
+        1.0
+      ]
+    },
+    {
+      "name": "Chrysalimon_White.003",
+      "color": [
+        0.9800000190734863,
+        0.9800000190734863,
+        0.9599999785423279,
+        1.0
+      ]
+    },
+    {
+      "name": "Chrysalimon_Gold.003",
+      "color": [
+        0.8299999833106995,
+        0.6600000262260437,
+        0.17000000178813934,
+        1.0
+      ]
+    }
+  ],
+  "name": "Chrysalimon",
+  "korean": "크리사리몬",
+  "costFolder": "3코스트",
+  "targetHeight": 1.95,
+  "maxWidth": 1.95,
+  "maxDepth": 1.9,
+  "references": [
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\크리사리몬_확대.png",
+      "sha256": "4f5b29d1ae366f4c6c936c208a3f4d904cd702cdb4ebfcf5bc229a758ec92485"
+    }
+  ],
+  "previousReferences": [
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\크리사리몬_확대.png",
+      "sha256": "4f5b29d1ae366f4c6c936c208a3f4d904cd702cdb4ebfcf5bc229a758ec92485"
+    }
+  ],
+  "clips": [
+    {
+      "name": "Idle",
+      "firstFrame": 1,
+      "lastFrame": 49,
+      "loop": true
+    },
+    {
+      "name": "Walk",
+      "firstFrame": 60,
+      "lastFrame": 84,
+      "loop": true
+    },
+    {
+      "name": "Attack",
+      "firstFrame": 90,
+      "lastFrame": 108,
+      "loop": false
+    },
+    {
+      "name": "Death",
+      "firstFrame": 120,
+      "lastFrame": 150,
+      "loop": false
+    }
+  ],
+  "revision": "face-and-anatomy-2"
+}

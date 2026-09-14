@@ -1,0 +1,1 @@
+Chrysalimon: PASS; triangles=3106; size=(1.95, 1.68, 1.85); 4 clips, loop seams, skin weights, materials verified

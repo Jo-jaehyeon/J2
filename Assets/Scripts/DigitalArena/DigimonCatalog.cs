@@ -4,7 +4,8 @@ using System.Linq;
 namespace DigitalArena
 {
     public enum AttackKind { Physical, Special }
-    public enum DigimonType { Vaccine, Virus, Data, Unknown, Free, None }
+    public enum DigimonType { Vaccine, Virus, Data, Unknown, Free, NoData }
+    public enum DigimonRole { Unassigned = -1, Guardian, Fighter, Marksman, Caster, Support }
     public enum DigimonElement { Fire, Water, Grass, Electric, Wind, Earth, Light, Dark, Neutral }
     public enum PlaceholderModel { Default, BlueCube, GreenSphere, PurpleCapsule }
     [Serializable]
@@ -14,6 +15,7 @@ namespace DigitalArena
         public int cost=1, modelTier, startStage=1, range=1;
         public float HP=90, SP=100, ATK=15, DEF=10, INT=15, SPD=1.25f;
         public AttackKind attack;
+        public DigimonRole role = DigimonRole.Unassigned;
         public DigimonType type;
         public DigimonElement element;
         public PlaceholderModel placeholder;
@@ -24,7 +26,9 @@ namespace DigitalArena
     public sealed class DigimonCatalog
     {
         public DigimonData[] allies=Defaults(false), enemies=Defaults(true);
-        public static readonly string[] TypeNames={"백신","바이러스","데이터","언노운","프리","속성없음"};
+        public static readonly string[] TypeNames={"백신","바이러스","데이터","언노운","프리","NoData"};
+        public static readonly string[] RoleNames={"미정","수호","투사","사수","술사","지원"};
+        public static string RoleName(DigimonRole role) => RoleNames[(int)role+1];
         public static readonly string[] ElementNames={"불","물","풀","전기","바람","땅","빛","어둠","무"};
         public DigimonData Get(int tier,bool enemy) => (enemy?enemies:allies)[tier];
         public int Evolution(int index) => Array.FindIndex(allies,d=>d.id==allies[index].evolvesTo);
@@ -69,6 +73,7 @@ namespace DigitalArena
             if(allies.Concat(enemies).Any(d=>d==null)) return "비어 있는 기물 데이터입니다.";
             if(allies.Concat(enemies).Select(d=>d.id).Distinct().Count()!=allies.Length+enemies.Length) return "기물 ID는 중복될 수 없습니다.";
             if(!enemies.Any(d=>d.startStage==1)) return "스테이지 1에서 등장하는 크립이 필요합니다.";
+            if(allies.Any(d=>d.cost<1||d.cost>5)) return "플레이어 기물은 1~5코스트여야 합니다.";
             foreach(var d in allies.Concat(enemies))
             {
                 if(d==null) return "비어 있는 기물 데이터입니다.";
@@ -80,6 +85,7 @@ namespace DigitalArena
                     return "수치는 0~1,000,000, HP·SP·사거리·스킬 배율은 0보다 커야 합니다.";
                 if(!Enum.IsDefined(typeof(AttackKind),d.attack)||!Enum.IsDefined(typeof(DigimonType),d.type)||!Enum.IsDefined(typeof(DigimonElement),d.element)) return "유효하지 않은 분류입니다.";
                 if(!Enum.IsDefined(typeof(PlaceholderModel),d.placeholder)) return "유효하지 않은 임시 도형입니다.";
+                if(!Enum.IsDefined(typeof(DigimonRole),d.role)) return "유효하지 않은 역할군입니다.";
             }
             foreach(var origin in allies)
             {
@@ -100,7 +106,7 @@ namespace DigitalArena
         {
             if(a==DigimonType.Free || b==DigimonType.Free) return 1;
             if((a==DigimonType.Vaccine&&b==DigimonType.Virus)||(a==DigimonType.Virus&&b==DigimonType.Data)||(a==DigimonType.Data&&b==DigimonType.Vaccine)) return 2;
-            if((a==DigimonType.Unknown&&(int)b<3)||((int)a<3&&b==DigimonType.None)) return 1.1f;
+            if((a==DigimonType.Unknown&&(int)b<3)||((int)a<3&&b==DigimonType.NoData)) return 1.1f;
             return 1;
         }
         public static float ElementMultiplier(DigimonElement a,DigimonElement b)

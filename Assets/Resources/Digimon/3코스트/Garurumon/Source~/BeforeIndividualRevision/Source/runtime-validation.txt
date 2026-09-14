@@ -1,0 +1,1 @@
+Garurumon: PASS; resource/catalog, Idle startup, Walk, Attack, Special/Hit fallbacks, Death duration

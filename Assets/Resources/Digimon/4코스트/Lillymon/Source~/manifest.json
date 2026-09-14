@@ -1,0 +1,167 @@
+{
+  "vertices": 58496,
+  "triangles": 116508,
+  "bones": 17,
+  "materials": [
+    {
+      "name": "Lillymon_Peach.004",
+      "color": [
+        0.9800000190734863,
+        0.7799999713897705,
+        0.6700000166893005,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Lillymon_Petal.004",
+      "color": [
+        0.949999988079071,
+        0.2800000011920929,
+        0.5400000214576721,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Lillymon_Leaf.004",
+      "color": [
+        0.1899999976158142,
+        0.4300000071525574,
+        0.10000000149011612,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Lillymon_Ivory.004",
+      "color": [
+        0.9100000262260437,
+        0.9100000262260437,
+        0.7599999904632568,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Lillymon_Black.004",
+      "color": [
+        0.017999999225139618,
+        0.019999999552965164,
+        0.029999999329447746,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Lillymon_Leather.004",
+      "color": [
+        0.20999999344348907,
+        0.11500000208616257,
+        0.054999999701976776,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Lillymon_White.004",
+      "color": [
+        0.9800000190734863,
+        0.9800000190734863,
+        0.9599999785423279,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Lillymon_Rose.004",
+      "color": [
+        0.6499999761581421,
+        0.02500000037252903,
+        0.06499999761581421,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Lillymon_PetalLight.004",
+      "color": [
+        1.0,
+        0.5099999904632568,
+        0.699999988079071,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Lillymon_Yellow.004",
+      "color": [
+        0.9800000190734863,
+        0.7799999713897705,
+        0.07500000298023224,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Lillymon_LeafLight.004",
+      "color": [
+        0.5099999904632568,
+        0.699999988079071,
+        0.2199999988079071,
+        1.0
+      ],
+      "vertexColor": true
+    }
+  ],
+  "name": "Lillymon",
+  "korean": "릴리몬",
+  "costFolder": "4코스트",
+  "targetHeight": 2.0,
+  "maxWidth": 2.0,
+  "maxDepth": 1.8,
+  "references": [
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\릴리몬_뒤.png",
+      "sha256": "f811182c2be8ef4cb49b5329edb2b9869fc57e7a9035f757d32b0455e05cdf3e"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\릴리몬_앞.png",
+      "sha256": "06b42589b6e2ad2b33287405468addfb4bedb03816761486d2a1ff4fa11794a1"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\릴리몬_옆.png",
+      "sha256": "bc0de09301450eda19d7859f865f106723b0f0cab3b0c7de3178cf75633e7932"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\릴리몬_확대.png",
+      "sha256": "10885739687230958314532f6bb489e0c6f6b8ac937cc6853d42da3d6edde68b"
+    }
+  ],
+  "clips": [
+    {
+      "name": "Idle",
+      "firstFrame": 1,
+      "lastFrame": 49,
+      "loop": true
+    },
+    {
+      "name": "Walk",
+      "firstFrame": 60,
+      "lastFrame": 84,
+      "loop": true
+    },
+    {
+      "name": "Attack",
+      "firstFrame": 90,
+      "lastFrame": 108,
+      "loop": false
+    },
+    {
+      "name": "Death",
+      "firstFrame": 120,
+      "lastFrame": 150,
+      "loop": false
+    }
+  ]
+}

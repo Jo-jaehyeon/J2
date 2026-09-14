@@ -19,7 +19,7 @@ namespace DigitalArena
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Boot()
         {
-            if (Environment.GetCommandLineArgs().Contains("-arena-smoke"))
+            if (Environment.GetCommandLineArgs().Any(a=>a=="-arena-smoke"||a=="-arena-stars-smoke"))
             {
                 Application.runInBackground = true;
                 new GameObject("3D Runtime Verification").AddComponent<ArenaSmokeTest>();
@@ -36,9 +36,9 @@ namespace DigitalArena
         void Drag(ArenaWorld3D world,int id,Vector3 target)
         {
             var unit=world.Units.Find(u=>u.Id==id);
-            Pointer(EventType.MouseDown,world.Project(unit.Root.position+Vector3.up*0.6f),1,1);
-            Pointer(EventType.MouseDrag,world.Project(target),1,1);
-            Pointer(EventType.MouseUp,world.Project(target),1,1);
+            Pointer(EventType.MouseDown,world.Project(unit.Root.position+Vector3.up*0.6f),1,0);
+            Pointer(EventType.MouseDrag,world.Project(target),1,0);
+            Pointer(EventType.MouseUp,world.Project(target),1,0);
         }
         void Check(bool condition,string description)
         {
@@ -60,6 +60,52 @@ namespace DigitalArena
             target.Release(); Destroy(target); Destroy(image);
             Check(File.Exists(path),"captured "+name);
         }
+        IEnumerator CaptureStarUi(string name)
+        {
+            // Opt in only with a visible player: hidden Windows players skip GUI rendering.
+            if(!Environment.GetCommandLineArgs().Contains("-arena-stars-capture")) yield break;
+            yield return new WaitForEndOfFrame();
+            var screenshot=ScreenCapture.CaptureScreenshotAsTexture();
+            Check(screenshot.GetPixels32().Any(c=>c.r>20||c.g>20||c.b>20),"UI capture is not blank");
+            File.WriteAllBytes(Path.Combine(output,name+".png"),screenshot.EncodeToPNG());
+            Destroy(screenshot);
+        }
+        IEnumerator StarSmoke()
+        {
+            Call("StartSinglePlayer");
+            var original=Field<ArenaRules>("rules");
+            foreach(var data in original.Catalog.allies.Concat(original.Catalog.enemies))
+                if(!string.IsNullOrEmpty(data.prefabPath)) Check(Resources.Load<GameObject>(data.prefabPath)!=null,"migrated prefab "+data.id);
+            var star=Resources.Load<Texture2D>("UI/RankStar");
+            Check(star!=null&&star.GetPixel(0,0).a<.01f,"generated star has transparent background");
+            var catalog=original.Catalog.Copy();catalog.allies[0].role=DigimonRole.Marksman;
+            var balance=original.Balance.Copy();foreach(var level in balance.levels) level.weights=new[]{100,0,0,0,0};
+            var rules=new ArenaRules(12,balance,catalog);rules.BeginRound();
+            Set("rules",rules);Set("remaining",999f);Set("shopOpen",false);Set("shopProgress",0f);
+            var world=Field<ArenaWorld3D>("world");
+            foreach(int targetStars in new[]{1,2,3})
+            {
+                while(!rules.Pieces.Any(p=>p.Stars==targetStars))
+                {
+                    for(int slot=0;slot<5&&!rules.Pieces.Any(p=>p.Stars==targetStars);slot++)
+                    {
+                        rules.Offers[slot]=0;rules.Buy(slot);
+                    }
+                    if(!rules.Pieces.Any(p=>p.Stars==targetStars)) { rules.StartBattle();rules.ResolveBattle(true,0);rules.BeginRound(); }
+                }
+                world.Rebuild(rules,null);
+                var piece=rules.Pieces.First(p=>p.Stars==targetStars);
+                Set("selectedUnit",world.Units.First(u=>u.Id==piece.Id));
+                Check(piece.Tier==0&&piece.InvestedGold==ArenaRules.OriginalCopies(targetStars),"same species and investment at star "+targetStars);
+                yield return CaptureStarUi("stars-"+targetStars+"-preparation");
+            }
+            rules.StartBattle();var battle=new ArenaBattle(rules);Set("battle",battle);Set("help",true);
+            world.Rebuild(rules,battle);
+            var unit=world.Units.First(u=>!u.Enemy&&u.Fighter!=null&&u.Fighter.Stars==3);
+            Set("selectedUnit",unit);Set("help",false);
+            Check(unit.Data.role==DigimonRole.Marksman&&unit.Fighter.Stars==3,"combat view retains role and three stars");
+            yield return CaptureStarUi("stars-3-combat");
+        }
         IEnumerator Start()
         {
             Application.logMessageReceived += OnLog;
@@ -67,6 +113,12 @@ namespace DigitalArena
             Directory.CreateDirectory(output);
             yield return null; yield return null;
             game=FindAnyObjectByType<DigitalArenaGame>();
+            if(Environment.GetCommandLineArgs().Contains("-arena-stars-smoke"))
+            {
+                yield return StarSmoke();
+                Debug.Log("ARENA STARS SMOKE PASSED: "+assertions+" assertions");
+                Application.Quit(0);yield break;
+            }
             Check(game!=null,"game bootstraps");
             Check(Field<bool>("mainMenu")&&Field<ArenaRules>("rules")==null,"boot stays on main menu without round income");
             Check(Resources.Load<Texture2D>("UI/DigiTacticsMainBackground")!=null,"generated main background bundled");
@@ -129,7 +181,19 @@ namespace DigitalArena
             Vector2 benchHit=world.Project(unit.Root.position+Vector3.up*0.6f);
             Pointer(EventType.MouseDown,benchHit); Pointer(EventType.MouseUp,benchHit);
             Check(piece.Cell==-1,"single click does not place piece");
-            Check(Field<ArenaWorld3D.UnitView>("selectedUnit")==unit,"left click opens unit details");
+            Check(Field<ArenaWorld3D.UnitView>("selectedUnit")==null,"left click does not open details");
+            Pointer(EventType.MouseDown,benchHit,1,1);
+            Check(Field<ArenaWorld3D.UnitView>("selectedUnit")==unit,"right click opens unit details");
+            Pointer(EventType.MouseDown,benchHit,1,1);
+            Check(Field<ArenaWorld3D.UnitView>("selectedUnit")==null,"right click again closes unit details");
+            var tamer=Field<PlayableCharacterMotor>("playableCharacter");
+            Check(tamer!=null,"existing tamer prefab loaded");
+            var destination=ArenaWorld3D.CellPosition(20);
+            Pointer(EventType.MouseDown,world.Project(destination),1,1);
+            Check((new Vector2(tamer.Destination.x,tamer.Destination.z)-new Vector2(destination.x,destination.z)).sqrMagnitude<.01f,"right click ground moves tamer");
+            var savedDestination=tamer.Destination;
+            Pointer(EventType.MouseDown,world.Project(ArenaWorld3D.CellPosition(21)),1,0);
+            Check(tamer.Destination==savedDestination,"left ground click does not move tamer");
             Pointer(EventType.MouseDown,benchHit,2); Pointer(EventType.MouseUp,benchHit,2);
             Check(piece.Cell>=0,"double click input deploys piece");
             yield return Capture("02-deployed-3d");
@@ -141,14 +205,15 @@ namespace DigitalArena
             Check(piece.Cell==-1,"drag input returns piece to bench");
             Drag(world,piece.Id,ArenaWorld3D.BenchPosition(7));
             Check(piece.BenchSlot==7,"drag rearranges bench slot");
-            Check(rules.AutoDeploy(piece.Id),"redeploy for battle"); world.Rebuild(rules,null);
+            Check(piece.Cell<0,"leave piece on bench for timeout deployment"); world.Rebuild(rules,null);
             Set("remaining",0.01f);
             yield return new WaitForSeconds(0.2f);
             var battle=Field<ArenaBattle>("battle");
             float trainCenter=rules.Train.Center;
             Check(!rules.Preparing && battle!=null && !Field<bool>("shopOpen"),"timer automatically starts battle and closes drawer");
+            Check(piece.Cell>=0&&piece.BenchSlot==-1&&battle.Fighters.Any(f=>!f.Enemy),"timeout deploys bench piece before combat fighters are created");
             var enemy=world.Units.First(u=>u.Enemy);
-            Pointer(EventType.MouseDown,world.Project(enemy.Root.position+Vector3.up*.6f));
+            Pointer(EventType.MouseDown,world.Project(enemy.Root.position+Vector3.up*.6f),1,1);
             Check(Field<ArenaWorld3D.UnitView>("selectedUnit")==enemy,"combat enemy inspection");
             float deadline=Time.realtimeSinceStartup+35;
             while(!battle.Finished && Time.realtimeSinceStartup<deadline) yield return null;
@@ -167,19 +232,19 @@ namespace DigitalArena
             void BeginSaleDrag()
             {
                 var view=world.Units.Find(u=>u.Id==salePiece.Id);
-                Pointer(EventType.MouseDown,world.Project(view.Root.position+Vector3.up*.6f),1,1);
-                Pointer(EventType.MouseDrag,saleScreen,1,1);
+                Pointer(EventType.MouseDown,world.Project(view.Root.position+Vector3.up*.6f),1,0);
+                Pointer(EventType.MouseDrag,saleScreen,1,0);
             }
             BeginSaleDrag();Check(Field<bool>("saleHover"),"bottom drag reveals sale UI");
-            Pointer(EventType.MouseDrag,world.Project(ArenaWorld3D.BenchPosition(7)),1,1);
+            Pointer(EventType.MouseDrag,world.Project(ArenaWorld3D.BenchPosition(7)),1,0);
             Check(!Field<bool>("saleHover"),"leaving bottom cancels sale preview");
-            Pointer(EventType.MouseUp,world.Project(ArenaWorld3D.BenchPosition(7)),1,1);
+            Pointer(EventType.MouseUp,world.Project(ArenaWorld3D.BenchPosition(7)),1,0);
             Check(rules.Pieces.Count==1&&rules.Gold==1,"cancelled sale keeps unit and gold");
-            BeginSaleDrag();Pointer(EventType.MouseUp,saleScreen,1,1);
+            BeginSaleDrag();Pointer(EventType.MouseUp,saleScreen,1,0);
             Check(rules.Pieces.Count==0&&rules.Gold==2&&!Field<bool>("saleHover"),"bench drop sells once");
             rules.Offers[1]=0;Check(rules.Buy(1),"purchase for field sale");salePiece=rules.Pieces.Single();
             rules.AutoDeploy(salePiece.Id);world.Rebuild(rules,null);
-            BeginSaleDrag();Pointer(EventType.MouseUp,saleScreen,1,1);
+            BeginSaleDrag();Pointer(EventType.MouseUp,saleScreen,1,0);
             Check(rules.Pieces.Count==0&&rules.Gold==2,"field drop sells unit");
             var expanded=rules.Catalog.Copy();
             var extra=expanded.allies[0].Copy();extra.id="smoke_added";extra.name="Added unit";extra.evolvesTo="";extra.cost=1;
@@ -198,7 +263,7 @@ namespace DigitalArena
             expandedRules.StartBattle();var expandedBattle=new ArenaBattle(expandedRules);
             Check(expandedBattle.Fighters.Any(f=>f.Data.id==extra.id)&&expandedBattle.Fighters.Any(f=>f.Data.id==extraEnemy.id),"added data participates in combat");
             world.Rebuild(rules,null);
-            var tsumemon=Resources.Load<GameObject>("Digimon/Tsumemon/Tsumemon");
+            var tsumemon=Resources.Load<GameObject>("Digimon/1코스트/Tsumemon/Tsumemon");
             Check(tsumemon!=null,"Tsumemon prefab bundled");
             var model=Instantiate(tsumemon);model.transform.position=new Vector3(1000,0,0);
             var motion=model.GetComponent<ArenaUnitAnimation>();var clips=model.GetComponent<Animation>();
@@ -230,5 +295,6 @@ namespace DigitalArena
     }
 }
 #endif
+
 
 

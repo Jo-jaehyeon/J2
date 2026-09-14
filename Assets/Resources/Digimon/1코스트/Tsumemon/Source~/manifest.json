@@ -1,0 +1,115 @@
+{
+  "vertices": 810,
+  "triangles": 1540,
+  "bones": 10,
+  "materials": [
+    {
+      "name": "Tsumemon_BlueSkin.002",
+      "color": [
+        0.38999998569488525,
+        0.46000000834465027,
+        0.699999988079071,
+        1.0
+      ]
+    },
+    {
+      "name": "Tsumemon_Black.002",
+      "color": [
+        0.017999999225139618,
+        0.019999999552965164,
+        0.029999999329447746,
+        1.0
+      ]
+    },
+    {
+      "name": "Tsumemon_Ruby.002",
+      "color": [
+        0.6700000166893005,
+        0.03500000014901161,
+        0.07999999821186066,
+        1.0
+      ]
+    },
+    {
+      "name": "Tsumemon_Rust.001",
+      "color": [
+        0.4300000071525574,
+        0.15000000596046448,
+        0.0949999988079071,
+        1.0
+      ]
+    },
+    {
+      "name": "Tsumemon_White.002",
+      "color": [
+        0.9800000190734863,
+        0.9800000190734863,
+        0.9599999785423279,
+        1.0
+      ]
+    },
+    {
+      "name": "Tsumemon_BlueLight.002",
+      "color": [
+        0.5799999833106995,
+        0.6299999952316284,
+        0.8600000143051147,
+        1.0
+      ]
+    },
+    {
+      "name": "Tsumemon_Ivory.002",
+      "color": [
+        0.9100000262260437,
+        0.9100000262260437,
+        0.7599999904632568,
+        1.0
+      ]
+    }
+  ],
+  "name": "Tsumemon",
+  "korean": "츠메몬",
+  "costFolder": "1코스트",
+  "targetHeight": 1.35,
+  "maxWidth": 1.55,
+  "maxDepth": 1.55,
+  "references": [
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\츠메몬_확대.png",
+      "sha256": "c3345a077118047b99d2656b5065164be02dd9159074fee89a8ff3302fee22b8"
+    }
+  ],
+  "previousReferences": [
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\츠메몬_확대.png",
+      "sha256": "c3345a077118047b99d2656b5065164be02dd9159074fee89a8ff3302fee22b8"
+    }
+  ],
+  "clips": [
+    {
+      "name": "Idle",
+      "firstFrame": 1,
+      "lastFrame": 49,
+      "loop": true
+    },
+    {
+      "name": "Walk",
+      "firstFrame": 60,
+      "lastFrame": 84,
+      "loop": true
+    },
+    {
+      "name": "Attack",
+      "firstFrame": 90,
+      "lastFrame": 108,
+      "loop": false
+    },
+    {
+      "name": "Death",
+      "firstFrame": 120,
+      "lastFrame": 150,
+      "loop": false
+    }
+  ],
+  "revision": "face-and-anatomy-2"
+}

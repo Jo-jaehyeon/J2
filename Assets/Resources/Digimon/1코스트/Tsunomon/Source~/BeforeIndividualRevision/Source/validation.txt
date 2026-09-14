@@ -1,0 +1,1 @@
+Tsunomon: PASS; triangles=21340; size=(0.75, 1.10, 0.61); 4 clips, loop seams, skin weights, materials verified

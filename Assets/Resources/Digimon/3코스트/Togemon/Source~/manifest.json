@@ -1,0 +1,124 @@
+{
+  "vertices": 47222,
+  "triangles": 92128,
+  "bones": 9,
+  "materials": [
+    {
+      "name": "Togemon_LeafBright",
+      "color": [
+        0.6299999952316284,
+        0.7699999809265137,
+        0.20000000298023224,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Togemon_Leaf.003",
+      "color": [
+        0.1899999976158142,
+        0.4300000071525574,
+        0.10000000149011612,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Togemon_Black.003",
+      "color": [
+        0.017999999225139618,
+        0.019999999552965164,
+        0.029999999329447746,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Togemon_SeedVein",
+      "color": [
+        0.38999998569488525,
+        0.46000000834465027,
+        0.11999999731779099,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Togemon_Ruby.003",
+      "color": [
+        0.6700000166893005,
+        0.03500000014901161,
+        0.07999999821186066,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Togemon_Rose.003",
+      "color": [
+        0.6499999761581421,
+        0.02500000037252903,
+        0.06499999761581421,
+        1.0
+      ],
+      "vertexColor": true
+    },
+    {
+      "name": "Togemon_Yellow.003",
+      "color": [
+        0.9800000190734863,
+        0.7799999713897705,
+        0.07500000298023224,
+        1.0
+      ],
+      "vertexColor": true
+    }
+  ],
+  "name": "Togemon",
+  "korean": "니드몬",
+  "costFolder": "3코스트",
+  "targetHeight": 1.9,
+  "maxWidth": 1.9,
+  "maxDepth": 1.7,
+  "clips": [
+    {
+      "name": "Idle",
+      "firstFrame": 1,
+      "lastFrame": 49,
+      "loop": true
+    },
+    {
+      "name": "Walk",
+      "firstFrame": 60,
+      "lastFrame": 84,
+      "loop": true
+    },
+    {
+      "name": "Attack",
+      "firstFrame": 90,
+      "lastFrame": 108,
+      "loop": false
+    },
+    {
+      "name": "Death",
+      "firstFrame": 120,
+      "lastFrame": 150,
+      "loop": false
+    }
+  ],
+  "references": [
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\confirm\\니드몬_뒤.png",
+      "sha256": "282ab762c48eb01cdeb27f5c46a7977cbf28879862b35dafa0f2ebfd4a160ba1"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\confirm\\니드몬_앞.png",
+      "sha256": "6c347eac6ffb4a541be8dfaf3db982c1e202241f9a0977ac7c8a6193f6af5227"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\confirm\\니드몬_옆.png",
+      "sha256": "de2594e4e27f0fe9ed99484c7b2c01127c5d56f2a2667cf1499d7fc5afb117cb"
+    }
+  ],
+  "revision": "individual-reference-rebuild"
+}

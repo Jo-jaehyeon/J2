@@ -1,0 +1,1 @@
+Gabumon: PASS; triangles=54116; size=(1.01, 1.65, 1.16); 4 clips, loop seams, skin weights, materials verified

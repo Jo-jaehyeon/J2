@@ -1,0 +1,1 @@
+Lillymon: PASS; triangles=116508; size=(1.25, 2.00, 0.46); 4 clips, loop seams, skin weights, materials verified

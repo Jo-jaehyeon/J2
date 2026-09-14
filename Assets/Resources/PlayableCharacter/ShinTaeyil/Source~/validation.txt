@@ -1,0 +1,1 @@
+ShinTaeyil: PASS; triangles=129668; size=(1.37, 1.80, 0.81); 4 clips, loop seams, skin weights, materials verified

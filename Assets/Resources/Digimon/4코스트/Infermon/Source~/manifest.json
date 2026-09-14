@@ -1,0 +1,142 @@
+{
+  "vertices": 2700,
+  "triangles": 5132,
+  "bones": 10,
+  "materials": [
+    {
+      "name": "Infermon_ShellWhite.002",
+      "color": [
+        0.8100000023841858,
+        0.8199999928474426,
+        0.8799999952316284,
+        1.0
+      ]
+    },
+    {
+      "name": "Infermon_RedMetal.002",
+      "color": [
+        0.47999998927116394,
+        0.10999999940395355,
+        0.10000000149011612,
+        1.0
+      ]
+    },
+    {
+      "name": "Infermon_Silver.002",
+      "color": [
+        0.5299999713897705,
+        0.5899999737739563,
+        0.6299999952316284,
+        1.0
+      ]
+    },
+    {
+      "name": "Infermon_Black.002",
+      "color": [
+        0.017999999225139618,
+        0.019999999552965164,
+        0.029999999329447746,
+        1.0
+      ]
+    },
+    {
+      "name": "Infermon_Green.002",
+      "color": [
+        0.10999999940395355,
+        0.6600000262260437,
+        0.10000000149011612,
+        1.0
+      ]
+    },
+    {
+      "name": "Infermon_Yellow.002",
+      "color": [
+        0.9800000190734863,
+        0.7799999713897705,
+        0.07500000298023224,
+        1.0
+      ]
+    },
+    {
+      "name": "Infermon_White.002",
+      "color": [
+        0.9800000190734863,
+        0.9800000190734863,
+        0.9599999785423279,
+        1.0
+      ]
+    },
+    {
+      "name": "Infermon_Rust.002",
+      "color": [
+        0.4300000071525574,
+        0.15000000596046448,
+        0.0949999988079071,
+        1.0
+      ]
+    },
+    {
+      "name": "Infermon_Gold.002",
+      "color": [
+        0.8299999833106995,
+        0.6600000262260437,
+        0.17000000178813934,
+        1.0
+      ]
+    },
+    {
+      "name": "Infermon_SteelDark.002",
+      "color": [
+        0.2199999988079071,
+        0.27000001072883606,
+        0.3100000023841858,
+        1.0
+      ]
+    }
+  ],
+  "name": "Infermon",
+  "korean": "인펠몬",
+  "costFolder": "4코스트",
+  "targetHeight": 1.55,
+  "maxWidth": 2.1,
+  "maxDepth": 2.15,
+  "references": [
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\인펠몬_확대.png",
+      "sha256": "2d717be34161f7121557931e5bf35693aa66e4b2e0bd86918a2756e95bcc8533"
+    }
+  ],
+  "previousReferences": [
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\ready\\인펠몬_확대.png",
+      "sha256": "2d717be34161f7121557931e5bf35693aa66e4b2e0bd86918a2756e95bcc8533"
+    }
+  ],
+  "clips": [
+    {
+      "name": "Idle",
+      "firstFrame": 1,
+      "lastFrame": 49,
+      "loop": true
+    },
+    {
+      "name": "Walk",
+      "firstFrame": 60,
+      "lastFrame": 84,
+      "loop": true
+    },
+    {
+      "name": "Attack",
+      "firstFrame": 90,
+      "lastFrame": 108,
+      "loop": false
+    },
+    {
+      "name": "Death",
+      "firstFrame": 120,
+      "lastFrame": 150,
+      "loop": false
+    }
+  ],
+  "revision": "face-and-anatomy-2"
+}

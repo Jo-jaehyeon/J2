@@ -28,7 +28,7 @@ public sealed class DigimonTableEditor : EditorWindow
     void OnGUI()
     {
         EditorGUILayout.LabelField("디지몬 등록 · 아군 "+data.allies.Length+"종 / 크립 "+data.enemies.Length+"종",EditorStyles.boldLabel);
-        EditorGUILayout.HelpBox("추가 → 설정 → 저장 → 게임 재시작. 프리팹을 만들기만 해서는 자동 등록되지 않습니다. 같은 진화 단계의 기물은 균등 추첨하며 진화 단계별 재고를 공유합니다.",MessageType.Info);
+        EditorGUILayout.HelpBox("추가 → 설정 → 저장 → 게임 재시작. 같은 코스트의 기물은 균등 추첨하며 코스트별 재고를 공유합니다. 동일 기물·동일 별 3개로 별을 강화합니다.",MessageType.Info);
         int newSide=GUILayout.Toolbar(side,new[]{"플레이어","크립"});if(newSide!=side){side=newSide;selected=0;}
         EditorGUILayout.BeginHorizontal();
         if(GUILayout.Button("새 기물 추가")) Add(false);
@@ -42,11 +42,12 @@ public sealed class DigimonTableEditor : EditorWindow
         row.name=EditorGUILayout.TextField("이름",row.name);
         if(side==0)
         {
-            row.cost=EditorGUILayout.Popup("진화 단계",row.cost,new[]{"합성 전용 (외형 단계 기준)","유년기", "성장기", "성숙기", "완전체", "궁극체"});
-            EditorGUILayout.LabelField("구매 / 판매 골드",ArenaRules.PurchasePrice(row)+" / "+ArenaRules.SalePrice(row));
+            row.cost=EditorGUILayout.Popup("코스트",row.cost-1,ArenaRules.CostNames)+1;
+            EditorGUILayout.LabelField("구매 / 1성 판매 골드",ArenaRules.PurchasePrice(row)+" / "+ArenaRules.SalePrice(row));
+            EditorGUILayout.LabelField("2성 / 3성 판매 골드",ArenaRules.SalePrice(row,2)+" / "+ArenaRules.SalePrice(row,3));
             var targets=data.allies.Where(d=>d.id!=row.id).ToArray();
             int target=Array.FindIndex(targets,d=>d.id==row.evolvesTo)+1;
-            int next=EditorGUILayout.Popup("3개 합성 → 진화 대상",target,new[]{"없음"}.Concat(targets.Select(d=>d.name+" ["+d.id+"]")).ToArray());
+            int next=EditorGUILayout.Popup("진화 경로 (증강·아이템용 보존)",target,new[]{"없음"}.Concat(targets.Select(d=>d.name+" ["+d.id+"]")).ToArray());
             if(next!=target) row.evolvesTo=next==0?"":targets[next-1].id;
         }
         else row.startStage=EditorGUILayout.IntField("등장 시작 스테이지",row.startStage);
@@ -69,7 +70,10 @@ public sealed class DigimonTableEditor : EditorWindow
         row.ATK=EditorGUILayout.FloatField("ATK",row.ATK);row.DEF=EditorGUILayout.FloatField("DEF",row.DEF);
         row.INT=EditorGUILayout.FloatField("INT",row.INT);row.SPD=EditorGUILayout.FloatField("SPD (칸/초)",row.SPD);
         row.range=EditorGUILayout.IntSlider("기본 공격 사거리 (칸)",row.range,1,4);
-        row.attack=(AttackKind)EditorGUILayout.Popup("공격 타입",(int)row.attack,new[]{"물리형","특수형"});
+        EditorGUILayout.BeginHorizontal();
+        row.attack=(AttackKind)EditorGUILayout.Popup("공격 구분",(int)row.attack,new[]{"물리형","특수형"});
+        row.role=(DigimonRole)(EditorGUILayout.Popup("역할군",(int)row.role+1,DigimonCatalog.RoleNames)-1);
+        EditorGUILayout.EndHorizontal();
         row.type=(DigimonType)EditorGUILayout.Popup("타입",(int)row.type,DigimonCatalog.TypeNames);
         row.element=(DigimonElement)EditorGUILayout.Popup("속성",(int)row.element,DigimonCatalog.ElementNames);
         row.spPerAttack=EditorGUILayout.FloatField("기본 공격당 SP",row.spPerAttack);

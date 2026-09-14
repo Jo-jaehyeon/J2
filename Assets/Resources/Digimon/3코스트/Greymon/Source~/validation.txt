@@ -1,0 +1,1 @@
+Greymon: PASS; triangles=3958; size=(1.19, 2.05, 1.91); 4 clips, loop seams, skin weights, materials verified

@@ -26,13 +26,30 @@ public static class DigitalArenaValidation
         ArenaRules Game(int tier=0,int count=60) { var r=new ArenaRules(100,TierBalance(tier,count),BaseCatalog());r.BeginRound();return r; }
         void Round(ArenaRules r,bool won=true,int survivors=0) { r.StartBattle();r.ResolveBattle(won,survivors);r.BeginRound(); }
         var game=Game();
+        var auto=Game();
+        auto.Pieces.Add(new ArenaRules.Piece{Id=100,Tier=0,BenchSlot=8});
+        auto.Pieces.Add(new ArenaRules.Piece{Id=101,Tier=0,BenchSlot=2});
+        auto.StartBattle();
+        Check(auto.Pieces[1].Cell==0&&auto.Pieces[0].Cell==-1,"battle fills limit from leftmost bench slot, not purchase order");
+        auto.StartBattle();Check(auto.Pieces.Count(p=>p.Cell>=0)==1,"repeated battle start cannot overdeploy");
+        var autoMulti=Game();for(int i=0;i<10;i++) Round(autoMulti);
+        autoMulti.Pieces.Add(new ArenaRules.Piece{Id=100,Tier=0,Cell=0});
+        autoMulti.Pieces.Add(new ArenaRules.Piece{Id=101,Tier=0,BenchSlot=9});
+        autoMulti.Pieces.Add(new ArenaRules.Piece{Id=102,Tier=0,BenchSlot=4});
+        autoMulti.Pieces.Add(new ArenaRules.Piece{Id=103,Tier=0,BenchSlot=1});
+        autoMulti.StartBattle();
+        Check(autoMulti.Pieces[0].Cell==0&&autoMulti.Pieces[3].Cell==1&&autoMulti.Pieces[2].Cell==2&&autoMulti.Pieces[1].Cell==-1,"fills remaining slots in bench order without moving deployed units");
+        var autoSparse=Game();for(int i=0;i<10;i++) Round(autoSparse);
+        autoSparse.Pieces.Add(new ArenaRules.Piece{Id=100,Tier=0,BenchSlot=9});autoSparse.StartBattle();
+        Check(autoSparse.Pieces[0].Cell==0,"partial bench deploys available piece only");
+        var autoEmpty=Game();autoEmpty.StartBattle();Check(!autoEmpty.Preparing&&autoEmpty.Pieces.Count==0,"empty bench still starts battle");
         Check(game.Health==100 && game.Level==1 && game.Gold==2,"initial health, level and income");
         game.BeginRound();Check(game.Round==1 && game.Gold==2,"duplicate income blocked");
         Round(game);
         for(int i=0;i<5;i++) Check(game.Buy(i),"purchase candidate "+i);
         Check(game.PurchaseCount==5 && game.Gold==0,"all five candidates can be purchased");
         Check(!game.Buy(0) && !game.Buy(5),"sold slot and sixth purchase blocked");
-        Check(game.Pieces.Count==3 && game.Pieces.Count(p=>p.Tier==1)==1,"automatic three-copy evolution");
+        Check(game.Pieces.Count==3 && game.Pieces.Count(p=>p.Stars==2)==1,"automatic same-unit star upgrade");
         Check(game.Pieces.Select(p=>p.BenchSlot).Distinct().Count()==game.Pieces.Count,"merge retains unique bench slots");
         var p=game.Pieces[0];var q=game.Pieces[1];int oldP=p.BenchSlot,oldQ=q.BenchSlot;
         Check(game.MoveToBench(p.Id,oldQ) && q.BenchSlot==oldP && p.BenchSlot==oldQ,"bench slot swap");
@@ -71,14 +88,37 @@ public static class DigitalArenaValidation
         stock.Buy(0);stock.Buy(1);Round(stock);
         Check(stock.Offers.All(t=>t==-1),"exhausted pool stays empty");
         var empty=Game(0,0);Check(empty.Offers.All(t=>t==-1) && !empty.Buy(0),"zero inventory safe");
+        var reroll=Game(0,5);
+        Check(reroll.CanReroll&&reroll.Reroll()&&reroll.Gold==0,"reroll costs exactly two gold");
+        Check(reroll.Offers.All(t=>t==0)&&reroll.RemainingPool[0]==0,"reroll returns all reservations before drawing from exhausted pool");
+        var oldOffers=(int[])reroll.Offers.Clone();var oldStock=(int[])reroll.RemainingPool.Clone();
+        Check(!reroll.CanReroll&&!reroll.Reroll()&&reroll.Gold==0&&reroll.Offers.SequenceEqual(oldOffers)&&reroll.RemainingPool.SequenceEqual(oldStock),"unaffordable reroll is atomic");
+        Round(reroll);Check(reroll.Buy(0),"purchase before reroll");
+        var keptPiece=reroll.Pieces.Single();int rerollRound=reroll.Round,rerollXp=reroll.Xp;
+        Check(reroll.Reroll()&&reroll.Pieces.Single()==keptPiece&&reroll.Round==rerollRound&&reroll.Xp==rerollXp,"reroll preserves owned pieces and progression");
+        Check(reroll.PurchaseCount==0&&reroll.Offers.Count(t=>t==0)==4&&reroll.RemainingPool[0]==0,"purchased slot resets without returning owned stock");
+        Round(reroll);Check(reroll.Reroll()&&reroll.Buy(0),"replacement offers remain purchasable");
+        oldOffers=(int[])reroll.Offers.Clone();oldStock=(int[])reroll.RemainingPool.Clone();int rerollGold=reroll.Gold;
+        reroll.StartBattle();Check(!reroll.CanReroll&&!reroll.Reroll()&&reroll.Gold==rerollGold&&reroll.Offers.SequenceEqual(oldOffers)&&reroll.RemainingPool.SequenceEqual(oldStock),"combat blocks reroll without mutation");
+        var repeatReroll=Game();while(repeatReroll.Gold<20) Round(repeatReroll);
+        int repeatGold=repeatReroll.Gold;oldStock=(int[])repeatReroll.RemainingPool.Clone();
+        for(int i=0;i<5;i++) Check(repeatReroll.Reroll(),"repeated preparation reroll");
+        Check(repeatReroll.Gold==repeatGold-10&&repeatReroll.RemainingPool.SequenceEqual(oldStock),"repeated rerolls charge each time and conserve pool");
+        var allBought=Game();while(allBought.Gold<7) Round(allBought);
+        for(int i=0;i<5;i++) Check(allBought.Buy(i),"buy all offers before reroll");
+        Check(allBought.Reroll()&&allBought.PurchaseCount==0&&allBought.Offers.All(t=>t>=0)&&allBought.Buy(0),"reroll refills all bought slots and allows more than five purchases per round");
+        var emptyReroll=Game(0,0);Check(emptyReroll.Reroll()&&emptyReroll.Gold==0&&emptyReroll.Offers.All(t=>t<0),"empty pool reroll stays safe");
+        var newLevelBalance=TierBalance(0);newLevelBalance.levels[0].requiredXp=2;newLevelBalance.levels[1].weights=new[]{0,100,0,0,0};
+        var currentLevelReroll=new ArenaRules(7,newLevelBalance,BaseCatalog());currentLevelReroll.BeginRound();
+        Round(currentLevelReroll);Check(currentLevelReroll.Level==2&&currentLevelReroll.Reroll()&&currentLevelReroll.Offers.All(t=>t==1),"reroll uses current level probabilities");
         var settings=new ArenaBalance();Check(settings.Validate()==null,"default data table");
         settings.levels[0].weights[0]++;Check(settings.Validate()!=null,"invalid probability sum rejected");
         settings=new ArenaBalance();settings.poolCounts[0]=-1;Check(settings.Validate()!=null,"negative stock rejected");
-        var shop=Game(4);while(shop.Gold<81) Round(shop);Check(shop.Buy(0),"expensive purchase");Check(!shop.Buy(1)&&!shop.Bought[1],"insufficient gold does not consume candidate");
+        var shop=Game(4);while(shop.Gold<5) Round(shop);Check(shop.Buy(0),"expensive purchase");Check(!shop.Buy(1)&&!shop.Bought[1],"insufficient gold does not consume candidate");
         var merge=Game(2);while(merge.Gold<9) Round(merge);merge.Pieces.Add(new ArenaRules.Piece{Id=10,Tier=2,Cell=31});
         merge.Pieces.Add(new ArenaRules.Piece{Id=11,Tier=2,BenchSlot=0});
-        for(int tier=3;tier<=3;tier++)for(int i=0;i<2;i++)merge.Pieces.Add(new ArenaRules.Piece{Id=20+tier*2+i,Tier=tier,BenchSlot=1+(tier-3)*2+i});
-        Check(merge.Buy(0)&&merge.Pieces.Count==1&&merge.Pieces[0].Tier==4&&merge.Pieces[0].Cell==31,"chain to WarGreymon preserves cell 31");
+        for(int tier=3;tier<=3;tier++)for(int i=0;i<2;i++)merge.Pieces.Add(new ArenaRules.Piece{Id=20+tier*2+i,Tier=2,Stars=2,BenchSlot=1+(tier-3)*2+i});
+        Check(merge.Buy(0)&&merge.Pieces.Count==1&&merge.Pieces[0].Tier==2&&merge.Pieces[0].Stars==3&&merge.Pieces[0].Cell==31,"chain to three stars preserves species and cell 31");
         var full=Game();for(int i=0;i<10;i++) full.Pieces.Add(new ArenaRules.Piece{Id=100+i,Tier=1+i%4,BenchSlot=i});
         Check(!full.Buy(0)&&full.Gold==2&&!full.Bought[0],"full bench rejects purchase atomically");
         full.Pieces[0].Tier=full.Pieces[1].Tier=0;Check(full.Buy(0),"full bench permits instant merge");
@@ -103,7 +143,7 @@ public static class DigitalArenaValidation
         Round(income);Check(income.Stage==2&&income.LastIncome-income.LastInterest==5,"round nine starts stage two income");
         while(income.Gold<100) Round(income);
         Check(income.LastInterest==5&&income.LastIncome+income.LastVictoryGold+income.LastStreakGold==12,"income cap twelve with capped interest and streak");
-        int[] salePrices={1,2,6,18,54};
+        int[] salePrices={1,2,3,4,5};
         for(int stage=0;stage<5;stage++)
         {
             var sale=Game(stage);while(sale.Gold<ArenaRules.Costs[stage]) Round(sale);
@@ -114,6 +154,42 @@ public static class DigitalArenaValidation
         }
         var lockedSale=Game();lockedSale.Buy(0);int lockedId=lockedSale.Pieces[0].Id;lockedSale.StartBattle();
         Check(!lockedSale.Sell(lockedId)&&lockedSale.Pieces.Count==1,"combat sale rejected");
+        for(int cost=1;cost<=5;cost++)
+        {
+            var starsGame=Game(cost-1,100);
+            int purchased=0;
+            while(purchased<27)
+            {
+                for(int slot=0;slot<5&&purchased<27;slot++) if(starsGame.Buy(slot)) purchased++;
+                if(purchased<27) Round(starsGame);
+            }
+            Check(starsGame.Pieces.Count==3&&starsGame.Pieces.All(item=>item.Stars==3&&item.Tier==cost-1),"three stars never merge or evolve");
+            Check(starsGame.Pieces.All(item=>item.InvestedGold==9*cost),"chain carries full investment");
+            Check(starsGame.RemainingPool[cost-1]+starsGame.Offers.Where((offer,index)=>offer>=0&&!starsGame.Bought[index]).Count()+27==100,"merging conserves reserved and owned stock");
+            int beforeStock=starsGame.RemainingPool[cost-1],beforeGold=starsGame.Gold;
+            var item=starsGame.Pieces[0];
+            Check(starsGame.SalePrice(item)==9*cost-(cost-1),"three star sale formula");
+            Check(starsGame.Sell(item.Id)&&starsGame.Gold==beforeGold+9*cost-(cost-1)&&starsGame.RemainingPool[cost-1]==beforeStock+9,"selling three stars returns nine originals and correct gold");
+            for(int stars=1;stars<=3;stars++)
+            {
+                int n=cost*ArenaRules.OriginalCopies(stars);
+                Check(ArenaRules.SalePrice(starsGame.Catalog.allies[cost-1],stars)==n-(stars==1?0:cost-1),"all fifteen cost/star sale combinations");
+                Check(ArenaRules.SalePrice(starsGame.Catalog.allies[cost-1],stars,n+7)==n+7-(stars==1?0:cost-1),"sale includes additional invested merge cost");
+            }
+        }
+        var mixed=Game();
+        for(int i=0;i<10;i++) mixed.Pieces.Add(new ArenaRules.Piece{Id=100+i,Tier=i<2?0:1,Stars=i==0?1:2,BenchSlot=i});
+        Check(!mixed.Buy(0)&&mixed.Gold==2&&!mixed.Bought[0],"full bench cannot merge different stars");
+        var starBattle=Game();starBattle.Buy(0);starBattle.Pieces[0].Stars=3;starBattle.AutoDeploy(starBattle.Pieces[0].Id);starBattle.StartBattle();
+        Check(new ArenaBattle(starBattle).Fighters.Single(f=>!f.Enemy).Stars==3,"battle retains stars for inspection UI");
+        var roles=BaseCatalog();
+        foreach(DigimonRole role in Enum.GetValues(typeof(DigimonRole)))
+        {
+            roles.allies[0].role=role;
+            Check(roles.Validate()==null&&roles.Copy().allies[0].role==role,"role validates and survives catalog copy");
+        }
+        roles.allies[0].role=(DigimonRole)99;Check(roles.Validate()!=null,"invalid role rejected");
+        Check((int)DigimonType.NoData==5&&DigimonCatalog.TypeNames[5]=="NoData","NoData preserves serialized numeric value");
         var expanded=BaseCatalog();
         var newcomer=expanded.allies[0].Copy();newcomer.id="new_ally";newcomer.name="New ally";newcomer.evolvesTo="ally_1";
         var newEnemy=expanded.enemies[0].Copy();newEnemy.id="new_enemy";newEnemy.name="New enemy";newEnemy.startStage=9;
@@ -129,7 +205,7 @@ public static class DigitalArenaValidation
         Check(found.SetEquals(new[]{0,5}),"both existing and added units drawn at shared cost");
         var addedGame=new ArenaRules(8,TierBalance(0),expanded);addedGame.BeginRound();Round(addedGame);
         for(int i=0;i<3;i++) { addedGame.Offers[i]=5;Check(addedGame.Buy(i),"purchase added unit"); }
-        Check(addedGame.Pieces.Count==1&&addedGame.Pieces[0].Tier==0,"ID evolution supports lower array index");
+        Check(addedGame.Pieces.Count==1&&addedGame.Pieces[0].Tier==5&&addedGame.Pieces[0].Stars==2,"merge preserves species regardless of evolution target index");
         Round(addedGame);Check(addedGame.RemainingPool[0]==52,"shared cost reservations returned");
         var reordered=expanded.Copy();Array.Reverse(reordered.allies);
         Check(reordered.allies[reordered.Evolution(0)].id=="ally_1","evolution reference survives reorder");
@@ -149,11 +225,11 @@ public static class DigitalArenaValidation
             {
                 Check(lineage.allies[stage].cost==stage+1,"stage cost");
                 Check(lineage.Evolution(stage)==(stage<4?stage+1:-1),"lineage evolution target");
-                if(stage==4) continue;
+
                 var evolving=new ArenaRules(7,TierBalance(stage),lineage);evolving.BeginRound();while(evolving.Gold<ArenaRules.Costs[stage]) Round(evolving);
                 evolving.Pieces.Add(new ArenaRules.Piece{Id=100,Tier=stage,Cell=31});
                 evolving.Pieces.Add(new ArenaRules.Piece{Id=101,Tier=stage,BenchSlot=0});
-                Check(evolving.Buy(0)&&evolving.Pieces.Count==1&&evolving.Pieces[0].Tier==stage+1&&evolving.Pieces[0].Cell==31,"each new stage merges on board");
+                Check(evolving.Buy(0)&&evolving.Pieces.Count==1&&evolving.Pieces[0].Tier==stage&&evolving.Pieces[0].Stars==2&&evolving.Pieces[0].Cell==31,"every cost upgrades stars on board including final evolution");
             }
         }
         var seenUnits=new System.Collections.Generic.HashSet<int>();

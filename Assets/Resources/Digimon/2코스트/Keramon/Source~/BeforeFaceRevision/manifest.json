@@ -1,0 +1,143 @@
+{
+  "vertices": 3114,
+  "triangles": 5896,
+  "bones": 17,
+  "materials": [
+    {
+      "name": "Keramon_BlueLight",
+      "color": [
+        0.5799999833106995,
+        0.6299999952316284,
+        0.8600000143051147,
+        1.0
+      ]
+    },
+    {
+      "name": "Keramon_Mouth",
+      "color": [
+        0.25,
+        0.02500000037252903,
+        0.04500000178813934,
+        1.0
+      ]
+    },
+    {
+      "name": "Keramon_Ivory",
+      "color": [
+        0.9100000262260437,
+        0.9100000262260437,
+        0.7599999904632568,
+        1.0
+      ]
+    },
+    {
+      "name": "Keramon_Black",
+      "color": [
+        0.017999999225139618,
+        0.019999999552965164,
+        0.029999999329447746,
+        1.0
+      ]
+    },
+    {
+      "name": "Keramon_Green",
+      "color": [
+        0.10999999940395355,
+        0.6600000262260437,
+        0.10000000149011612,
+        1.0
+      ]
+    },
+    {
+      "name": "Keramon_White",
+      "color": [
+        0.9800000190734863,
+        0.9800000190734863,
+        0.9599999785423279,
+        1.0
+      ]
+    },
+    {
+      "name": "Keramon_Rust",
+      "color": [
+        0.4300000071525574,
+        0.15000000596046448,
+        0.0949999988079071,
+        1.0
+      ]
+    },
+    {
+      "name": "Keramon_BlueSkin",
+      "color": [
+        0.38999998569488525,
+        0.46000000834465027,
+        0.699999988079071,
+        1.0
+      ]
+    },
+    {
+      "name": "Keramon_Yellow",
+      "color": [
+        0.9800000190734863,
+        0.7799999713897705,
+        0.07500000298023224,
+        1.0
+      ]
+    },
+    {
+      "name": "Keramon_HairRed",
+      "color": [
+        0.8399999737739563,
+        0.14000000059604645,
+        0.04500000178813934,
+        1.0
+      ]
+    }
+  ],
+  "name": "Keramon",
+  "korean": "케라몬",
+  "costFolder": "2코스트",
+  "targetHeight": 1.85,
+  "maxWidth": 1.65,
+  "maxDepth": 1.6,
+  "references": [
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\케라몬_앞.png",
+      "sha256": "fc02deb9ba832889c31be5ab3e0746ce238d5fb112321d6c63f03a7a43d7f1b1"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\케라몬_옆.png",
+      "sha256": "20f7e1a8a991b103b31c1668dfede7183bf4c41d462a5d7e8634e0e9d9b289c8"
+    },
+    {
+      "path": "C:\\Users\\User\\Desktop\\J2_AssetImage\\케라몬_뒤.png",
+      "sha256": "6e90df658615a655ce3e6ea06836cd77819bf43698ed0c03ecc84182af02b3f2"
+    }
+  ],
+  "clips": [
+    {
+      "name": "Idle",
+      "firstFrame": 1,
+      "lastFrame": 49,
+      "loop": true
+    },
+    {
+      "name": "Walk",
+      "firstFrame": 60,
+      "lastFrame": 84,
+      "loop": true
+    },
+    {
+      "name": "Attack",
+      "firstFrame": 90,
+      "lastFrame": 108,
+      "loop": false
+    },
+    {
+      "name": "Death",
+      "firstFrame": 120,
+      "lastFrame": 150,
+      "loop": false
+    }
+  ]
+}

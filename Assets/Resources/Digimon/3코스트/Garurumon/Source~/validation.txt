@@ -1,0 +1,1 @@
+Garurumon: PASS; triangles=90404; size=(0.87, 1.57, 2.30); 4 clips, loop seams, skin weights, materials verified

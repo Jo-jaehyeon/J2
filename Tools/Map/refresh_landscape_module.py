@@ -1,0 +1,2 @@
+from pathlib import Path
+p=Path('Tools/Map/build_multiplayer_map.py');s=p.read_text(encoding='utf-8');s=s.replace('from lake_landscape import ENV_PALETTE, build_environment','import importlib, lake_landscape\nimportlib.reload(lake_landscape)\nfrom lake_landscape import ENV_PALETTE, build_environment');s=s.replace('DragonEyeMultiplayerLandscape.blend','DragonEyeMultiplayerLandscapeFinal.blend');p.write_text(s,encoding='utf-8')

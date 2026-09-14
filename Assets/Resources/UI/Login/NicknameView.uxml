@@ -1,0 +1,17 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="nicknameScreen" class="nickname-screen">
+        <ui:Label text="DigiTactics" class="game-title" />
+        <ui:Label text="디지털 월드에서 시작되는 나만의 전술" class="game-subtitle" />
+        <ui:VisualElement class="nickname-panel">
+            <ui:Label text="닉네임 설정" class="panel-title" />
+            <ui:Button name="changeAccount" text="계정 변경" class="change-account" />
+            <ui:Label text="한글·영문·숫자·밑줄 2~12자 · 영문 대소문자 중복 불가" class="nickname-help" />
+            <ui:VisualElement class="nickname-row">
+                <ui:TextField name="nickname" max-length="12" class="nickname-input" />
+                <ui:Button name="checkNickname" text="중복 확인" class="check-nickname" />
+            </ui:VisualElement>
+            <ui:Label name="nicknameMessage" class="nickname-message" />
+            <ui:Button name="confirmNickname" text="닉네임 확정 · 시작하기" class="confirm-nickname" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

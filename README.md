@@ -4,9 +4,9 @@
 
 코스트·별 이관 검증: 규칙 검사 **39,608개**, 전체 Editor 코드 컴파일, Unity Windows 빌드 및 별·역할군·프리팹 로딩 기능 검사를 수행합니다. 개별 역할 배정과 별별 능력치 배율은 미정이므로 기존 전투 수치를 유지합니다. `-arena-stars-smoke`로 관련 실행 검사를 재현할 수 있습니다. UI 화면 캡처는 보이는 플레이어에서 `-arena-stars-capture`를 함께 지정해야 합니다.
 
-Unity **6000.6.0f1**에서 `Assets/Scenes/DragonEyeLake.unity`를 열고 **Play**를 누르세요. 권장 비율은 16:9 또는 16:10입니다. 별도 서버나 아트 다운로드는 필요 없습니다.
+Unity **6000.6.0f1**에서 `Assets/Scenes/DragonEyeLake.unity`를 열고 **Play**를 누르세요. 권장 비율은 16:9 또는 16:10입니다. 아트는 포함되어 있으며, 로그인에는 [계정 서버와 제공자 앱 설정](Docs/Account-Setup.md)이 필요합니다.
 
-처음에는 **DigiTactics 메인 화면**이 열립니다. **싱글 플레이**를 눌러야 라운드와 수입·타이머가 시작됩니다. **멀티 플레이**는 TODO 안내만 표시하며 아직 세션을 만들지 않습니다. 생성한 디지털 월드 배경은 `Assets/Resources/UI/DigiTacticsMainBackground.png`에 있으며, 사용 도구와 전체 프롬프트는 `Docs/MainMenuBackground.md`에 기록했습니다.
+처음에는 **DigiTactics 로그인 화면**이 열립니다. 외부 계정 로그인과 최초 닉네임 설정 후 **싱글 플레이**를 눌러야 라운드와 수입·타이머가 시작됩니다. **멀티 플레이**는 TODO 안내만 표시하며 아직 세션을 만들지 않습니다. 생성한 디지털 월드 배경은 `Assets/Resources/UI/DigiTacticsMainBackground.png`에 있으며, 사용 도구와 전체 프롬프트는 `Docs/MainMenuBackground.md`에 기록했습니다.
 
 칸 기반 AI·메인 화면 검증: 규칙 검사 **37,566개**, Windows 플레이어 검사 **83개 통과**. 로그는 `Logs/grid-menu-build.log`, `Logs/grid-menu-runtime.log`입니다. UI 전체의 수동 시각 검수는 포함하지 않았습니다.
 
@@ -95,7 +95,8 @@ Unity 메뉴 **Digital Arena > Balance Table**에서 다음 항목을 수정하�
 - `ArenaBalance.cs` / `ArenaBalanceEditor.cs`: 데이터 테이블과 유효성 검사.
 - `ArenaTrain.cs` / `ArenaBattle.cs`: 기차의 라운드 주기, 장애물 우회와 공격 차단, 자동 전투.
 - `ArenaWorld3D.cs` / `ArenaSolid.shader`: 호수·전차·입체 기물·초상화와 카메라. Built-in 렌더링 사용.
-- `DigitalArenaGame.cs`: 타이머, 상점 패널, 마우스 조작, 체력과 게임 종료 UI.
+- `DigitalArenaGame.cs`: 타이머, 상점 패널, 체력과 게임 종료 UI 구성. `DigitalArenaGame.Mouse.cs` / `.Mobile.cs`에서 전장 입력 처리.
+- `ArenaGameUi.cs`: UI Toolkit의 유지형 Label·Button·Image를 재사용하는 화면 렌더러. 스타일은 `Assets/Resources/UI/Arena`, 닉네임 입력은 `Assets/Resources/UI/Login`에서 관리.
 
 `Tools/Verify-Arena.ps1` 또는 Unity 메뉴 `Digital Arena > Validate Prototype Rules`로 규칙을 검증할 수 있습니다. 전차 관통 방지, 재등장 주기, 5개 구매, 재고 반환·소진, 대기석 교환, 32칸 경계, 체력·XP·진화를 포함합니다.
 
@@ -119,3 +120,12 @@ Unity 메뉴 **Digital Arena > Balance Table**에서 다음 항목을 수정하�
 
 
 
+## 계정 로그인
+
+게임 시작 시 Google·네이버·카카오 로그인 후 최초 닉네임을 설정하고 싱글/멀티 선택으로 진입합니다. Python 로그인 서버는 `C:\Jerry\CPP_Server\J2_Server\LoginServer` 하위 프로젝트에 있고 계정은 로컬 MySQL의 J2 DB에 저장됩니다. Unity Editor → 로그인 서버는 HTTP 8787번, 로그인 서버 → MySQL은 3306번 포트를 사용합니다. **실제 외부 로그인을 사용하려면 제공자 앱 키와 콜백 설정이 필요합니다.** [계정 설정 안내](Docs/Account-Setup.md)를 확인하세요.
+
+## 게임 UI
+
+로그인·메인 메뉴·타이머·플레이어 정보·골드/XP·상점·기물 이름/체력/SP·상세창·판매·전투 결과·도움말·게임 종료 화면은 UI Toolkit으로 표시합니다. 기존 1440×900 기준 배치와 안전 영역 비율을 유지하고, 패널 배율에 맞춰 텍스트를 렌더링합니다. 버튼은 UI Toolkit 포인터 이벤트, 전장 마우스/터치 동작은 Input System으로 처리합니다.
+
+Play 모드에서 `Tools/Verification/VerifyArenaUi.cs`는 UI 포인터 조작 31개 항목, `VerifyArenaMouse.cs`는 마우스 입력 어댑터, `VerifyMobile.cs`와 `VerifyMobileDevice.cs`는 전장 터치 동작을 검증합니다. `VerifyArenaTouchUi.cs`는 가상 Touchscreen에서 UI Toolkit까지의 입력 전달과 중복 클릭 방지를 검증합니다. 비동기 UI 검사는 Game 뷰가 표시된 상태에서 실행하고 Console의 `ARENA UI PASS` / `ARENA TOUCH UI PASS`를 확인합니다. 테스트는 임시 게임 상태만 사용하며 실기기 터치·OS 한글 IME의 직접 입력 검증은 별도입니다.

@@ -8,8 +8,8 @@ namespace DigitalArena
     public sealed partial class DigitalArenaGame
     {
         int touchFinger = -1, suppressMouseUntilFrame = -1;
-        bool touchCancelled, touchStartedOverUi, touchMoved, pendingUiTap, usedTouch;
-        Vector2 touchStart, uiTapStart, uiTapEnd;
+        bool touchCancelled, touchStartedOverUi, touchMoved, usedTouch;
+        Vector2 touchStart;
         ArenaWorld3D.UnitView touchedUnit;
         Rect touchSafeArea;
         bool TouchControls => Application.isMobilePlatform || usedTouch;
@@ -87,7 +87,7 @@ namespace DigitalArena
             MoveTouch(point);
             if (touchStartedOverUi)
             {
-                if (!touchMoved) { uiTapStart = touchStart; uiTapEnd = point; pendingUiTap = true; }
+                // UI Toolkit owns the complete pointer gesture for UI controls.
                 return;
             }
             if (dragId >= 0) { HandlePointer(EventType.MouseUp, 0, 1, point); return; }
@@ -106,17 +106,5 @@ namespace DigitalArena
             }
         }
 
-        bool TouchButton(Rect rect)
-        {
-            if (!pendingUiTap || !GUI.enabled || Event.current.type != EventType.Repaint ||
-                !rect.Contains(uiTapStart) || !rect.Contains(uiTapEnd)) return false;
-            pendingUiTap = false;
-            return true;
-        }
-
-        void FinishTouchGui()
-        {
-            if (Event.current.type == EventType.Repaint) pendingUiTap = false;
-        }
     }
 }

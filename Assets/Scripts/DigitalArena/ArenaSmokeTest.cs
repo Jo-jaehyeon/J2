@@ -28,6 +28,13 @@ namespace DigitalArena
         T Field<T>(string name) => (T)typeof(DigitalArenaGame).GetField(name,Flags).GetValue(game);
         void Set(string name,object value) => typeof(DigitalArenaGame).GetField(name,Flags).SetValue(game,value);
         void Call(string name) => typeof(DigitalArenaGame).GetMethod(name,Flags).Invoke(game,null);
+        void SetAccountFixture()
+        {
+            // Explicit opt-in smoke test only; no runtime fake-login endpoint or release bypass.
+            var client = Field<ArenaAccountClient>("account");
+            typeof(ArenaAccountClient).GetProperty("Profile").GetSetMethod(true).Invoke(client,
+                new object[] { new ArenaAccountProfile { playerId="smoke-only",nickname="검증테이머",mmr=1000,ownedCharacterIds=new string[0] } });
+        }
         void Pointer(EventType type, Vector2 screen, int clicks=1, int button=0)
         {
             Vector2 mouse=(screen-Field<Vector2>("uiOffset"))/Field<float>("uiScale");
@@ -72,6 +79,7 @@ namespace DigitalArena
         }
         IEnumerator StarSmoke()
         {
+            SetAccountFixture();
             Call("StartSinglePlayer");
             var original=Field<ArenaRules>("rules");
             foreach(var data in original.Catalog.allies.Concat(original.Catalog.enemies))
@@ -122,6 +130,9 @@ namespace DigitalArena
             Check(game!=null,"game bootstraps");
             Check(Field<bool>("mainMenu")&&Field<ArenaRules>("rules")==null,"boot stays on main menu without round income");
             Check(Resources.Load<Texture2D>("UI/DigiTacticsMainBackground")!=null,"generated main background bundled");
+            Call("StartSinglePlayer"); Call("SelectMultiplayer");
+            Check(Field<bool>("mainMenu")&&!Field<bool>("multiplayerNotice")&&Field<ArenaRules>("rules")==null,"unauthenticated player cannot start either mode");
+            SetAccountFixture();
             Call("SelectMultiplayer");yield return new WaitForSeconds(.25f);
             Check(Field<bool>("mainMenu")&&Field<bool>("multiplayerNotice")&&Field<ArenaRules>("rules")==null,"multiplayer TODO leaves game unstarted");
             Call("StartSinglePlayer");

@@ -21,13 +21,13 @@ try
     Send(42, UnityEngine.InputSystem.TouchPhase.Began, point + Vector2.right * 100);
     Check((int)Get("touchFinger") == 41, "Second finger stole gesture");
     Send(41, UnityEngine.InputSystem.TouchPhase.Canceled, point);
-    Check((int)Get("touchFinger") == -1 && !(bool)Get("pendingUiTap"), "Canceled touch activated UI");
+    Check((int)Get("touchFinger") == -1 && (int)Get("dragId") == -1, "Canceled touch retained a world gesture");
     UnityEngine.InputSystem.InputSystem.Update(); Call("UpdateTouchInput");
     Check((int)Get("touchFinger") == -1, "Held secondary finger took over");
     Send(42, UnityEngine.InputSystem.TouchPhase.Ended, point);
     Send(43, UnityEngine.InputSystem.TouchPhase.Began, point);
     Send(43, UnityEngine.InputSystem.TouchPhase.Ended, point);
-    Check((int)Get("touchFinger") == -1 && (bool)Get("pendingUiTap"), "Fresh UI tap was lost");
+    Check((int)Get("touchFinger") == -1, "Fresh UI tap retained gesture ownership");
     Check((bool)type.GetProperty("SuppressTouchMouse", flags).GetValue(g), "Touch release did not suppress synthetic mouse");
     Call("CancelDrag");
     return "PASS: Input System device events, finger ownership, multitouch isolation, cancellation, secondary-finger lockout, new tap, synthetic mouse suppression.";

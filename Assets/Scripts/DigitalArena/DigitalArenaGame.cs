@@ -26,7 +26,7 @@ namespace DigitalArena
         Vector3? dragPoint;
         bool help, shopOpen, economyOpen, saleHover;
         static readonly Rect SaleRect = new Rect(0,790,1440,110);
-        GUIStyle textStyle, buttonStyle;
+        ArenaGameUi ui;
         static readonly Color Panel = Hex(0x16292E), Edge = Hex(0x556A62), Ink = Hex(0xF4EEDB);
         static readonly Color Muted = Hex(0xA7B8AF), Mint = Hex(0x7BE5BC), Gold = Hex(0xF3CF80), Pink = Hex(0xEF91A1);
         static Color Hex(uint v) => new Color32((byte)(v >> 16), (byte)(v >> 8), (byte)v, 255);
@@ -43,12 +43,14 @@ namespace DigitalArena
             Application.targetFrameRate = 60;
             mainBackground=Resources.Load<Texture2D>("UI/DigiTacticsMainBackground");
             rankStar=Resources.Load<Texture2D>("UI/RankStar");
+            InitializeAccount();
+            ui = new ArenaGameUi(transform, font);
             menuCamera=new GameObject("Main Menu Camera").AddComponent<Camera>();
             menuCamera.transform.SetParent(transform);menuCamera.cullingMask=0;
             menuCamera.clearFlags=CameraClearFlags.SolidColor;menuCamera.backgroundColor=Hex(0x112A3A);
         }
-        void StartSinglePlayer() { if(mainMenu) ResetRun(); }
-        void SelectMultiplayer() { multiplayerNotice=true; } // TODO: multiplayer lobby and network session.
+        void StartSinglePlayer() { if(mainMenu && account.Ready && !account.Busy) ResetRun(); }
+        void SelectMultiplayer() { if(account.Ready && !account.Busy) multiplayerNotice=true; } // TODO: multiplayer lobby and network session.
         void ResetRun()
         {
             mainMenu=false;multiplayerNotice=false;
@@ -85,6 +87,8 @@ namespace DigitalArena
         void Update()
         {
             UpdateTouchInput();
+            UpdateMouseInput();
+            nicknamePanel?.Sync(NeedsNickname, uiScale, uiOffset);
             if(playableCharacter!=null) playableCharacter.Tick(Time.deltaTime,!mainMenu && !help && rules!=null && rules.Health>0);
             if (mainMenu || help || rules.Health <= 0) return;
             elapsed += Time.deltaTime;
@@ -108,52 +112,48 @@ namespace DigitalArena
         void CancelDrag()
         {
             pressedId = dragId = -1; dragPoint = null; saleHover=false;
-            touchCancelled = true; pendingUiTap = false;
+            touchCancelled = true;
             if (world != null) world.Highlight(-1);
         }
         void OnDestroy()
         {
+            nicknamePanel?.Dispose();
+            ui?.Dispose();
             if (partners != null) foreach (var t in partners) Destroy(t);
             if(enemyPortraits!=null) foreach(var t in enemyPortraits) Destroy(t);
             foreach(var t in badges.Values) Destroy(t);
             if (font != null) Destroy(font);
         }
-        void Styles()
-        {
-            if (textStyle != null) return;
-            textStyle = new GUIStyle { font = font, richText = false, alignment = TextAnchor.MiddleLeft, clipping = TextClipping.Clip };
-            buttonStyle = new GUIStyle(textStyle) { alignment = TextAnchor.MiddleCenter };
-        }
         Vector2 UiPoint(Vector2 screen) => (screen-uiOffset)/uiScale;
         Vector2 ScreenPoint(Vector2 ui) => ui*uiScale+uiOffset;
-        void OnGUI()
+        void LateUpdate()
         {
-            Styles();
             UpdateUiMetrics();
-            if (SuppressTouchMouse && Event.current.isMouse) Event.current.Use();
-            GUI.matrix = Matrix4x4.TRS(uiOffset, Quaternion.identity, new Vector3(uiScale,uiScale,1));
-            if(mainMenu) { MainMenu(); FinishTouchGui(); GUI.matrix=Matrix4x4.identity;return; }
+            ui.Begin(uiScale, uiOffset);
+            if(mainMenu) { MainMenu(); ui.End(); return; }
             bool modal = help || rules.Health <= 0;
-            GUI.enabled = !modal;
+            ui.Enabled = !modal;
             UnitLabels(); Header(); PlayerList(); BottomControls(); UnitDetails();
             if (shopProgress > 0) Shop();
             if(saleHover && dragId>=0) SaleOverlay();
             if (battle != null && battle.Finished && !battle.Won && rules.Health > 0) Result();
-            if (!modal) HandlePlacement(Event.current);
-            GUI.enabled = true;
+            ui.Enabled = true;
             if (help) Help(); else if (rules.Health <= 0) GameOver();
-            FinishTouchGui();
-            GUI.matrix = Matrix4x4.identity;
+            ui.End();
         }
         void MainMenu()
         {
-            if(mainBackground!=null) GUI.DrawTexture(new Rect(0,0,1440,900),mainBackground,ScaleMode.ScaleAndCrop);
+            if (NeedsNickname) return;
+            if(mainBackground!=null) ui.Picture(new Rect(0,0,1440,900),mainBackground,ScaleMode.ScaleAndCrop);
             Label(200,165,1040,110,"DigiTactics",82,new Color(0,0,0,.55f),true,TextAnchor.MiddleCenter);
             Label(200,161,1040,110,"DigiTactics",82,Ink,true,TextAnchor.MiddleCenter);
             Label(390,277,660,34,"디지털 월드에서 시작되는 나만의 전술",20,Ink,false,TextAnchor.MiddleCenter);
-            if(Button(new Rect(402,686,310,62),"싱글 플레이",Hex(0x285B55))) StartSinglePlayer();
-            if(Button(new Rect(728,686,310,62),"멀티 플레이  ·  준비 중",Hex(0x24394F))) SelectMultiplayer();
+            if (!account.Ready) { AccountMenu(); return; }
+            AccountSummary();
+            ui.Button("single",new Rect(402,686,310,62),"싱글 플레이",Hex(0x285B55),StartSinglePlayer,!account.Busy);
+            ui.Button("multi",new Rect(728,686,310,62),"멀티 플레이  ·  준비 중",Hex(0x24394F),SelectMultiplayer,!account.Busy);
             if(multiplayerNotice) Label(350,762,740,48,"멀티 플레이는 추후 업데이트 예정입니다. (TODO)",18,Ink,false,TextAnchor.MiddleCenter);
+            else Label(350,762,740,48,account.Message,16,Ink,false,TextAnchor.MiddleCenter);
             Label(390,831,660,24,"DIGITAL WORLD · SINGLE PLAYER PROTOTYPE",12,Ink,false,TextAnchor.MiddleCenter);
         }
         void Header()
@@ -170,14 +170,14 @@ namespace DigitalArena
         {
             Label(1216,166,200,25,"플레이어",14,Muted,true);
             PanelBox(new Rect(1216,198,200,99));
-            GUI.DrawTexture(new Rect(1224,213,53,53),partners[Mathf.Min(2,partners.Length-1)]);
+            ui.Picture(new Rect(1224,213,53,53),partners[Mathf.Min(2,partners.Length-1)]);
             Label(1284,211,118,25,"나 · 테이머",15,Ink,true);
             Label(1284,242,118,28,rules.Health + " / 100",22,Pink,true);
             Fill(new Rect(1230,280,172,4),Edge); Fill(new Rect(1230,280,172*rules.Health/100f,4),Mint);
-            if(TouchButton(new Rect(1216,198,200,99)) || GUI.Button(new Rect(1216,198,200,99),GUIContent.none,GUIStyle.none)) ViewPlayer(false);
+            ui.Button("myView",new Rect(1216,198,200,99),"",Color.clear,()=>ViewPlayer(false),transparent:true);
             Label(1216,308,205,27,"배치 " + rules.Pieces.Count(p=>p.Cell>=0) + " / " + rules.Level,16,Ink);
             Label(1216,337,200,22,"적: " + rules.Catalog.enemies[rules.Catalog.EnemyAt(rules.Stage)].name,13,Muted);
-            if(Button(new Rect(1216,369,200,38),viewingOpponent?"상대 시점 · 선택됨":"현재 상대 시점",Panel)) ViewPlayer(true);
+            ui.Button("opponentView",new Rect(1216,369,200,38),viewingOpponent?"상대 시점 · 선택됨":"현재 상대 시점",Panel,()=>ViewPlayer(true));
             if(selectedUnit!=null) return;
             Label(24,198,230,27,"용의 눈 호수",21,Ink,true);
             Label(24,236,240,45,rules.Train.Visible?"기차가 가로막는 길을 우회하세요.":"기차 재등장: "+(rules.Train.ReturnRound-rules.Round)+"라운드 후",12,Gold);
@@ -192,20 +192,20 @@ namespace DigitalArena
         void BottomControls()
         {
 
-            if (Button(new Rect(24,805,250,63),"골드 " + rules.Gold + "   ·   Lv. " + rules.Level,Hex(0x304C43))) { economyOpen=!economyOpen; selectedUnit=null; }
+            ui.Button("economy",new Rect(24,805,250,63),"골드 " + rules.Gold + "   ·   Lv. " + rules.Level,Hex(0x304C43),()=> { economyOpen=!economyOpen; selectedUnit=null; });
             if (economyOpen)
             {
                 PanelBox(new Rect(24,463,250,264));
                 Label(40,478,220,28,"레벨 " + rules.Level + "  ·  배치 한도 " + rules.Level,17,Ink,true);
                 Label(40,515,220,22,rules.Level==ArenaRules.MaxLevel?"MAX LEVEL":rules.Xp+" / "+rules.RequiredXp+" XP",14,Mint);
                 Fill(new Rect(40,545,218,5),Edge); Fill(new Rect(40,545,218*(rules.Level==ArenaRules.MaxLevel?1:rules.Xp/(float)rules.RequiredXp),5),Mint);
-                if(Button(new Rect(40,566,218,45),"XP 구매 +"+xpPerPurchase+"   /   4 pt",Hex(0x304C43),rules.Preparing&&rules.Gold>=4&&rules.Level<ArenaRules.MaxLevel)) rules.BuyXp(xpPerPurchase);
+                ui.Button("buyXp",new Rect(40,566,218,45),"XP 구매 +"+xpPerPurchase+"   /   4 pt",Hex(0x304C43),()=>rules.BuyXp(xpPerPurchase),rules.Preparing&&rules.Gold>=4&&rules.Level<ArenaRules.MaxLevel);
                 Label(40,621,220,24,"라운드 수입 +"+rules.LastIncome+" pt",13,Gold);
                 Label(40,650,220,24,"다음 이자 예상 +"+rules.Interest+" pt",13,Muted);
                 Label(40,678,220,24,"연승 "+rules.WinStreak+" · 승리 +1 / 3연승 +1G",13,Mint);
             }
-            if(Button(new Rect(1250,805,166,63),shopOpen?"기물 선택 닫기":"기물 선택 열기",Panel)) { CancelDrag(); shopOpen=!shopOpen; }
-            if(Button(new Rect(1250,746,166,45),"플레이 가이드",Panel)) { CancelDrag(); help=true; }
+            ui.Button("toggleShop",new Rect(1250,805,166,63),shopOpen?"기물 선택 닫기":"기물 선택 열기",Panel,()=> { CancelDrag(); shopOpen=!shopOpen; });
+            ui.Button("guide",new Rect(1250,746,166,45),"플레이 가이드",Panel,()=> { CancelDrag(); help=true; });
             Label(330,862,900,24,rules.Notice,13,Ink,false,TextAnchor.MiddleCenter);
             if(shopProgress<0.05f && rules.Preparing)
                 Label(330,827,900,22,TouchControls ? "기물 탭: 정보   ·   드래그: 배치 / 교환 / 하단 판매   ·   빈 바닥 탭: 테이머 이동" : "빈 전장 우클릭: 테이머 이동   ·   기물 더블 클릭: 자동배치   ·   좌클릭 드래그: 배치 / 교환",13,Muted,false,TextAnchor.MiddleCenter);
@@ -244,13 +244,13 @@ namespace DigitalArena
             {
                 int stars=u.Fighter!=null?u.Fighter.Stars:rules.Pieces.Find(p=>p.Id==u.Id)?.Stars??1;
                 for(int i=0;i<stars;i++)
-                    if(rankStar!=null) GUI.DrawTexture(new Rect(38+i*28,276,24,24),rankStar,ScaleMode.ScaleToFit,true);
+                    if(rankStar!=null) ui.Picture(new Rect(38+i*28,276,24,24),rankStar,ScaleMode.ScaleToFit);
                     else Label(38+i*28,276,24,24,"★",22,Gold,true);
                 Label(130,276,130,24,d.cost+"코스트 · "+stars+"성",13,Gold);
             }
-            if(Button(new Rect(223,302,48,36),"×",Panel)) { selectedUnit=null;return; }
-            GUI.DrawTexture(new Rect(38,339,84,84),(u.Enemy?enemyPortraits:partners)[u.Tier]);
-            GUI.DrawTexture(new Rect(133,346,44,44),Badge(d));
+            ui.Button("closeDetails",new Rect(223,302,48,36),"×",Panel,()=>selectedUnit=null);
+            ui.Picture(new Rect(38,339,84,84),(u.Enemy?enemyPortraits:partners)[u.Tier]);
+            ui.Picture(new Rect(133,346,44,44),Badge(d));
             Label(38,306,185,28,d.name,18,Ink,true);
             Label(130,395,137,24,DigimonCatalog.TypeNames[(int)d.type]+" · "+DigimonCatalog.ElementNames[(int)d.element],13,Ink);
             float hp=u.Fighter==null?d.HP:u.Fighter.Hp,sp=u.Fighter==null?0:u.Fighter.Sp;
@@ -273,21 +273,20 @@ namespace DigitalArena
             Label(panel.x+14,panel.y-29,220,24,"코스트별 등장 확률",14,Ink,true);
             
             for(int i=0;i<5;i++) Label(panel.x+245+i*132,panel.y-29,132,24,ArenaRules.CostNames[i]+" "+rules.Balance.levels[rules.Level-1].weights[i]+"%",13,Rarity(i));
-            if(Button(new Rect(panel.x+16,panel.y+8,150,29),"리롤 · "+ArenaRules.RerollCost+"골드",Hex(0x304C43),rules.CanReroll)) rules.Reroll();
-            if(Button(new Rect(panel.xMax-61,panel.y+8,43,27),"닫기",Panel)) shopOpen=false;
+            ui.Button("reroll",new Rect(panel.x+16,panel.y+8,150,29),"리롤 · "+ArenaRules.RerollCost+"골드",Hex(0x304C43),()=>rules.Reroll(),rules.CanReroll);
+            ui.Button("closeShop",new Rect(panel.xMax-61,panel.y+8,43,27),"닫기",Panel,()=>shopOpen=false);
             for(int i=0;i<5;i++)
             {
                 int tier=rules.Offers[i]; Rect card=new Rect(panel.x+16+i*179,panel.y+46,171,114);
                 if(tier<0||rules.Bought[i]) { PanelBox(card);continue; }
-                if(Button(card,"",Hex(0x243C3F),rules.Preparing&&rules.Gold>=ArenaRules.PurchasePrice(rules.Catalog.allies[tier])))
+                int slot = i;
+                ui.Button("offer"+i,card,"",Hex(0x243C3F),()=>
                 {
-                    if(rules.Buy(i)) { CancelDrag(); world.Rebuild(rules,null); }
-                }
-                if(rules.Bought[i]) { PanelBox(card);continue; }
-                GUI.DrawTexture(new Rect(card.x+4,card.y+5,163,83),partners[tier],ScaleMode.ScaleToFit);
+                    if(rules.Offers[slot]==tier && rules.Buy(slot)) { CancelDrag(); world.Rebuild(rules,null); }
+                },rules.Preparing&&rules.Gold>=ArenaRules.PurchasePrice(rules.Catalog.allies[tier]),tooltip:DigimonCatalog.TypeNames[(int)rules.Catalog.allies[tier].type]+" · "+DigimonCatalog.ElementNames[(int)rules.Catalog.allies[tier].element]);
+                ui.Picture(new Rect(card.x+4,card.y+5,163,83),partners[tier],ScaleMode.ScaleToFit);
                 var d=rules.Catalog.Get(tier,false);
-                GUI.DrawTexture(new Rect(card.xMax-39,card.y+7,32,32),Badge(d));
-                GUI.Label(new Rect(card.xMax-41,card.y+5,36,36),new GUIContent("",DigimonCatalog.TypeNames[(int)d.type]+" · "+DigimonCatalog.ElementNames[(int)d.element]));
+                ui.Picture(new Rect(card.xMax-39,card.y+7,32,32),Badge(d));
                 Label(card.x+8,card.y+87,124,22,rules.Catalog.allies[tier].name,13,Ink,true);
                 Label(card.x+132,card.y+87,36,22,ArenaRules.PurchasePrice(rules.Catalog.allies[tier])+"G",14,Gold,true);
                 Frame(card,Rarity(d.cost-1),3);
@@ -299,12 +298,6 @@ namespace DigitalArena
                 || new Rect(24,economyOpen?463:805,250,economyOpen?405:63).Contains(point)
                 || selectedUnit!=null && new Rect(24,268,250,452).Contains(point)
                 || new Rect(1250,746,166,122).Contains(point) || shopProgress>0 && new Rect(ShopRect.x,ShopRect.y-32,ShopRect.width,ShopRect.height+32).Contains(point);
-        }
-        void HandlePlacement(Event e)
-        {
-            if(e.type==EventType.KeyDown && e.keyCode==KeyCode.Escape) { CancelDrag(); shopOpen=false; e.Use(); return; }
-            if(SuppressTouchMouse) return;
-            if(HandlePointer(e.rawType==EventType.MouseUp?EventType.MouseUp:e.type,e.button,e.clickCount,e.mousePosition)) e.Use();
         }
         bool HandlePointer(EventType type,int button,int clicks,Vector2 mouse)
         {
@@ -391,7 +384,7 @@ namespace DigitalArena
                 "체력 0이면 게임 종료. 가이드를 보고 있는 동안 일시 정지됩니다."
             };
             for(int i=0;i<lines.Length;i++) Label(340,247+i*37,760,28,lines[i],15,Ink);
-            if(Button(new Rect(340,671,760,44),"계속 플레이",Hex(0x304C43))) help=false;
+            ui.Button("continue",new Rect(340,671,760,44),"계속 플레이",Hex(0x304C43),()=>help=false);
         }
         void GameOver()
         {
@@ -400,8 +393,8 @@ namespace DigitalArena
             Label(450,369,540,30,"플레이어 체력이 모두 소진되었습니다.",18,Ink,false,TextAnchor.MiddleCenter);
             Label(450,413,540,32,"스테이지 "+rules.Stage+" · "+rules.StageRound+"라운드 도달",22,Ink,true,TextAnchor.MiddleCenter);
             Label(450,459,540,30,"최고 레벨 "+rules.Level+"  /  수집 기물 "+rules.Pieces.Count,16,Muted,false,TextAnchor.MiddleCenter);
-            if(Button(new Rect(450,548,260,62),"게임 재시작",Hex(0x304C43))) ResetRun();
-            if(Button(new Rect(730,548,260,62),"게임 종료",Hex(0x52303F))) QuitGame();
+            ui.Button("restart",new Rect(450,548,260,62),"게임 재시작",Hex(0x304C43),ResetRun);
+            ui.Button("quit",new Rect(730,548,260,62),"게임 종료",Hex(0x52303F),QuitGame);
         }
         static void QuitGame()
         {
@@ -414,21 +407,12 @@ namespace DigitalArena
         static Color Rarity(int tier)=>tier==0?Muted:tier==1?Mint:tier==2?Hex(0x7ABDE1):tier==3?Hex(0xBAA0DA):Gold;
         void Label(float x,float y,float w,float h,string value,int size,Color color,bool bold=false,TextAnchor alignment=TextAnchor.MiddleLeft)
         {
-            textStyle.fontSize=size; textStyle.normal.textColor=color; textStyle.fontStyle=bold?FontStyle.Bold:FontStyle.Normal; textStyle.alignment=alignment;
-            GUI.Label(new Rect(x,y,w,h),value,textStyle);
+            ui.Text(new Rect(x,y,w,h),value,size,color,bold,alignment);
         }
-        bool Button(Rect rect,string value,Color color,bool enabled=true)
-        {
-            bool previous=GUI.enabled; GUI.enabled=previous&&enabled;
-            bool hover=rect.Contains(Event.current.mousePosition)&&GUI.enabled;
-            Fill(rect,hover?Color.Lerp(color,Mint,0.15f):color); Frame(rect,hover?Mint:Edge,1);
-            buttonStyle.fontSize=14; buttonStyle.normal.textColor=enabled?Ink:Muted;
-            bool clicked=TouchButton(rect) | GUI.Button(rect,value,buttonStyle); GUI.enabled=previous; return clicked;
-        }
-        static void Fill(Rect rect,Color color) { Color previous=GUI.color; GUI.color=color; GUI.DrawTexture(rect,Texture2D.whiteTexture); GUI.color=previous; }
-        static void Frame(Rect r,Color c,float w)
+        void Fill(Rect rect,Color color) => ui.Fill(rect,color);
+        void Frame(Rect r,Color c,float w)
         { Fill(new Rect(r.x,r.y,r.width,w),c); Fill(new Rect(r.x,r.yMax-w,r.width,w),c); Fill(new Rect(r.x,r.y,w,r.height),c); Fill(new Rect(r.xMax-w,r.y,w,r.height),c); }
-        static void PanelBox(Rect rect) { Fill(rect,Panel); Frame(rect,Edge,1); }
+        void PanelBox(Rect rect) { Fill(rect,Panel); Frame(rect,Edge,1); }
     }
 }
 

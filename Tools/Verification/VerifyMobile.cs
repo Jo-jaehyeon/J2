@@ -63,8 +63,8 @@ unit = world.Units.Single(u => u.Id == 9002); start = Ui(unit.Root.position + Ve
 int gold = rules.Gold;
 Begin(start); Call("MoveTouch", new Vector2(700, 850)); End(new Vector2(700, 850));
 Check(rules.Pieces.All(p => p.Id != 9002) && rules.Gold > gold, "Touch sale failed");
-// A UI tap must remain queued until OnGUI, then be consumed exactly once.
+// Board touch handling leaves UI taps to UI Toolkit's pointer events.
 Begin(new Vector2(1300, 820)); End(new Vector2(1300, 820));
-Check((bool)Get("pendingUiTap"), "UI tap was not queued");
+Check(!(bool)Get("shopOpen"), "Board touch handler also activated a UI control");
 Set("remaining", 10000f);
-return "PASS: tap/jitter/details toggle, drag placement, pause cancellation, UI isolation, ground movement, opponent view, battle transition cancellation, enemy battle details, sale. Shop button queued for OnGUI verification.";
+return "PASS: tap/jitter/details toggle, drag placement, pause cancellation, UI isolation, ground movement, opponent view, battle transition cancellation, enemy battle details, sale, native UI event ownership.";

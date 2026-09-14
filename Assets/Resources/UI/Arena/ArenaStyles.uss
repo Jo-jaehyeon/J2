@@ -1,0 +1,22 @@
+#arenaScreen { position: absolute; width: 1440px; height: 900px; }
+.arena-element {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    border-width: 0;
+    border-radius: 0;
+    overflow: hidden;
+    white-space: normal;
+}
+.arena-button {
+    color: rgb(244, 238, 219);
+    font-size: 14px;
+    -unity-text-align: middle-center;
+    border-width: 1px;
+    border-color: rgb(85, 106, 98);
+}
+.arena-button:hover { border-color: rgb(123, 229, 188); }
+.arena-button:focus { border-color: rgb(123, 229, 188); }
+.arena-button:active { -unity-font-style: bold; }
+.arena-button:disabled { color: rgb(167, 184, 175); opacity: 0.55; }
+.arena-hit-target { border-width: 0; }

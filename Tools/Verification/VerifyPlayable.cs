@@ -1,7 +1,8 @@
 var flags=System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic;
 var gt=AppDomain.CurrentDomain.GetAssemblies().SelectMany(a=>a.GetTypes()).Single(t=>t.FullName=="DigitalArena.DigitalArenaGame");
 var g=UnityEngine.Object.FindAnyObjectByType(gt);
-gt.GetMethod("StartSinglePlayer",flags).Invoke(g,null);
+// This explicit Editor motor test initializes the arena independently of OAuth credentials.
+gt.GetMethod("ResetRun",flags).Invoke(g,null);
 gt.GetField("help",flags).SetValue(g,true);
 var motor=(Component)gt.GetField("playableCharacter",flags).GetValue(g);
 if(motor==null)throw new Exception("Avatar missing");

@@ -1,0 +1,6 @@
+<linker>
+  <assembly fullname="Assembly-CSharp">
+    <type fullname="J2.Protocol.*" preserve="all" />
+  </assembly>
+  <assembly fullname="Google.Protobuf" preserve="all" />
+</linker>

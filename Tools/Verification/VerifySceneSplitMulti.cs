@@ -1,0 +1,26 @@
+void Check(bool ok,string message) { if(!ok) throw new System.Exception(message); }
+Check(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name=="DragonEyeLake","Multiplayer scene did not load");
+Check(UnityEngine.Object.FindAnyObjectByType<DigitalArena.DigitalArenaGame>()==null,"Menu/single-player controller leaked into multiplayer");
+Check(UnityEngine.Object.FindAnyObjectByType<DigitalArena.ArenaWorld3D>()==null,"Single-player map leaked into multiplayer");
+var controller=UnityEngine.Object.FindAnyObjectByType<J2.MultiplayerMap.MultiplayerSceneController>();
+var world=controller.World;
+Check(world.Layout.Arenas.Length==8,"Expected eight arenas");
+Check(world.Player.parent==world.Layout.Arenas[3],"Player did not spawn at assigned arena");
+world.Layout.TryGetView(3,out var anchor,out var target);
+Check(UnityEngine.Vector3.Distance(world.ViewCamera.transform.position,anchor.position)<.001f,"Camera not at assigned arena");
+Check(UnityEngine.Object.FindObjectsByType<J2.MultiplayerMap.MultiplayerMapLayout>(UnityEngine.FindObjectsSortMode.None).Length==1,"Duplicate map");
+Check(UnityEngine.Object.FindAnyObjectByType<DigitalArena.ArenaAccountClient>().GetEntityId().ToString()==UnityEditor.SessionState.GetString("SceneSplit.Account",""),"Account session lost");
+Check(J2.Networking.NetworkManager.Instance.GetEntityId().ToString()==UnityEditor.SessionState.GetString("SceneSplit.Network",""),"Network session lost");
+var inputBackground=UnityEngine.InputSystem.InputSystem.settings.backgroundBehavior;
+UnityEngine.InputSystem.InputSystem.settings.backgroundBehavior=UnityEngine.InputSystem.InputSettings.BackgroundBehavior.IgnoreFocus;
+var wanted=world.Layout.Arenas[3].TransformPoint(new UnityEngine.Vector3(2,.25f,-5));
+var screen=world.ViewCamera.WorldToScreenPoint(wanted);
+var ray=world.ViewCamera.ScreenPointToRay(screen);
+var ground=new UnityEngine.Plane(UnityEngine.Vector3.up,wanted);
+Check(ground.Raycast(ray,out var distance),"Camera cannot pick assigned arena ground");
+Check(world.MoveToWorldPoint(ray.GetPoint(distance)),"Assigned arena destination rejected");
+world.Advance(10f);
+Check(UnityEngine.Vector3.Distance(world.Player.position,wanted)<.02f,"Ground destination movement failed at rotated arena");
+UnityEngine.InputSystem.InputSystem.settings.backgroundBehavior=inputBackground;
+controller.GetType().GetMethod("ReturnToMenu",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).Invoke(controller,null);
+return "PASS: Dedicated multiplayer scene, one map, assigned arena 4 spawn/camera, preserved account/network, ground picking and movement. Return scene load requested.";

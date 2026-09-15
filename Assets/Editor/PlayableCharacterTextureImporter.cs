@@ -1,3 +1,6 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -6,8 +9,13 @@ public sealed class PlayableCharacterTextureImporter : AssetPostprocessor
 {
     void OnPreprocessTexture()
     {
-        if (!assetPath.StartsWith("Assets/Resources/PlayableCharacter/") || !assetPath.Contains("/Textures/")) return;
+        if (!assetPath.StartsWith("Assets/Resources/PlayableCharacter/") || !assetPath.Contains("/Textures/"))
+        {
+            return;
+        }
+
         var importer = (TextureImporter)assetImporter;
+
         importer.textureType = TextureImporterType.Default;
         importer.textureShape = TextureImporterShape.Texture2D;
         importer.sRGBTexture = true;

@@ -113,3 +113,7 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+
+# Local readability tool build outputs
+/Tools/CodeStyle/bin/
+/Tools/CodeStyle/obj/

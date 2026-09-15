@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using System;
 using System.IO;
 using UnityEditor;
@@ -32,22 +34,40 @@ public static class ArenaMobileBuild
     static void Build(BuildTarget target, string path)
     {
         if (!BuildPipeline.IsBuildTargetSupported(BuildPipeline.GetBuildTargetGroup(target), target))
+        {
             throw new InvalidOperationException("Install Unity " + target + " Build Support in Unity Hub first.");
+        }
+
         ApplySettings();
+
         const string scene = "Assets/Scenes/DragonEyeLake.unity";
-        if (!File.Exists(scene)) throw new FileNotFoundException("Game scene missing", scene);
+
+        if (!File.Exists(scene))
+        {
+            throw new FileNotFoundException("Game scene missing", scene);
+        }
+
         Directory.CreateDirectory(Path.GetDirectoryName(path));
+
         bool previousBundle = EditorUserBuildSettings.buildAppBundle;
+
         try
         {
-            if (target == BuildTarget.Android) EditorUserBuildSettings.buildAppBundle = false;
-            var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions {
-                scenes = new[] { scene }, target = target, locationPathName = path,
-                options = BuildOptions.Development
-            });
+            if (target == BuildTarget.Android)
+            {
+                EditorUserBuildSettings.buildAppBundle = false;
+            }
+
+            var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions { scenes = new[] { scene }, target = target, locationPathName = path, options = BuildOptions.Development });
+
             if (report.summary.result != BuildResult.Succeeded)
+            {
                 throw new InvalidOperationException("Mobile build failed: " + report.summary.result);
+            }
         }
-        finally { EditorUserBuildSettings.buildAppBundle = previousBundle; }
+        finally
+        {
+            EditorUserBuildSettings.buildAppBundle = previousBundle;
+        }
     }
 }

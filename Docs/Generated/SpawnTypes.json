@@ -1,0 +1,221 @@
+{
+    "entries": [
+        {
+            "id": 0,
+            "key": "player_shintaeyil",
+            "name": "신태일",
+            "kind": "Player",
+            "catalogId": "",
+            "prefabPath": "Assets/Resources/PlayableCharacter/ShinTaeyil/ShinTaeyil.prefab"
+        },
+        {
+            "id": 1001,
+            "key": "ally_ally_1",
+            "name": "코로몬",
+            "kind": "Ally",
+            "catalogId": "ally_1",
+            "prefabPath": "Assets/Resources/Digimon/1코스트/Koromon/Koromon.prefab"
+        },
+        {
+            "id": 1002,
+            "key": "ally_ally_2",
+            "name": "아구몬",
+            "kind": "Ally",
+            "catalogId": "ally_2",
+            "prefabPath": "Assets/Resources/Digimon/2코스트/Agumon/Agumon.prefab"
+        },
+        {
+            "id": 1003,
+            "key": "ally_ally_3",
+            "name": "그레이몬",
+            "kind": "Ally",
+            "catalogId": "ally_3",
+            "prefabPath": "Assets/Resources/Digimon/3코스트/Greymon/Greymon.prefab"
+        },
+        {
+            "id": 1004,
+            "key": "ally_ally_4",
+            "name": "메탈그레이몬",
+            "kind": "Ally",
+            "catalogId": "ally_4",
+            "prefabPath": "Assets/Resources/Digimon/4코스트/MetalGreymon/MetalGreymon.prefab"
+        },
+        {
+            "id": 1005,
+            "key": "ally_ally_5",
+            "name": "워그레이몬",
+            "kind": "Ally",
+            "catalogId": "ally_5",
+            "prefabPath": "Assets/Resources/Digimon/5코스트/WarGreymon/WarGreymon.prefab"
+        },
+        {
+            "id": 1006,
+            "key": "ally_garurumon_1",
+            "name": "뿔몬",
+            "kind": "Ally",
+            "catalogId": "garurumon_1",
+            "prefabPath": "Assets/Resources/Digimon/1코스트/Tsunomon/Tsunomon.prefab"
+        },
+        {
+            "id": 1007,
+            "key": "ally_garurumon_2",
+            "name": "파피몬",
+            "kind": "Ally",
+            "catalogId": "garurumon_2",
+            "prefabPath": "Assets/Resources/Digimon/2코스트/Gabumon/Gabumon.prefab"
+        },
+        {
+            "id": 1008,
+            "key": "ally_garurumon_3",
+            "name": "가루몬",
+            "kind": "Ally",
+            "catalogId": "garurumon_3",
+            "prefabPath": "Assets/Resources/Digimon/3코스트/Garurumon/Garurumon.prefab"
+        },
+        {
+            "id": 1009,
+            "key": "ally_garurumon_4",
+            "name": "워가루몬",
+            "kind": "Ally",
+            "catalogId": "garurumon_4",
+            "prefabPath": "Assets/Resources/Digimon/4코스트/WereGarurumon/WereGarurumon.prefab"
+        },
+        {
+            "id": 1010,
+            "key": "ally_garurumon_5",
+            "name": "메탈가루몬",
+            "kind": "Ally",
+            "catalogId": "garurumon_5",
+            "prefabPath": "Assets/Resources/Digimon/5코스트/MetalGarurumon/MetalGarurumon.prefab"
+        },
+        {
+            "id": 1011,
+            "key": "ally_rosemon_1",
+            "name": "시드몬",
+            "kind": "Ally",
+            "catalogId": "rosemon_1",
+            "prefabPath": "Assets/Resources/Digimon/1코스트/Tanemon/Tanemon.prefab"
+        },
+        {
+            "id": 1012,
+            "key": "ally_rosemon_2",
+            "name": "팔몬",
+            "kind": "Ally",
+            "catalogId": "rosemon_2",
+            "prefabPath": "Assets/Resources/Digimon/2코스트/Palmon/Palmon.prefab"
+        },
+        {
+            "id": 1013,
+            "key": "ally_rosemon_3",
+            "name": "니드몬",
+            "kind": "Ally",
+            "catalogId": "rosemon_3",
+            "prefabPath": "Assets/Resources/Digimon/3코스트/Togemon/Togemon.prefab"
+        },
+        {
+            "id": 1014,
+            "key": "ally_rosemon_4",
+            "name": "릴리몬",
+            "kind": "Ally",
+            "catalogId": "rosemon_4",
+            "prefabPath": "Assets/Resources/Digimon/4코스트/Lillymon/Lillymon.prefab"
+        },
+        {
+            "id": 1015,
+            "key": "ally_rosemon_5",
+            "name": "로제몬",
+            "kind": "Ally",
+            "catalogId": "rosemon_5",
+            "prefabPath": "Assets/Resources/Digimon/5코스트/Rosemon/Rosemon.prefab"
+        },
+        {
+            "id": 1016,
+            "key": "ally_myotismon_1",
+            "name": "퍼그몬",
+            "kind": "Ally",
+            "catalogId": "myotismon_1",
+            "prefabPath": "Assets/Resources/Digimon/1코스트/Pagumon/Pagumon.prefab"
+        },
+        {
+            "id": 1017,
+            "key": "ally_myotismon_2",
+            "name": "피코데블몬",
+            "kind": "Ally",
+            "catalogId": "myotismon_2",
+            "prefabPath": "Assets/Resources/Digimon/2코스트/DemiDevimon/DemiDevimon.prefab"
+        },
+        {
+            "id": 1018,
+            "key": "ally_myotismon_3",
+            "name": "데블몬",
+            "kind": "Ally",
+            "catalogId": "myotismon_3",
+            "prefabPath": "Assets/Resources/Digimon/3코스트/Devimon/Devimon.prefab"
+        },
+        {
+            "id": 1019,
+            "key": "ally_myotismon_4",
+            "name": "묘티스몬",
+            "kind": "Ally",
+            "catalogId": "myotismon_4",
+            "prefabPath": "Assets/Resources/Digimon/4코스트/Myotismon/Myotismon.prefab"
+        },
+        {
+            "id": 1020,
+            "key": "ally_myotismon_5",
+            "name": "베놈묘티스몬",
+            "kind": "Ally",
+            "catalogId": "myotismon_5",
+            "prefabPath": "Assets/Resources/Digimon/5코스트/VenomMyotismon/VenomMyotismon.prefab"
+        },
+        {
+            "id": 2001,
+            "key": "creep_enemy_1",
+            "name": "츠메몬",
+            "kind": "Creep",
+            "catalogId": "enemy_1",
+            "prefabPath": "Assets/Resources/Digimon/1코스트/Tsumemon/Tsumemon.prefab"
+        },
+        {
+            "id": 2002,
+            "key": "creep_enemy_2",
+            "name": "케라몬",
+            "kind": "Creep",
+            "catalogId": "enemy_2",
+            "prefabPath": "Assets/Resources/Digimon/2코스트/Keramon/Keramon.prefab"
+        },
+        {
+            "id": 2003,
+            "key": "creep_enemy_3",
+            "name": "크리사리몬",
+            "kind": "Creep",
+            "catalogId": "enemy_3",
+            "prefabPath": "Assets/Resources/Digimon/3코스트/Chrysalimon/Chrysalimon.prefab"
+        },
+        {
+            "id": 2004,
+            "key": "creep_enemy_4",
+            "name": "인펠몬",
+            "kind": "Creep",
+            "catalogId": "enemy_4",
+            "prefabPath": "Assets/Resources/Digimon/4코스트/Infermon/Infermon.prefab"
+        },
+        {
+            "id": 2005,
+            "key": "creep_enemy_5",
+            "name": "디아블로몬",
+            "kind": "Creep",
+            "catalogId": "enemy_5",
+            "prefabPath": "Assets/Resources/Digimon/5코스트/Diaboromon/Diaboromon.prefab"
+        },
+        {
+            "id": 2006,
+            "key": "creep_enemy_6",
+            "name": "아마게몬",
+            "kind": "Creep",
+            "catalogId": "enemy_6",
+            "prefabPath": ""
+        }
+    ],
+    "schemaVersion": 1
+}

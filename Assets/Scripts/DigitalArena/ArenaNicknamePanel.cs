@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -8,15 +10,18 @@ namespace DigitalArena
     // No IMGUI TextEditor, manual composition concatenation, or per-frame text assignment.
     public sealed class ArenaNicknamePanel : IDisposable
     {
-        readonly ArenaAccountClient account;
-        readonly GameObject owner;
-        readonly PanelSettings settings;
-        readonly VisualElement screen;
-        readonly TextField input;
-        readonly UnityEngine.UIElements.Button check, confirm, change;
-        readonly UnityEngine.UIElements.Label message;
-        string playerId;
-        bool visible;
+
+        readonly ArenaAccountClient	account;
+
+        string	playerId;
+        bool	visible;
+
+        readonly GameObject						owner;
+        readonly PanelSettings					settings;
+        readonly VisualElement					screen;
+        readonly TextField						input;
+        readonly UnityEngine.UIElements.Button	check, confirm, change;
+        readonly UnityEngine.UIElements.Label	message;
 
         public ArenaNicknamePanel(Transform parent, ArenaAccountClient account, Font font, Texture2D background)
         {
@@ -28,10 +33,14 @@ namespace DigitalArena
             settings.themeStyleSheet = Resources.Load<ThemeStyleSheet>("UI/Login/NicknameTheme");
             owner = new GameObject("Nickname Input (UI Toolkit)");
             owner.transform.SetParent(parent, false);
+
             var document = owner.AddComponent<UIDocument>();
+
             document.panelSettings = settings;
             document.visualTreeAsset = Resources.Load<VisualTreeAsset>("UI/Login/NicknameView");
+
             var root = document.rootVisualElement;
+
             root.pickingMode = PickingMode.Ignore;
             root.style.unityFontDefinition = FontDefinition.FromFont(font);
             screen = root.Q("nicknameScreen");
@@ -46,7 +55,11 @@ namespace DigitalArena
             input.RegisterValueChangedCallback(_ => account.InvalidateNickname());
             check.clicked += () => AfterComposition(() => account.CheckNickname(input.value));
             confirm.clicked += () => AfterComposition(() => account.SetNickname(input.value));
-            change.clicked += () => { input.Blur(); account.Logout(); };
+            change.clicked += () =>
+            {
+                input.Blur();
+                account.Logout();
+            };
             screen.style.display = DisplayStyle.None;
         }
 
@@ -55,10 +68,15 @@ namespace DigitalArena
             // Give focus loss a UI tick to commit the final Hangul syllable before
             // freezing the field for an HTTP request. Never submit a stale cached value.
             input.Blur();
+
             var requestedPlayer = playerId;
+
             input.schedule.Execute(() =>
             {
-                if (visible && !account.Busy && account.Profile?.playerId == requestedPlayer) action();
+                if (visible && !account.Busy && account.Profile?.playerId == requestedPlayer)
+                {
+                    action();
+                }
             });
         }
 
@@ -66,18 +84,32 @@ namespace DigitalArena
         {
             if (visible != show)
             {
-                if (!show) input.Blur();
+                if (!show)
+                {
+                    input.Blur();
+                }
+
                 visible = show;
                 screen.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
             }
-            if (!show) return;
+
+            if (!show)
+            {
+                return;
+            }
+
             if (playerId != account.Profile.playerId)
             {
                 playerId = account.Profile.playerId;
                 input.SetValueWithoutNotify("");
                 account.InvalidateNickname();
             }
-            if (!Mathf.Approximately(settings.scale, scale)) settings.scale = scale;
+
+            if (!Mathf.Approximately(settings.scale, scale))
+            {
+                settings.scale = scale;
+            }
+
             screen.style.left = offset.x / scale;
             screen.style.top = offset.y / scale;
             input.isReadOnly = account.Busy;
@@ -90,8 +122,15 @@ namespace DigitalArena
 
         public void Dispose()
         {
-            if (owner != null) UnityEngine.Object.Destroy(owner);
-            if (settings != null) UnityEngine.Object.Destroy(settings);
+            if (owner != null)
+            {
+                UnityEngine.Object.Destroy(owner);
+            }
+
+            if (settings != null)
+            {
+                UnityEngine.Object.Destroy(settings);
+            }
         }
     }
 }

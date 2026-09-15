@@ -48,10 +48,20 @@
 
 ## 현재 실행 방법
 
-메인 화면의 `멀티 플레이` 버튼은 현재 서버 매칭을 기다리지 않고 맵 미리보기로 바로 진입한다. 7번 전장에 플레이어 캐릭터를 생성하며, 라운드·상점·전투 로직은 실행하지 않는다.
+빌드 시작 씬은 `Assets/Scenes/MainMenu.unity`다. 로그인, 닉네임, 게임 시작 버튼을 처리하며, 계정과 네트워크 세션은 씬 전환 후에도 유지한다.
 
-- 바닥 우클릭 / 터치 탭: 해당 위치로 이동.
-- 캐릭터는 현재 전장 안에서 이동하며 호수 밖 목적지는 받지 않는다.
-- Esc / `메인 화면으로`: 미리보기 종료 및 메뉴 복귀.
+- 멀티 버튼은 매칭 요청·응답 대기 없이 `DragonEyeLake` 씬을 비동기로 로드한다. 씬 진입 후 서버 스폰 처리는 유지한다.
+- `Assets/Scenes/DragonEyeLake.unity`는 멀티플레이 전용이며 맵 프리팹과 `MultiplayerSceneController`를 포함한다. 메인 화면 컨트롤러와 싱글플레이 라운드는 생성하지 않는다.
+- 씬 진입 시 `GameSceneFlow.LocalArenaIndex` 위치에 카메라를 초기화한다. 캐릭터와 기물은 `S_Spawn` 수신 시 생성한다. 서버 프로토콜에 전장 할당 필드가 아직 없어 기본값은 기존 7번 전장이다. 서버 연동 시 씬 전환 전에 `GameSceneFlow.SetLocalArenaAssignment(index)`를 호출한다. index는 0~7이다.
+- 우클릭·터치 탭으로 전장 안을 이동한다. WASD·방향키 이동은 없다. Esc 또는 메인 화면 버튼은 `MainMenu` 씬으로 돌아간다.
+- 싱글 버튼은 보존한 `Assets/Scenes/SinglePlayer.unity`를 로드해 기존 맵과 라운드를 시작한다. `ArenaWorld3D.cs`와 캐릭터 모터는 변경하지 않았다.
 
-진입 구현은 `DigitalArenaGame.Multiplayer.cs`, 독립 맵·카메라·플레이어 조작은 `MultiplayerMapPreview.cs`에 있다. 기존 싱글플레이 맵과 캐릭터 모터는 수정하지 않았다. 실제 UI 버튼, 키보드/마우스/터치 이동, 복귀/재진입, 전투 미생성 및 복귀 후 싱글플레이 진입을 Play 모드에서 검증했다. 결과: `Logs/MultiplayerPreviewValidation.txt`.
+씬 전환 검증은 `Tools/Verification/VerifySceneSplitEnter.cs`, `VerifySceneSplitMulti.cs`, `VerifySceneSplitReturn.cs`, `VerifySceneSplitSingle.cs` 순서로 Play 모드에서 실행한다. 기존 `VerifyMultiplayerPreview*.cs`는 씬 분리 이전 구조를 대상으로 한 기록이다. 결과는 `Logs/SceneSplitValidation.txt`에 기록한다.
+
+## 개발 범위 결정 (2026-09-15)
+
+싱글플레이는 멀티플레이가 완성되면 삭제할 임시 기능이다. 이후 싱글플레이에 대한 별도 수정, 개선, 기능 추가는 진행하지 않는다. 현재는 기존 기능만 보존하고 개발은 멀티플레이에 집중한다. 멀티플레이 완성 전에는 싱글플레이를 임의로 삭제하지 않는다.
+
+## 서버 스폰
+
+S_Spawn의 SpawnTypeId를 SpawnTypeTable로 조회해 생성하고 EntityId로 객체를 관리한다. X/Y는 현재 카메라 전장 기준 로컬 X/Z 좌표다. (0,0)은 전장 중앙이다. 임시 캐릭터의 자동 생성은 제거했다. 전체 플레이어에게 스폰이 전송되므로 현재 패킷만으로 내 객체를 판별하지 않는다. 서버에서 내 EntityId가 확인되면 SetLocalEntityId로 우클릭·터치 조작을 연결한다. 세부 사항은 Docs/SpawnTypes.md를 참고한다.

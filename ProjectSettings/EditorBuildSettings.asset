@@ -6,7 +6,13 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: a74bc75c318a58c469f47e72a4a88e60
+  - enabled: 1
     path: Assets/Scenes/DragonEyeLake.unity
     guid: fd3ce4ad365ee3948ab8651d7b0618ae
+  - enabled: 1
+    path: Assets/Scenes/SinglePlayer.unity
+    guid: 9709836a2c5cd704187e082f8efba707
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}

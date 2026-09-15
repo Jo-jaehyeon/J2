@@ -1,0 +1,177 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 555610000b95e0745983ebf5e7cf4ca1, type: 3}
+  m_Name: SpawnTypeTable
+  m_EditorClassIdentifier: Assembly-CSharp::J2.Spawning.SpawnTypeTable
+  entries:
+  - kind: 0
+    id: 0
+    key: player_shintaeyil
+    displayName: "\uC2E0\uD0DC\uC77C"
+    catalogId: 
+    prefab: {fileID: 1502721041264042570, guid: c2cad73358a823d46b966a130c034c48, type: 3}
+  - kind: 1
+    id: 1001
+    key: ally_ally_1
+    displayName: "\uCF54\uB85C\uBAAC"
+    catalogId: ally_1
+    prefab: {fileID: 6642514579245892626, guid: 0a21f7dbc771dde4eb59177f5a2a1f2e, type: 3}
+  - kind: 1
+    id: 1002
+    key: ally_ally_2
+    displayName: "\uC544\uAD6C\uBAAC"
+    catalogId: ally_2
+    prefab: {fileID: 7666559967852144540, guid: 9aa9c34d168cf6a4eb4c8173753da46e, type: 3}
+  - kind: 1
+    id: 1003
+    key: ally_ally_3
+    displayName: "\uADF8\uB808\uC774\uBAAC"
+    catalogId: ally_3
+    prefab: {fileID: 6788909935790239722, guid: d4ca43884056ab942b83a07436b57bf9, type: 3}
+  - kind: 1
+    id: 1004
+    key: ally_ally_4
+    displayName: "\uBA54\uD0C8\uADF8\uB808\uC774\uBAAC"
+    catalogId: ally_4
+    prefab: {fileID: 4473579967377232545, guid: f06c6da15df9556449bf8047318eef5f, type: 3}
+  - kind: 1
+    id: 1005
+    key: ally_ally_5
+    displayName: "\uC6CC\uADF8\uB808\uC774\uBAAC"
+    catalogId: ally_5
+    prefab: {fileID: 375876389656721810, guid: 4ad303caeab0f4e4797574ddfe5e8dd1, type: 3}
+  - kind: 1
+    id: 1006
+    key: ally_garurumon_1
+    displayName: "\uBFD4\uBAAC"
+    catalogId: garurumon_1
+    prefab: {fileID: 7538797246871215835, guid: 8689c7944907f8f428670ebac4376b99, type: 3}
+  - kind: 1
+    id: 1007
+    key: ally_garurumon_2
+    displayName: "\uD30C\uD53C\uBAAC"
+    catalogId: garurumon_2
+    prefab: {fileID: 1670667114504676936, guid: 766f97cad65452846a7654a6562fbc33, type: 3}
+  - kind: 1
+    id: 1008
+    key: ally_garurumon_3
+    displayName: "\uAC00\uB8E8\uBAAC"
+    catalogId: garurumon_3
+    prefab: {fileID: 1101231122332463114, guid: eba745982f190804a8a9469f706192ad, type: 3}
+  - kind: 1
+    id: 1009
+    key: ally_garurumon_4
+    displayName: "\uC6CC\uAC00\uB8E8\uBAAC"
+    catalogId: garurumon_4
+    prefab: {fileID: 3839017823948102189, guid: 55736e12f7b1ae044a525f47a4b8d6c8, type: 3}
+  - kind: 1
+    id: 1010
+    key: ally_garurumon_5
+    displayName: "\uBA54\uD0C8\uAC00\uB8E8\uBAAC"
+    catalogId: garurumon_5
+    prefab: {fileID: 2714033156593460479, guid: 87029fed5d8c349408b72a1a544053f9, type: 3}
+  - kind: 1
+    id: 1011
+    key: ally_rosemon_1
+    displayName: "\uC2DC\uB4DC\uBAAC"
+    catalogId: rosemon_1
+    prefab: {fileID: 852365195427825847, guid: 514d2143e19fb4d43bb3df7440691815, type: 3}
+  - kind: 1
+    id: 1012
+    key: ally_rosemon_2
+    displayName: "\uD314\uBAAC"
+    catalogId: rosemon_2
+    prefab: {fileID: 2177223501011099061, guid: 271ecaa59fe13124ba1244270155f9b8, type: 3}
+  - kind: 1
+    id: 1013
+    key: ally_rosemon_3
+    displayName: "\uB2C8\uB4DC\uBAAC"
+    catalogId: rosemon_3
+    prefab: {fileID: 9133286993145811704, guid: e564b7ef0d6be2647ad4aadad5265961, type: 3}
+  - kind: 1
+    id: 1014
+    key: ally_rosemon_4
+    displayName: "\uB9B4\uB9AC\uBAAC"
+    catalogId: rosemon_4
+    prefab: {fileID: 8552515542498030585, guid: d5887e78368004b47ac4cbb6e68f3621, type: 3}
+  - kind: 1
+    id: 1015
+    key: ally_rosemon_5
+    displayName: "\uB85C\uC81C\uBAAC"
+    catalogId: rosemon_5
+    prefab: {fileID: 678793130546112420, guid: 8cae3b2539ba5d34aa95d11802f35ddf, type: 3}
+  - kind: 1
+    id: 1016
+    key: ally_myotismon_1
+    displayName: "\uD37C\uADF8\uBAAC"
+    catalogId: myotismon_1
+    prefab: {fileID: 3636826205635324839, guid: 892f9ad5c82ed8642a3c7ff9ba3333c4, type: 3}
+  - kind: 1
+    id: 1017
+    key: ally_myotismon_2
+    displayName: "\uD53C\uCF54\uB370\uBE14\uBAAC"
+    catalogId: myotismon_2
+    prefab: {fileID: 2773777953457317265, guid: e85a31f338b1d154c896c39166e1389c, type: 3}
+  - kind: 1
+    id: 1018
+    key: ally_myotismon_3
+    displayName: "\uB370\uBE14\uBAAC"
+    catalogId: myotismon_3
+    prefab: {fileID: 7815294406036881795, guid: 7d5bce651fb4ae94a9e9eca6e8af0cd4, type: 3}
+  - kind: 1
+    id: 1019
+    key: ally_myotismon_4
+    displayName: "\uBB18\uD2F0\uC2A4\uBAAC"
+    catalogId: myotismon_4
+    prefab: {fileID: 5789907308151314425, guid: a9e09d1b016a212468f0db45ad455ef7, type: 3}
+  - kind: 1
+    id: 1020
+    key: ally_myotismon_5
+    displayName: "\uBCA0\uB188\uBB18\uD2F0\uC2A4\uBAAC"
+    catalogId: myotismon_5
+    prefab: {fileID: 9015070266403539808, guid: f19774bc3c87d9449931e545e322b4b8, type: 3}
+  - kind: 2
+    id: 2001
+    key: creep_enemy_1
+    displayName: "\uCE20\uBA54\uBAAC"
+    catalogId: enemy_1
+    prefab: {fileID: 3916989700785352786, guid: 9741635d887cda140a77de35bd032a33, type: 3}
+  - kind: 2
+    id: 2002
+    key: creep_enemy_2
+    displayName: "\uCF00\uB77C\uBAAC"
+    catalogId: enemy_2
+    prefab: {fileID: 3609696365587822167, guid: 8571e99a3b9b64c408130a63db2f74e5, type: 3}
+  - kind: 2
+    id: 2003
+    key: creep_enemy_3
+    displayName: "\uD06C\uB9AC\uC0AC\uB9AC\uBAAC"
+    catalogId: enemy_3
+    prefab: {fileID: 1791562662835115881, guid: dbb1e4df5e9678d47a064206eb2558eb, type: 3}
+  - kind: 2
+    id: 2004
+    key: creep_enemy_4
+    displayName: "\uC778\uD3A0\uBAAC"
+    catalogId: enemy_4
+    prefab: {fileID: 1960423772349081110, guid: fbbc14d3d3314b546ab65c49a3e91c7a, type: 3}
+  - kind: 2
+    id: 2005
+    key: creep_enemy_5
+    displayName: "\uB514\uC544\uBE14\uB85C\uBAAC"
+    catalogId: enemy_5
+    prefab: {fileID: 4613613775244738623, guid: 64a0c854d4e29cd4ebe2baa7051b7e6e, type: 3}
+  - kind: 2
+    id: 2006
+    key: creep_enemy_6
+    displayName: "\uC544\uB9C8\uAC8C\uBAAC"
+    catalogId: enemy_6
+    prefab: {fileID: 0}

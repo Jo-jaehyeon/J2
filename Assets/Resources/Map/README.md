@@ -1,6 +1,6 @@
 # 용의 눈 호수 · 멀티플레이 맵 에셋
 
-동일한 형태의 8개 전장(위 3개 / 중간 좌우 2개 / 아래 3개, 중앙 비움), 전장 중앙을 통과하는 공용 직사각형 철로, 기차 한 대, 호수를 둘러싼 육지·숲과 먼 산·폭포로 구성한다. 기존 싱글플레이 씬과 ArenaWorld3D는 수정하지 않았다.
+동일한 형태의 8개 전장(위 3개 / 중간 좌우 2개 / 아래 3개, 중앙 비움), 전장 중앙을 통과하는 공용 직사각형 철로, 기차 한 대, 호수를 둘러싼 육지·숲과 먼 산·폭포로 구성한다.
 
 ## 에셋
 
@@ -54,14 +54,13 @@
 - `Assets/Scenes/DragonEyeLake.unity`는 멀티플레이 전용이며 맵 프리팹과 `MultiplayerSceneController`를 포함한다. 메인 화면 컨트롤러와 싱글플레이 라운드는 생성하지 않는다.
 - 씬 진입 시 `GameSceneFlow.LocalArenaIndex` 위치에 카메라를 초기화한다. 캐릭터와 기물은 `S_Spawn` 수신 시 생성한다. 서버 프로토콜에 전장 할당 필드가 아직 없어 기본값은 기존 7번 전장이다. 서버 연동 시 씬 전환 전에 `GameSceneFlow.SetLocalArenaAssignment(index)`를 호출한다. index는 0~7이다.
 - 우클릭·터치 탭으로 전장 안을 이동한다. WASD·방향키 이동은 없다. Esc 또는 메인 화면 버튼은 `MainMenu` 씬으로 돌아간다.
-- 싱글 버튼은 보존한 `Assets/Scenes/SinglePlayer.unity`를 로드해 기존 맵과 라운드를 시작한다. `ArenaWorld3D.cs`와 캐릭터 모터는 변경하지 않았다.
 
-씬 전환 검증은 `Tools/Verification/VerifySceneSplitEnter.cs`, `VerifySceneSplitMulti.cs`, `VerifySceneSplitReturn.cs`, `VerifySceneSplitSingle.cs` 순서로 Play 모드에서 실행한다. 기존 `VerifyMultiplayerPreview*.cs`는 씬 분리 이전 구조를 대상으로 한 기록이다. 결과는 `Logs/SceneSplitValidation.txt`에 기록한다.
+현재 검증은 Tools/Verification/VerifyMultiplayerHud.cs, VerifyServerSpawn.cs, VerifyPreservedMovement.cs를 사용한다.
 
 ## 개발 범위 결정 (2026-09-15)
 
-싱글플레이는 멀티플레이가 완성되면 삭제할 임시 기능이다. 이후 싱글플레이에 대한 별도 수정, 개선, 기능 추가는 진행하지 않는다. 현재는 기존 기능만 보존하고 개발은 멀티플레이에 집중한다. 멀티플레이 완성 전에는 싱글플레이를 임의로 삭제하지 않는다.
+사용자 승인에 따라 싱글 맵과 로컬 전투·라운드·상점 추첨·실제 구매 로직을 삭제했다. 메인 화면과 멀티 씬만 유지한다. UI는 서버 상태 표시와 요청 콜백으로 이식했다. 상세 내용은 Docs/MultiplayerOnlyMigration.md를 참고한다.
 
 ## 서버 스폰
 
-S_Spawn의 SpawnTypeId를 SpawnTypeTable로 조회해 생성하고 EntityId로 객체를 관리한다. X/Y는 현재 카메라 전장 기준 로컬 X/Z 좌표다. (0,0)은 전장 중앙이다. 임시 캐릭터의 자동 생성은 제거했다. 전체 플레이어에게 스폰이 전송되므로 현재 패킷만으로 내 객체를 판별하지 않는다. 서버에서 내 EntityId가 확인되면 SetLocalEntityId로 우클릭·터치 조작을 연결한다. 세부 사항은 Docs/SpawnTypes.md를 참고한다.
+S_Spawn의 SpawnTypeId를 SpawnTypeTable로 조회해 생성하고 EntityId로 객체를 관리한다. X/Y는 현재 카메라 전장 기준 로컬 X/Z 좌표다. (0,0)은 전장 중앙이다. 임시 캐릭터의 자동 생성은 제거했다. 전체 플레이어에게 스폰이 전송되므로 S_EnterGame.ObjectId를 내 EntityId로 보관한다. 멀티 컨트롤러가 동일 EntityId의 스폰 객체에 우클릭·터치 조작을 자동 연결한다. 세부 사항은 Docs/SpawnTypes.md를 참고한다.

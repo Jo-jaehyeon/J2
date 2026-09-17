@@ -13,6 +13,7 @@ namespace J2.Networking
         private readonly object	stateLock = new object ();
         private bool			connected;
         private int				sessionId, matchedGameId;
+        private int				localEntityId;
         private bool			matchResultPending;
         private int				matchResultSessionId;
         private readonly System.Collections.Generic.Queue<S_Spawn> pendingSpawns = new System.Collections.Generic.Queue<S_Spawn>();
@@ -39,6 +40,26 @@ namespace J2.Networking
                 {
                     return matchedGameId;
                 }
+            }
+        }
+
+        public int LocalEntityId
+        {
+            get
+            {
+                lock (stateLock)
+                {
+                    return localEntityId;
+                }
+            }
+        }
+
+        public void SetEnteredGame(int enteredSessionId, int objectId)
+        {
+            lock (stateLock)
+            {
+                sessionId = enteredSessionId;
+                localEntityId = objectId;
             }
         }
 
@@ -139,6 +160,7 @@ namespace J2.Networking
             {
                 connected = true;
                 sessionId = 0;
+                localEntityId = 0;
                 matchedGameId = 0;
                 pendingSpawns.Clear();
                 matchResultPending = false;
@@ -154,6 +176,7 @@ namespace J2.Networking
             {
                 connected = false;
                 sessionId = 0;
+                localEntityId = 0;
                 matchedGameId = 0;
                 pendingSpawns.Clear();
                 matchResultPending = false;

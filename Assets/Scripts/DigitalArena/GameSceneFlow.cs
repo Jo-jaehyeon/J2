@@ -10,7 +10,6 @@ namespace DigitalArena
     {
 
         public const string	MainMenu = "MainMenu";
-        public const string	SinglePlayer = "SinglePlayer";
         public const string	Multiplayer = "DragonEyeLake";
         public static bool IsLoading { get; private set; }
         // Until the server protocol includes assignments, retain the existing preview arena.

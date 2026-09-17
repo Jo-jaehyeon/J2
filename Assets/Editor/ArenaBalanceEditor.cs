@@ -48,7 +48,7 @@ public sealed class ArenaBalanceEditor : EditorWindow
 
         for (int tier = 0; tier < 5; tier++)
         {
-            GUILayout.Label(ArenaRules.CostNames[tier], GUILayout.Width(106));
+            GUILayout.Label((tier + 1) + "코스트", GUILayout.Width(106));
         }
 
         GUILayout.Label("다음 레벨 필요 XP", GUILayout.Width(130));
@@ -74,7 +74,7 @@ public sealed class ArenaBalanceEditor : EditorWindow
                 row.weights[tier] = EditorGUILayout.IntField(row.weights[tier], GUILayout.Width(106));
             }
 
-            if (row.level == ArenaRules.MaxLevel)
+            if (row.level == data.levels.Length)
             {
                 GUILayout.Label("MAX", GUILayout.Width(130));
             }

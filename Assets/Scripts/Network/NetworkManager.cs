@@ -60,6 +60,7 @@ namespace J2.Networking
         private int		port = 9900;
         private bool	connectionStarted;
         public int SessionId => _session.SessionId;
+        public int LocalEntityId => _session.LocalEntityId;
         public bool IsConnected => _session.IsConnected;
 
         public void ClearMatchResult() => _session.ClearMatchResult();

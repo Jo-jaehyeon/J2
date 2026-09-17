@@ -306,7 +306,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6154949761424033939}
   - component: {fileID: 4005345699150181573}
-  - component: {fileID: 3685140415402664905}
   m_Layer: 0
   m_Name: Koromon
   m_TagString: Untagged
@@ -350,18 +349,6 @@ Animation:
   m_AnimatePhysics: 0
   m_UpdateMode: 0
   m_CullingType: 0
---- !u!114 &3685140415402664905
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6642514579245892626}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c876c0fe0aa986c48b26d66d7b95ab6a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DigitalArena.ArenaUnitAnimation
 --- !u!1 &7349136565976109377
 GameObject:
   m_ObjectHideFlags: 0

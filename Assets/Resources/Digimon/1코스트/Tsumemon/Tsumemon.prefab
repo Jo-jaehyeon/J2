@@ -198,7 +198,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1391516506630398710}
   - component: {fileID: 1005736442754144315}
-  - component: {fileID: 4530667852302021840}
   m_Layer: 0
   m_Name: Tsumemon
   m_TagString: Untagged
@@ -242,18 +241,6 @@ Animation:
   m_AnimatePhysics: 0
   m_UpdateMode: 0
   m_CullingType: 0
---- !u!114 &4530667852302021840
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3916989700785352786}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c876c0fe0aa986c48b26d66d7b95ab6a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DigitalArena.ArenaUnitAnimation
 --- !u!1 &3940821501597893941
 GameObject:
   m_ObjectHideFlags: 0

@@ -228,7 +228,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5605656494181273210}
   - component: {fileID: 7346569583459594970}
-  - component: {fileID: 6109049334778813052}
+  - component: {fileID: 5351597991327269627}
   m_Layer: 30
   m_Name: ShinTaeyil
   m_TagString: Untagged
@@ -272,7 +272,7 @@ Animation:
   m_AnimatePhysics: 0
   m_UpdateMode: 0
   m_CullingType: 0
---- !u!114 &6109049334778813052
+--- !u!114 &5351597991327269627
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -281,10 +281,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 1502721041264042570}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 81ea17db834bd194f88e9fff107c2969, type: 3}
+  m_Script: {fileID: 11500000, guid: 82f491a50a79a4341930cdcb4fdeeac0, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DigitalArena.PlayableCharacterMotor
-  movementSpeed: 4
+  m_EditorClassIdentifier: Assembly-CSharp::J2.Creatures.Player
+  moveSpeed: 4
+  turnSpeed: 540
+  idleAnimation: Idle
+  moveAnimation: Walk
+  attackAnimation: Attack
+  deathAnimation: Death
+  animationPlayer: {fileID: 0}
+  destination: {x: 0, y: 0, z: 0}
 --- !u!1 &1624809784046084272
 GameObject:
   m_ObjectHideFlags: 0

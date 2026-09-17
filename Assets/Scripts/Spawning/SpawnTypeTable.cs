@@ -127,7 +127,7 @@ namespace J2.Spawning
 
                 result = new GameObject(entry.displayName);
                 result.transform.SetParent(parent, false);
-                result.AddComponent<ArenaWorld3D>().BuildSpawnModel(data, entry.kind == SpawnKind.Creep);
+                result.AddComponent<UnitModelView>().BuildSpawnModel(data, entry.kind == SpawnKind.Creep);
             }
 
             result.name = entry.displayName;

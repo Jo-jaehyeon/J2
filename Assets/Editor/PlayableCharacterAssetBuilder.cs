@@ -227,9 +227,9 @@ public static class PlayableCharacterAssetBuilder
                 child.position -= new Vector3(bounds.center.x, bounds.min.y, 0);
             }
 
-            if (root.GetComponent<PlayableCharacterMotor>() == null)
+            if (root.GetComponent<J2.Creatures.Player>() == null)
             {
-                root.AddComponent<PlayableCharacterMotor>();
+                root.AddComponent<J2.Creatures.Player>();
             }
 
             foreach (var r in root.GetComponentsInChildren<SkinnedMeshRenderer>())
@@ -274,7 +274,7 @@ public static class PlayableCharacterAssetBuilder
 
         try
         {
-            if (root.GetComponent<PlayableCharacterMotor>() == null)
+            if (root.GetComponent<J2.Creatures.Player>() == null)
             {
                 throw new Exception("Missing driver");
             }

@@ -17,7 +17,7 @@ namespace J2.Networking
         {
             if (session is ServerSession server)
             {
-                server.SetSessionId(packet.SessionId);
+                server.SetEnteredGame(packet.SessionId, packet.ObjectId);
             }
         }
 

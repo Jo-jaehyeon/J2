@@ -501,7 +501,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2368765431504673804}
   - component: {fileID: 1445792302623481112}
-  - component: {fileID: 3747620462117793156}
   m_Layer: 0
   m_Name: Togemon
   m_TagString: Untagged
@@ -545,15 +544,3 @@ Animation:
   m_AnimatePhysics: 0
   m_UpdateMode: 0
   m_CullingType: 0
---- !u!114 &3747620462117793156
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9133286993145811704}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c876c0fe0aa986c48b26d66d7b95ab6a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DigitalArena.ArenaUnitAnimation

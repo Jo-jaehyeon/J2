@@ -227,11 +227,6 @@ public static class DigimonBlenderAssetBuilder
                 child.position -= new Vector3(bounds.center.x, bounds.min.y, 0);
             }
 
-            if (root.GetComponent<ArenaUnitAnimation>() == null)
-            {
-                root.AddComponent<ArenaUnitAnimation>();
-            }
-
             foreach (var r in root.GetComponentsInChildren<SkinnedMeshRenderer>())
             {
                 r.updateWhenOffscreen = true;
@@ -286,9 +281,9 @@ public static class DigimonBlenderAssetBuilder
 
         try
         {
-            if (root.GetComponent<ArenaUnitAnimation>() == null)
+            if (root.GetComponent<Animation>() == null)
             {
-                throw new Exception("Missing driver");
+                throw new Exception("Missing Animation");
             }
 
             var anim = root.GetComponent<Animation>();

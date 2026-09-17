@@ -118,7 +118,6 @@ public static class TsumemonAssetBuilder
         }
 
         animation.clip = animation.GetClip("Idle");
-        root.AddComponent<ArenaUnitAnimation>();
         PrefabUtility.SaveAsPrefabAsset(root, Folder + "/Tsumemon.prefab");
 
         var catalogPath = "Assets/Resources/DigimonCatalog.json";

@@ -103,9 +103,7 @@ public sealed class DigimonTableEditor : EditorWindow
 
         if (side == 0)
         {
-            row.cost = EditorGUILayout.Popup("코스트", row.cost - 1, ArenaRules.CostNames) + 1;
-            EditorGUILayout.LabelField("구매 / 1성 판매 골드", ArenaRules.PurchasePrice(row) + " / " + ArenaRules.SalePrice(row));
-            EditorGUILayout.LabelField("2성 / 3성 판매 골드", ArenaRules.SalePrice(row, 2) + " / " + ArenaRules.SalePrice(row, 3));
+            row.cost = EditorGUILayout.Popup("코스트", row.cost - 1, new[]{"1코스트","2코스트","3코스트","4코스트","5코스트"}) + 1;
 
             var targets = data.allies.Where(d => d.id != row.id).ToArray();
 

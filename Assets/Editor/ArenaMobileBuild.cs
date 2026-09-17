@@ -58,7 +58,7 @@ public static class ArenaMobileBuild
                 EditorUserBuildSettings.buildAppBundle = false;
             }
 
-            var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions { scenes = new[] { scene }, target = target, locationPathName = path, options = BuildOptions.Development });
+            var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions { scenes = new[] { "Assets/Scenes/MainMenu.unity", scene }, target = target, locationPathName = path, options = BuildOptions.Development });
 
             if (report.summary.result != BuildResult.Succeeded)
             {

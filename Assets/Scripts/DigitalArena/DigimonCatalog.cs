@@ -125,7 +125,7 @@ namespace DigitalArena
 
         static DigimonData[] Defaults(bool enemy)
         {
-            var rows = Enumerable.Range(1, enemy ? 6 : 5).Select(i => new DigimonData { id = (enemy ? "enemy_" : "ally_") + i, name = (enemy ? ArenaRules.EnemyNames : ArenaRules.Names)[i - 1], cost = enemy ? 0 : i, modelTier = i, startStage = enemy ? i : 1, evolvesTo = !enemy && i < 5 ? "ally_" + (i + 1) : "", HP = (float)(90 * Math.Pow(2.1, i)), ATK = (float)(15 * Math.Pow(2, i)), INT = (float)(15 * Math.Pow(2, i)), type = enemy ? DigimonType.Unknown : DigimonType.Vaccine, element = enemy ? DigimonElement.Dark : i < 2 ? DigimonElement.Neutral : DigimonElement.Fire, attack = enemy ? AttackKind.Special : AttackKind.Physical, range = i == 1 ? 2 : 1 }).ToArray();
+            var rows = Enumerable.Range(1, enemy ? 6 : 5).Select(i => new DigimonData { id = (enemy ? "enemy_" : "ally_") + i, name = (enemy ? new[]{"츠메몬","케라몬","크리사리몬","인펠몬","디아블로몬","아마게몬"} : new[]{"코로몬","아구몬","그레이몬","메탈그레이몬","워그레이몬"})[i - 1], cost = enemy ? 0 : i, modelTier = i, startStage = enemy ? i : 1, evolvesTo = !enemy && i < 5 ? "ally_" + (i + 1) : "", HP = (float)(90 * Math.Pow(2.1, i)), ATK = (float)(15 * Math.Pow(2, i)), INT = (float)(15 * Math.Pow(2, i)), type = enemy ? DigimonType.Unknown : DigimonType.Vaccine, element = enemy ? DigimonElement.Dark : i < 2 ? DigimonElement.Neutral : DigimonElement.Fire, attack = enemy ? AttackKind.Special : AttackKind.Physical, range = i == 1 ? 2 : 1 }).ToArray();
 
             if (enemy)
             {

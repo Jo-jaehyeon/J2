@@ -41,7 +41,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5590479724743526440}
   - component: {fileID: 8112117368933785205}
-  - component: {fileID: 44092513320988699}
   m_Layer: 0
   m_Name: Rosemon
   m_TagString: Untagged
@@ -85,18 +84,6 @@ Animation:
   m_AnimatePhysics: 0
   m_UpdateMode: 0
   m_CullingType: 0
---- !u!114 &44092513320988699
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 678793130546112420}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c876c0fe0aa986c48b26d66d7b95ab6a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DigitalArena.ArenaUnitAnimation
 --- !u!1 &748047138000648018
 GameObject:
   m_ObjectHideFlags: 0

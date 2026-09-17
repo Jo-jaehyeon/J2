@@ -11,7 +11,7 @@ public static class ArenaBuild
 {
     public static void BuildSmoke()
     {
-        DigitalArenaValidation.Run();
+
 
         const string scenePath = "Assets/Scenes/DragonEyeLake.unity";
 
@@ -22,13 +22,9 @@ public static class ArenaBuild
             EditorSceneManager.SaveScene(scene, scenePath);
         }
 
-        EditorBuildSettings.scenes = new[]
-        {
-            new EditorBuildSettingsScene(scenePath, true)
-        };
         Directory.CreateDirectory("Builds/DigitalArena");
 
-        var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions { scenes = new[] { scenePath }, locationPathName = "Builds/DigitalArena/DigitalArena.exe", target = BuildTarget.StandaloneWindows64, options = BuildOptions.Development });
+        var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions { scenes = new[] { "Assets/Scenes/MainMenu.unity", scenePath }, locationPathName = "Builds/DigitalArena/DigitalArena.exe", target = BuildTarget.StandaloneWindows64, options = BuildOptions.Development });
 
         if (report.summary.result != BuildResult.Succeeded)
         {

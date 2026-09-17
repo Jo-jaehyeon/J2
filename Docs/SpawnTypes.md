@@ -44,7 +44,7 @@ Spawn은 등록 프리팹 또는 기존 기물 모델을 생성하며, 패킷 �
 
 S_Spawn 수신은 ServerSession 큐에 보관하고 MultiplayerSceneController.Update에서 메인 스레드로 처리한다. SpawnTypeId로 테이블을 조회하여 객체를 생성하고 EntityId로 중복 생성을 방지한다. 패킷의 X/Y는 현재 카메라가 보고 있는 전장 기준 로컬 X/Z 좌표로 적용한다. (0,0)은 해당 전장 중앙이다. 플레이어 높이는 0.25, 기물은 0으로 적용한다. 연결 종료와 멀티 씬 종료 시 대기 큐를 비운다.
 
-S_Spawn은 같은 게임의 모든 클라이언트에게 전달된다. 현재 소유자 필드가 없어 SpawnTypeId나 수신 순서로 내 캐릭터를 추측하지 않는다. 자동으로 생성하던 임시 플레이어는 제거했다. 서버가 내 EntityId를 식별해 주면 메인 스레드에서 MultiplayerSceneController.SetLocalEntityId(entityId)를 호출하여 기존 우클릭·터치 조작을 연결한다. 식별 정보가 오기 전에는 생성된 객체만 표시한다.
+S_Spawn은 같은 게임의 모든 클라이언트에게 전달된다. 현재 소유자 필드가 없어 SpawnTypeId나 수신 순서로 내 캐릭터를 추측하지 않는다. 자동으로 생성하던 임시 플레이어는 제거했다. S_EnterGame.ObjectId를 ServerSession.LocalEntityId에 보관한다. 멀티 컨트롤러가 메인 스레드에서 이 값을 읽어 SetLocalEntityId를 호출하고 동일한 S_Spawn.EntityId 객체에 기존 우클릭·터치 조작을 자동 연결한다. 입장 응답과 스폰의 처리 순서가 달라도 연결된다. 연결 종료 시 소유 ID를 초기화한다.
 
 ### EntityId로 객체 찾기
 

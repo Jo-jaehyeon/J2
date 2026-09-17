@@ -149,7 +149,6 @@ public static class WarGreymonAssetBuilder
             float height = vertices.Max(v => v.y) - vertices.Min(v => v.y);
 
             root.transform.localScale *= 2.15f / height;
-            root.AddComponent<ArenaUnitAnimation>();
 
             foreach (var renderer in root.GetComponentsInChildren<SkinnedMeshRenderer>())
             {
@@ -199,9 +198,9 @@ public static class WarGreymonAssetBuilder
         {
             var anim = root.GetComponent<Animation>();
 
-            if (root.GetComponent<ArenaUnitAnimation>() == null)
+            if (root.GetComponent<Animation>() == null)
             {
-                throw new Exception("Arena animation driver missing.");
+                throw new Exception("Animation component missing.");
             }
 
             foreach (var r in root.GetComponentsInChildren<Renderer>())

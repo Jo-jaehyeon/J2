@@ -15,11 +15,16 @@ namespace J2.MultiplayerMap
         [SerializeField]
         MultiplayerMapLayout	sceneMap;
         public MultiplayerMapPreview World { get; private set; }
-
+        public J2.Creatures.PlayerController PlayerController { get; private set; }
         public MultiplayerEntitySpawner Spawner { get; private set; }
-        int? localEntityId;
-        NetworkManager spawnNetwork;
-        ArenaGameUi	ui;
+
+        NetworkManager		spawnNetwork;
+        MultiplayerGameUi	ui;
+
+        int?	localEntityId;
+        public MultiplayerGameUi Hud => ui;
+
+        MultiplayerPointerInput	pointer;
 
         float	scale = 1;
 
@@ -29,21 +34,26 @@ namespace J2.MultiplayerMap
         void Awake()
         {
             World = gameObject.AddComponent<MultiplayerMapPreview>();
-            World.Initialize(Resources.Load<GameObject>("Map/DragonEyeMultiplayer"), null, GameSceneFlow.LocalArenaIndex, sceneMap != null ? sceneMap.gameObject : null);
+            World.Initialize(Resources.Load<GameObject>("Map/DragonEyeMultiplayer"), GameSceneFlow.LocalArenaIndex, sceneMap != null ? sceneMap.gameObject : null);
             spawnNetwork = NetworkManager.Instance;
             Spawner = gameObject.AddComponent<MultiplayerEntitySpawner>();
             Spawner.Initialize(World.ViewedArena);
+            PlayerController = gameObject.AddComponent<J2.Creatures.PlayerController>();
+            PlayerController.Initialize(World.ViewCamera);
             font = Font.CreateDynamicFontFromOSFont(new[] { "Malgun Gothic", "Arial" }, 18);
-            ui = new ArenaGameUi(transform, font);
+            ui = new MultiplayerGameUi(transform, font, this);
+            pointer = new MultiplayerPointerInput(this);
         }
 
         void Start()
         {
             // 멀티 씬 초기화 완료 → 서버에 스폰 요청
             var network = spawnNetwork;
+
             if (network == null || !network.IsConnected || network.SessionId <= 0)
             {
                 Debug.LogWarning("스폰 요청을 보낼 서버 세션이 없습니다.");
+
                 return;
             }
 
@@ -64,7 +74,10 @@ namespace J2.MultiplayerMap
                 SpawnTypeId = playerType.id
             };
 
-            if (!network.SendPacket(PacketId.CSpawn, packet)) Debug.LogWarning("스폰 요청 전송 실패");
+            if (!network.SendPacket(PacketId.CSpawn, packet))
+            {
+                Debug.LogWarning("스폰 요청 전송 실패");
+            }
         }
 
         void Update()
@@ -76,7 +89,18 @@ namespace J2.MultiplayerMap
 
             if (spawnNetwork != null)
             {
-                while (spawnNetwork.TryDequeueSpawn(out var packet)) HandleSpawn(packet);
+                // EnterGame identifies ownership; spawn broadcasts do not imply ownership.
+                int ownedEntityId = spawnNetwork.LocalEntityId;
+
+                if (ownedEntityId > 0 && localEntityId != ownedEntityId)
+                {
+                    SetLocalEntityId(ownedEntityId);
+                }
+
+                while (spawnNetwork.TryDequeueSpawn(out var packet))
+                {
+                    HandleSpawn(packet);
+                }
             }
 
             if (Keyboard.current?.escapeKey.wasPressedThisFrame == true)
@@ -86,18 +110,28 @@ namespace J2.MultiplayerMap
                 return;
             }
 
-            World.Tick(Time.deltaTime, screen =>
+            bool consumed = pointer.Tick(scale, offset);
+
+            PlayerController.Tick(screen =>
             {
                 var point = (new Vector2(screen.x, Screen.height - screen.y) - offset) / scale;
 
-                return point.y < 110 || point.y > 790;
+                return consumed || ui.OverUi(point);
             });
         }
 
         public bool HandleSpawn(S_Spawn packet)
         {
-            if (!Spawner.Spawn(packet)) return false;
-            if (localEntityId == packet.EntityId) BindLocalEntity();
+            if (!Spawner.Spawn(packet))
+            {
+                return false;
+            }
+
+            if (localEntityId == packet.EntityId)
+            {
+                BindLocalEntity();
+            }
+
             return true;
         }
 
@@ -107,26 +141,48 @@ namespace J2.MultiplayerMap
             localEntityId = entityId;
             BindLocalEntity();
         }
+
         void BindLocalEntity()
         {
-            if (localEntityId.HasValue && Spawner.TryGetEntity(localEntityId.Value,out var entity)
-                && World.Player != entity.transform) World.BindPlayer(entity.transform);
+            if (localEntityId.HasValue && Spawner.TryGetCreature(localEntityId.Value, out var creature) && creature is J2.Creatures.Player player && PlayerController.Player != player)
+            {
+                PlayerController.BindPlayer(player);
+            }
         }
 
         void LateUpdate()
         {
-            scale = Mathf.Min(Screen.width / 1440f, Screen.height / 900f);
-            offset = new Vector2((Screen.width - 1440 * scale) / 2, (Screen.height - 900 * scale) / 2);
-            ui.Begin(scale, offset);
-            ui.Text(new Rect(32, 28, 500, 40), "내 전장", 23, Color.white, true, TextAnchor.MiddleLeft);
-            ui.Button("returnMainMenu", new Rect(1216, 24, 200, 48), "메인 화면으로", new Color(.09f, .16f, .18f), ReturnToMenu, !GameSceneFlow.IsLoading);
-            ui.Text(new Rect(260, 829, 920, 31), "바닥 우클릭 / 터치 이동  ·  Esc 돌아가기", 17, Color.white, false, TextAnchor.MiddleCenter);
-            ui.End();
+            var safe = Screen.safeArea;
+
+            if (safe.width <= 0 || safe.height <= 0)
+            {
+                safe = new Rect(0, 0, Screen.width, Screen.height);
+            }
+
+            scale = Mathf.Max(.01f, Mathf.Min(safe.width / 1440f, safe.height / 900f));
+            offset = new Vector2(safe.x + (safe.width - 1440 * scale) / 2, Screen.height - safe.yMax + (safe.height - 900 * scale) / 2);
+            ui.Draw(scale, offset, Time.deltaTime);
         }
 
-        void ReturnToMenu()
+        void OnApplicationFocus(bool focused)
         {
-            World.CancelMovement();
+            if (!focused)
+            {
+                pointer?.Cancel();
+            }
+        }
+
+        void OnApplicationPause(bool paused)
+        {
+            if (paused)
+            {
+                pointer?.Cancel();
+            }
+        }
+
+        public void ReturnToMenu()
+        {
+            PlayerController.CancelMovement();
             spawnNetwork?.ClearSpawns();
             GameSceneFlow.Load(GameSceneFlow.MainMenu);
         }

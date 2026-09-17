@@ -5,7 +5,6 @@ using J2.Networking;
 using J2.Protocol;
 using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace J2.MultiplayerMap
 {
@@ -24,8 +23,6 @@ namespace J2.MultiplayerMap
         int?	localEntityId;
         public MultiplayerGameUi Hud => ui;
 
-        MultiplayerPointerInput	pointer;
-
         float	scale = 1;
 
         Font	font;
@@ -42,7 +39,7 @@ namespace J2.MultiplayerMap
             PlayerController.Initialize(World.ViewCamera);
             font = Font.CreateDynamicFontFromOSFont(new[] { "Malgun Gothic", "Arial" }, 18);
             ui = new MultiplayerGameUi(transform, font, this);
-            pointer = new MultiplayerPointerInput(this);
+            PlayerController.ConfigureInteraction(Spawner, ui, () => World.ViewedArena, ReturnToMenu);
         }
 
         void Start()
@@ -103,21 +100,7 @@ namespace J2.MultiplayerMap
                 }
             }
 
-            if (Keyboard.current?.escapeKey.wasPressedThisFrame == true)
-            {
-                ReturnToMenu();
-
-                return;
-            }
-
-            bool consumed = pointer.Tick(scale, offset);
-
-            PlayerController.Tick(screen =>
-            {
-                var point = (new Vector2(screen.x, Screen.height - screen.y) - offset) / scale;
-
-                return consumed || ui.OverUi(point);
-            });
+            PlayerController.Tick(scale, offset);
         }
 
         public bool HandleSpawn(S_Spawn packet)
@@ -162,22 +145,6 @@ namespace J2.MultiplayerMap
             scale = Mathf.Max(.01f, Mathf.Min(safe.width / 1440f, safe.height / 900f));
             offset = new Vector2(safe.x + (safe.width - 1440 * scale) / 2, Screen.height - safe.yMax + (safe.height - 900 * scale) / 2);
             ui.Draw(scale, offset, Time.deltaTime);
-        }
-
-        void OnApplicationFocus(bool focused)
-        {
-            if (!focused)
-            {
-                pointer?.Cancel();
-            }
-        }
-
-        void OnApplicationPause(bool paused)
-        {
-            if (paused)
-            {
-                pointer?.Cancel();
-            }
         }
 
         public void ReturnToMenu()

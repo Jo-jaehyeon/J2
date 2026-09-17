@@ -7,7 +7,7 @@
 - `Entity.cs`: Creature 상속. 준비 상태에서 SetDestination 호출 시 즉시 배치한다. 전투 상태에서는 Tick으로 목적지까지 이동한다. 기본 상태는 Preparation이다.
 - `Creature.Update`가 매 프레임 Tick을 한 번 호출한다. 맵의 입력 Tick에서는 이동을 중복 갱신하지 않는다.
 - `MultiplayerEntitySpawner`가 실제 스폰 객체에 Player 또는 Entity를 연결하고 Initialize로 ID를 설정한다. 기존 EntityId → GameObject 조회 API는 UI와의 호환을 위해 유지한다. TryGetCreature로 공통 부모를 조회할 수 있다.
-- `PlayerController`가 내 Player 참조·우클릭/터치·바닥 좌표 계산·전장 범위 검사·포커스 해제 시 이동 취소를 담당하고 Player.SetDestination을 호출한다. Input Action 에셋 전환은 하지 않았다.
+- `PlayerController`가 내 Player 참조·우클릭/터치·바닥 좌표 계산·전장 범위 검사·포커스 해제 시 이동 취소를 담당하고 TryGetMoveWorldPoint로 월드 좌표까지만 계산하며, PointAt에는 이동 패킷 전송 TODO를 남긴다. Input Action 에셋 전환은 하지 않았다.
 
 ## 패킷 적용 지점
 
@@ -47,3 +47,12 @@ Unity에서 `Tools/Verification/VerifyCreatures.cs`, `VerifyPreservedMovement.cs
 - PlayableCharacterMotor와 ArenaUnitAnimation을 삭제했다. 사용 중인 리소스 프리팹 26개를 Unity PrefabUtility로 수정하고 에셋 빌더의 생성·검증 참조도 정리했다. Source~ 아래 과거 백업은 Unity가 로드하지 않는 이력으로 보존했다.
 - 기물 모델 프리팹은 외형과 Animation을 제공하며, 런타임 루트 Entity가 이를 제어한다. 자식 모델에 Entity를 중복 부착하지 않는다.
 - VerifyCreatureCleanup에서 리소스 프리팹 29개에 Missing Script가 없음을 확인했다. VerifyCreatures, VerifyPreservedMovement, VerifyServerSpawn도 통과했다.
+## PlayerController 입력 통합
+
+- 기물 선택·조회, 드래그 배치/판매, 더블클릭 자동배치, 터치 및 ESC를 PlayerController로 통합했다. MultiplayerPointerInput은 삭제했다.
+- 씬은 PlayerController.Tick(scale, offset)을 호출하며 직접 장치 입력을 읽지 않는다. UI는 기존 요청 콜백 및 버튼 이벤트를 유지한다.
+- 내 EntityId로 스폰된 Player에 BindPlayer를 호출한다. 다른 플레이어의 스폰은 조작 대상을 바꾸지 않는다. 클릭은 해당 Player 기준의 월드 좌표까지만 계산한다. 로컬 목적지·위치를 변경하지 않으며 이동 패킷 전송은 TODO다.
+- 포커스 상실·일시정지·비활성화·바인딩 변경 시 이동과 드래그 상태를 함께 취소한다.
+- Input Action 에셋 도입이나 이동 패킷 연결은 추가하지 않았다. 현재 Input System 장치를 읽는 위치를 PlayerController로 모은 작업이다.
+
+클릭 이동은 서버 연동 대기 상태다. 목적지를 수신하여 Player.SetDestination을 호출하는 코드는 별도로 연결해야 한다.

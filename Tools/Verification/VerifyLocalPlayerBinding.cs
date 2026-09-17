@@ -28,6 +28,8 @@ var pointAt = controller.PlayerController.GetType().GetMethod("PointAt");
 try
 {
     pointAt.Invoke(controller.PlayerController, new object[] { new UnityEngine.Vector2(screen.x, screen.y), (System.Func<UnityEngine.Vector2, bool>)(_ => false) });
+    if (player.Destination != before) throw new System.Exception("Click changed destination without server response");
+    player.SetDestination(target); // Simulate future server destination application.
     player.Tick(10);
     if (UnityEngine.Vector3.Distance(player.transform.position, target) > .01f)
     {
@@ -40,7 +42,7 @@ try
             throw new System.Exception("A remote entity acquired local control");
         }
     }
-    return "PASS: server EnterGame -> LocalEntityId -> actual Spawn -> automatic control binding -> ground pointer movement; disconnect clears ownership. EntityId=" + network.LocalEntityId;
+    return "PASS: server EnterGame -> LocalEntityId -> actual Spawn -> automatic control binding -> coordinate-only click and externally applied movement; disconnect clears ownership. EntityId=" + network.LocalEntityId;
 }
 finally
 {
